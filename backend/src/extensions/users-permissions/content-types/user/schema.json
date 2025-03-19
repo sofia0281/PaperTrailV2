@@ -1,0 +1,173 @@
+{
+  "kind": "collectionType",
+  "collectionName": "up_users",
+  "info": {
+    "name": "user",
+    "description": "",
+    "singularName": "user",
+    "pluralName": "users",
+    "displayName": "User"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "username": {
+      "type": "string",
+      "minLength": 3,
+      "unique": true,
+      "configurable": false,
+      "required": true
+    },
+    "email": {
+      "type": "email",
+      "minLength": 6,
+      "configurable": false,
+      "required": true
+    },
+    "provider": {
+      "type": "string",
+      "configurable": false
+    },
+    "password": {
+      "type": "password",
+      "minLength": 6,
+      "configurable": false,
+      "private": true,
+      "searchable": false
+    },
+    "resetPasswordToken": {
+      "type": "string",
+      "configurable": false,
+      "private": true,
+      "searchable": false
+    },
+    "confirmationToken": {
+      "type": "string",
+      "configurable": false,
+      "private": true,
+      "searchable": false
+    },
+    "confirmed": {
+      "type": "boolean",
+      "default": false,
+      "configurable": false
+    },
+    "blocked": {
+      "type": "boolean",
+      "default": false,
+      "configurable": false
+    },
+    "role": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.role",
+      "inversedBy": "users",
+      "configurable": false
+    },
+    "Nombre": {
+      "type": "string"
+    },
+    "Apellido": {
+      "type": "string"
+    },
+    "cedula": {
+      "type": "biginteger"
+    },
+    "Genero": {
+      "type": "enumeration",
+      "enum": [
+        "Femenino",
+        "Masculino",
+        "Otro"
+      ]
+    },
+    "Fecha_nacimiento": {
+      "type": "date"
+    },
+    "Lugar_nacimiento": {
+      "type": "string"
+    },
+    "TemaL_1": {
+      "type": "enumeration",
+      "enum": [
+        "Ficción ",
+        "No ficción ",
+        "Novela ",
+        "Cuentos ",
+        "Poesía ",
+        "Biografías y autobiografías ",
+        "Ensayos ",
+        "Historia ",
+        "Ciencia ",
+        "Psicología y desarrollo personal ",
+        "Filosofía ",
+        "Negocios y economía ",
+        "Autoayuda y motivación ",
+        "Salud y bienestar",
+        "Religión y espiritualidad ",
+        "Educación y pedagogía ",
+        "Tecnología e informática ",
+        "Viajes y turismo ",
+        "Gastronomía y cocina",
+        "Arte y fotografía",
+        "Literatura infantil ",
+        "Literatura juvenil ",
+        "Misterio y suspense ",
+        "Novela policíaca",
+        "Fantasía épica ",
+        "Distopía",
+        "Romance contemporáneo ",
+        "Romance histórico ",
+        "Horror y terror ",
+        "Género gótico ",
+        "Novela histórica ",
+        "Filosofía oriental ",
+        "Mitología y folclore ",
+        "Cómics y novelas gráficas"
+      ]
+    },
+    "TemaL_2": {
+      "type": "enumeration",
+      "enum": [
+        "Ficción ",
+        "No ficción ",
+        "Novela ",
+        "Cuentos ",
+        "Poesía ",
+        "Biografías y autobiografías ",
+        "Ensayos ",
+        "Historia ",
+        "Ciencia ",
+        "Psicología y desarrollo personal ",
+        "Filosofía ",
+        "Negocios y economía ",
+        "Autoayuda y motivación ",
+        "Salud y bienestar",
+        "Religión y espiritualidad ",
+        "Educación y pedagogía ",
+        "Tecnología e informática ",
+        "Viajes y turismo ",
+        "Gastronomía y cocina",
+        "Arte y fotografía",
+        "Literatura infantil ",
+        "Literatura juvenil ",
+        "Misterio y suspense ",
+        "Novela policíaca",
+        "Fantasía épica ",
+        "Distopía",
+        "Romance contemporáneo ",
+        "Romance histórico ",
+        "Horror y terror ",
+        "Género gótico ",
+        "Novela histórica ",
+        "Filosofía oriental ",
+        "Mitología y folclore ",
+        "Cómics y novelas gráficas"
+      ]
+    },
+    "Direccion": {
+      "type": "string"
+    }
+  }
+}
