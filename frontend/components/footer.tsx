@@ -32,7 +32,7 @@ const Footer = () => {
                         PAPER <span className="font-bold">TRAIL</span>
                     </h1>
                     <Image
-                        src="/images/icono.png"
+                        src="/img/icono.png"
                         alt="Icono PaperTrail"
                         width={40}
                         height={40}

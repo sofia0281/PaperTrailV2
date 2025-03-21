@@ -13,15 +13,15 @@ const Navbar = () => {
     const router = useRouter();
     const [user, setUser] = useState<UserType>(null);
     const [isClient, setIsClient] = useState(false);
-  
+
     useEffect(() => {
-      setIsClient(true); // Indica que el componente ya se está ejecutando en el cliente
-  
-      // Simulación de carga de usuario (reemplaza con la lógica real)
-      const storedUser: UserType = { nombre: "client" }; // Simula un usuario root
-      setUser(storedUser);
+        setIsClient(true); // Indica que el componente ya se está ejecutando en el cliente
+
+        // Simulación de carga de usuario (reemplaza con la lógica real)
+        const storedUser: UserType = { nombre: "client" }; // Simula un usuario root
+        setUser(storedUser);
     }, []);
-  
+
     if (!isClient) return null;
 
 /*    useEffect(() => {
@@ -48,7 +48,7 @@ const Navbar = () => {
             {/* Logo e ícono */}
             <div className="flex items-center cursor-pointer" onClick={() => router.push("/")}>
                 <Image
-                    src="/images/icono.png"
+                    src="/img/icono.png"
                     alt="Icono PaperTrail"
                     width={32}
                     height={32}
@@ -92,7 +92,7 @@ const Navbar = () => {
                     </>
                 ) : (
                     <>
-                        <User strokeWidth={1} className="cursor-pointer" onClick={() => router.push("/login")} />
+                        <User strokeWidth={1} className="cursor-pointer" onClick={() => router.push("/routes/login")} />
                         <ShoppingCart strokeWidth={1} className="cursor-pointer" onClick={() => router.push("/cart")} />
                     </>
                 )}
