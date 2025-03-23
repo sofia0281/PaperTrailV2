@@ -3,55 +3,32 @@ import { useState, useEffect } from "react";
 import { Mail, Lock } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { loginUser } from '@/services/getLogin'
 
 const Login = () => {
   const router = useRouter();
-  const [isClient, setIsClient] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) return null; // Evita el error de hidratación
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setMessage(""); // Limpia el mensaje previo
-
-    if (!email || !password) {
-      setMessage("Por favor, completa todos los campos.");
-      return;
-    }
+  const handleLogin = async (event: React.FormEvent) => {
+    event.preventDefault(); // Evitar recarga de la página
 
     try {
-      const response = await fetch("http://localhost:1337/api/auth/local", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          identifier: email, // Strapi usa "identifier" en vez de "email"
-          password: password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage("¡Inicio de sesión exitoso!");
-        localStorage.setItem("jwt", data.jwt); // Guardar token de sesión
-        setTimeout(() => router.push("/home"), 2000); // Redirigir después de 2s
-      } else {
-        setMessage(data.error.message || "Error en el inicio de sesión.");
+      const data = await loginUser(email, password);
+      
+      if (data.jwt) {
+        // Guardar token en localStorage o sessionStorage
+        localStorage.setItem("authToken", data.jwt);
+        
+        // Redirigir a la página Home
+        router.push("/");
       }
     } catch (error) {
-      console.error("Error en la solicitud:", error);
-      setMessage("Error al conectar con el servidor.");
+      setMessage("Usuario no encontrado o credenciales incorrectas.");
     }
   };
+
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
