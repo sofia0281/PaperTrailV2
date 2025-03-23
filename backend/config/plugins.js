@@ -1,5 +1,1 @@
-module.exports = ({ env }) => ({
-    'users-permissions': {
-    enabled: true,
-    },
-});
+module.exports = ({}) => ({});

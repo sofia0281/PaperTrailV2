@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Mail, Lock } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { loginUser } from '@/services/getLogin'
+import { loginUser, fetchUserData } from '@/services/getLogin'
 
 const Login = () => {
   const router = useRouter();
@@ -15,16 +15,36 @@ const Login = () => {
     event.preventDefault(); // Evitar recarga de la página
 
     try {
+      // Iniciar sesión
       const data = await loginUser(email, password);
-      
-      if (data.jwt) {
-        // Guardar token en localStorage o sessionStorage
+      console.log("Respuesta del servidor:", data);
+
+      if (data.jwt && data.user) {
+        // Guardar token y datos del usuario en localStorage
         localStorage.setItem("authToken", data.jwt);
-        
-        // Redirigir a la página Home
-        router.push("/");
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        // Obtener el rol del usuario desde la respuesta
+        const userData = await fetchUserData(); // Esperar a que se resuelva la promesa
+        console.log("Datos del usuario:", userData);
+
+        // Acceder al nombre del rol
+        const userRole = userData.role?.name; // Usar optional chaining para evitar errores
+        console.log("Rol del usuario:", userRole);
+
+        if (userRole === "Admin") {
+          console.log("es ad")
+        } else if (userRole === "Authenticated") {
+          console.log("no es") // Redirigir a la página de usuario autenticado
+        } else {
+          setMessage("Rol no reconocido. Contacta al administrador.");
+        }
+      } else {
+        console.error("No se recibieron datos del usuario en la respuesta.");
+        setMessage("Error al iniciar sesión. Inténtalo de nuevo.");
       }
     } catch (error) {
+      console.error("Error al iniciar sesión:", error);
       setMessage("Usuario no encontrado o credenciales incorrectas.");
     }
   };

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-
+import withAuth from '@/components/withAuth';
 const EditProfile = () => {
   const [formData, setFormData] = useState({
     nombre: "",
@@ -208,4 +208,4 @@ const EditProfile = () => {
   );
 };
 
-export default EditProfile;
+export default withAuth(EditProfile);
