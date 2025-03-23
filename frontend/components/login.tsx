@@ -4,8 +4,9 @@ import { Mail, Lock } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { loginUser, fetchUserData } from '@/services/getLogin'
-
+import { useAuth } from '@/context/AuthContext';
 const Login = () => {
+  const { setAuthToken, setAuthUser, setAuthRole } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,9 +21,21 @@ const Login = () => {
       console.log("Respuesta del servidor:", data);
 
       if (data.jwt && data.user) {
-        // Guardar token y datos del usuario en localStorage
+
+        // Guardar token en localStorage
         localStorage.setItem("authToken", data.jwt);
-        localStorage.setItem("user", JSON.stringify(data.user));
+
+        // Actualizar el estado en AuthProvider
+        setAuthToken(data.jwt); // Cambiado de "setToken" a "setAuthToken"
+
+        // Filtrar los datos del usuario para obtener solo el nombre
+        const filteredUser = {
+          id: data.user.id,
+          username: data.user.username, // Solo el nombre de usuario
+        };
+
+        // Guardar datos filtrados en localStorage
+        localStorage.setItem("user", JSON.stringify(filteredUser));
 
         // Obtener el rol del usuario desde la respuesta
         const userData = await fetchUserData(); // Esperar a que se resuelva la promesa
@@ -31,17 +44,21 @@ const Login = () => {
         // Acceder al nombre del rol
         const userRole = userData.role?.name; // Usar optional chaining para evitar errores
         console.log("Rol del usuario:", userRole);
+        localStorage.setItem("role", JSON.stringify(userRole)); // Guardar el rol en localStorage
+        setAuthRole(userRole);
+
 
         if (userRole === "Admin") {
-          console.log("es ad")
+          router.push("/routes/loginHome");
         } else if (userRole === "Authenticated") {
-          console.log("no es") // Redirigir a la página de usuario autenticado
+          router.push("/routes/loginHome"); // Redirigir a la página de usuario autenticado
         } else {
           setMessage("Rol no reconocido. Contacta al administrador.");
         }
+        console.log("bien")
       } else {
         console.error("No se recibieron datos del usuario en la respuesta.");
-        setMessage("Error al iniciar sesión. Inténtalo de nuevo.");
+        setMessage("Usuario no encontrado o credenciales incorrectas.");
       }
     } catch (error) {
       console.error("Error al iniciar sesión:", error);

@@ -66,13 +66,19 @@
       "configurable": false
     },
     "Nombre": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "Apellido": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "cedula": {
-      "type": "biginteger"
+      "type": "biginteger",
+      "required": true,
+      "max": "9999999999",
+      "min": "99999",
+      "unique": false
     },
     "Genero": {
       "type": "enumeration",
@@ -80,13 +86,16 @@
         "Femenino",
         "Masculino",
         "Otro"
-      ]
+      ],
+      "required": true
     },
     "Fecha_nacimiento": {
-      "type": "date"
+      "type": "date",
+      "required": true
     },
     "Lugar_nacimiento": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "TemaL_1": {
       "type": "enumeration",
@@ -125,7 +134,8 @@
         "Filosofía oriental ",
         "Mitología y folclore ",
         "Cómics y novelas gráficas"
-      ]
+      ],
+      "required": true
     },
     "TemaL_2": {
       "type": "enumeration",
@@ -164,10 +174,12 @@
         "Filosofía oriental ",
         "Mitología y folclore ",
         "Cómics y novelas gráficas"
-      ]
+      ],
+      "required": true
     },
     "Direccion": {
-      "type": "string"
+      "type": "string",
+      "required": true
     }
   }
 }

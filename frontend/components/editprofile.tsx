@@ -1,31 +1,83 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import withAuth from '@/components/withAuth';
+import { fetchUserData } from "@/services/getLogin";
+
 const EditProfile = () => {
-  const [formData, setFormData] = useState({
-    nombre: "",
-    apellido: "",
-    cedula: "",
-    genero: "",
-    nacimiento: "",
-    lugarNacimiento: "",
-    direccion: "",
-    email: "",
-    usuario: "",
-    preferencia1: "",
-    preferencia2: "",
-    passwordActual: "",
-    passwordNueva: "",
-    passwordConfirmar: "",
-  });
+    const [formData, setFormData] = useState({
+      nombre: "",
+      apellido: "",
+      cedula: "",
+      genero: "",
+      nacimiento: "",
+      lugarNacimiento: "",
+      direccion: "",
+      email: "",
+      usuario: "",
+      preferencia1: "",
+      preferencia2: "",
+      passwordActual: "",
+      passwordNueva: "",
+      passwordConfirmar: "",
+    });
+
+  // Obtener los datos del usuario al cargar la página
+  useEffect(() => {
+    const loadUserData = async () => {
+      const userData = await fetchUserData();
+      if (userData) {
+        setFormData({
+          nombre: userData.Nombre || "",
+          apellido: userData.Apellido || "",
+          cedula: userData.cedula || "",
+          genero: userData.Genero || "",
+          nacimiento: userData.Fecha_nacimiento || "",
+          lugarNacimiento: userData.Lugar_nacimiento || "",
+          direccion: userData.Direccion || "",
+          email: userData.email || "",
+          usuario: userData.username || "",
+          preferencia1: userData.TemaL1 || "",
+          preferencia2: userData.TemaL2 || "",
+          passwordActual: "",
+          passwordNueva: "",
+          passwordConfirmar: "",
+        });
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Datos guardados:", formData);
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/me`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar los datos del usuario');
+      }
+
+      const updatedUser = await response.json();
+      console.log('Usuario actualizado:', updatedUser);
+      alert('Datos actualizados correctamente');
+    } catch (error) {
+      console.error('Error:', error.message);
+      alert('Error al actualizar los datos');
+    }
   };
 
   return (
@@ -209,3 +261,5 @@ const EditProfile = () => {
 };
 
 export default withAuth(EditProfile);
+
+

@@ -26,6 +26,7 @@ export const loginUser = async (email, password) => {
     }
 };
 
+// Función para obtener la información del usuario , se usa para obtener el role o toda la info del usuario
 export const fetchUserData = async () => {
     const token = localStorage.getItem('authToken'); // Obtener el token JWT del almacenamiento local
   
@@ -49,5 +50,70 @@ export const fetchUserData = async () => {
     }
   };
   
-  // Llamar a la función después de que el usuario inicie sesión
-  
+
+// Función para obtener el ID del rol "Authenticated"
+const obtenerIdRol = async () => {
+    try {
+        console.log('Obteniendo ID del rol "Authenticated"...');
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users-permissions/roles`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error detallado de Strapi:', errorData);
+            throw new Error('Error al obtener los roles');
+        }
+
+        const data = await response.json();
+        const rolAuthenticated = data.roles.find((rol) => rol.name === 'Authenticated');
+
+        if (!rolAuthenticated) {
+            throw new Error('No se encontró el rol "Authenticated"');
+        }
+
+        console.log('ID del rol "Authenticated":', rolAuthenticated.id);
+        return rolAuthenticated.id;
+    } catch (error) {
+    console.error('Error al obtener el ID del rol:', error.message);
+    throw error;
+    }
+};
+
+// Función para crear un usuario en Strapi
+export const createUser = async (userData) => {
+    try {
+        const roleId = await obtenerIdRol(); // Obtén el ID del rol "Authenticated"
+
+        const datosUsuario = {
+            ...userData,
+            password: userData.clave, // Mapea "clave" a "password"
+            role: roleId, // Asigna el ID del rol
+        };
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(datosUsuario),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error detallado de Strapi:', errorData);
+            throw new Error('Error al crear el usuario');
+        }
+
+        const data = await response.json();
+        console.log('Usuario creado en Strapi:', data);
+        return data;
+    } catch (error) {
+        console.error('Error al enviar datos a Strapi:', error.message);
+        throw error;
+    }
+};

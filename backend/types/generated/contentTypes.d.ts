@@ -826,30 +826,39 @@ export interface PluginUsersPermissionsUser
     draftAndPublish: false;
   };
   attributes: {
-    Apellido: Schema.Attribute.String;
+    Apellido: Schema.Attribute.String & Schema.Attribute.Required;
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    cedula: Schema.Attribute.BigInteger;
+    cedula: Schema.Attribute.BigInteger &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: '9999999999';
+          min: '99999';
+        },
+        string
+      >;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Direccion: Schema.Attribute.String;
+    Direccion: Schema.Attribute.String & Schema.Attribute.Required;
     email: Schema.Attribute.Email &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
-    Fecha_nacimiento: Schema.Attribute.Date;
-    Genero: Schema.Attribute.Enumeration<['Femenino', 'Masculino', 'Otro']>;
+    Fecha_nacimiento: Schema.Attribute.Date & Schema.Attribute.Required;
+    Genero: Schema.Attribute.Enumeration<['Femenino', 'Masculino', 'Otro']> &
+      Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'plugin::users-permissions.user'
     > &
       Schema.Attribute.Private;
-    Lugar_nacimiento: Schema.Attribute.String;
-    Nombre: Schema.Attribute.String;
+    Lugar_nacimiento: Schema.Attribute.String & Schema.Attribute.Required;
+    Nombre: Schema.Attribute.String & Schema.Attribute.Required;
     password: Schema.Attribute.Password &
       Schema.Attribute.Private &
       Schema.Attribute.SetMinMaxLength<{
@@ -899,7 +908,8 @@ export interface PluginUsersPermissionsUser
         'Mitolog\u00EDa y folclore ',
         'C\u00F3mics y novelas gr\u00E1ficas',
       ]
-    >;
+    > &
+      Schema.Attribute.Required;
     TemaL_2: Schema.Attribute.Enumeration<
       [
         'Ficci\u00F3n ',
@@ -937,7 +947,8 @@ export interface PluginUsersPermissionsUser
         'Mitolog\u00EDa y folclore ',
         'C\u00F3mics y novelas gr\u00E1ficas',
       ]
-    >;
+    > &
+      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

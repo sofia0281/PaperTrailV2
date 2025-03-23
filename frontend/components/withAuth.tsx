@@ -1,21 +1,20 @@
-// components/withAuth.js
-"use client";
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
+
 const withAuth = (WrappedComponent) => {
     const Wrapper = (props) => {
-        const { user, token } = useAuth();
+        const { authUser, authToken } = useAuth();
         const router = useRouter();
 
         useEffect(() => {
-            if (!user || !token) {
+            if (!authUser || !authToken) {
                 router.push('/routes/login'); // Redirige al login si no está autenticado
             }
-        }, [user, token, router]);
+        }, [authUser, authToken, router]);
 
-            return <WrappedComponent {...props} />;
+        return <WrappedComponent {...props} />;
     };
 
     return Wrapper;

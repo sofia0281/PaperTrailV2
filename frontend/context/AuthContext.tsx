@@ -1,26 +1,53 @@
 // context/AuthContext.js
 "use client";
-import { createContext, useContext, useEffect, useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
-const AuthContext = createContext();
+export const AuthContext = React.createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [token, setToken] = useState(null);
+    const [authUser, setAuthUser] = useState(null);
+    const [authToken, setAuthToken] = useState(null);
+    const [authRole, setAuthRole] = useState(null);
+    const [loading, setLoading] = useState(true); // Estado de carga
 
-    // Verifica si hay un token y datos del usuario almacenados (por ejemplo, en localStorage)
     useEffect(() => {
         const storedToken = localStorage.getItem('authToken');
-        const storedUser = JSON.parse(localStorage.getItem('user'));
+        const storedUser = localStorage.getItem('user');
+        const storedRole = localStorage.getItem('role');
 
-        if (storedToken && storedUser) {
-            setToken(storedToken);
-            setUser(storedUser);
+        if (storedToken) {
+            setAuthToken(storedToken);
         }
+
+        if (storedUser) {
+            try {
+                const parsedUser = JSON.parse(storedUser);
+                setAuthUser(parsedUser);
+            } catch (error) {
+                console.error("Error parsing user data:", error);
+                setAuthUser(null);
+            }
+        }
+
+        if (storedRole) {
+            try {
+                const parsedRole = JSON.parse(storedRole);
+                setAuthRole(parsedRole);
+            } catch (error) {
+                console.error("Error parsing role data:", error);
+                setAuthRole(null);
+            }
+        }
+
+        setLoading(false); // Marcar como cargado
     }, []);
 
+    if (loading) {
+        return <div>Cargando...</div>; // Mostrar un indicador de carga
+    }
+
     return (
-        <AuthContext.Provider value={{ user, token, setUser, setToken }}>
+        <AuthContext.Provider value={{ authUser, authToken, authRole, setAuthUser, setAuthToken, setAuthRole }}>
             {children}
         </AuthContext.Provider>
     );
