@@ -871,84 +871,8 @@ export interface PluginUsersPermissionsUser
       'manyToOne',
       'plugin::users-permissions.role'
     >;
-    TemaL_1: Schema.Attribute.Enumeration<
-      [
-        'Ficci\u00F3n ',
-        'No ficci\u00F3n ',
-        'Novela ',
-        'Cuentos ',
-        'Poes\u00EDa ',
-        'Biograf\u00EDas y autobiograf\u00EDas ',
-        'Ensayos ',
-        'Historia ',
-        'Ciencia ',
-        'Psicolog\u00EDa y desarrollo personal ',
-        'Filosof\u00EDa ',
-        'Negocios y econom\u00EDa ',
-        'Autoayuda y motivaci\u00F3n ',
-        'Salud y bienestar',
-        'Religi\u00F3n y espiritualidad ',
-        'Educaci\u00F3n y pedagog\u00EDa ',
-        'Tecnolog\u00EDa e inform\u00E1tica ',
-        'Viajes y turismo ',
-        'Gastronom\u00EDa y cocina',
-        'Arte y fotograf\u00EDa',
-        'Literatura infantil ',
-        'Literatura juvenil ',
-        'Misterio y suspense ',
-        'Novela polic\u00EDaca',
-        'Fantas\u00EDa \u00E9pica ',
-        'Distop\u00EDa',
-        'Romance contempor\u00E1neo ',
-        'Romance hist\u00F3rico ',
-        'Horror y terror ',
-        'G\u00E9nero g\u00F3tico ',
-        'Novela hist\u00F3rica ',
-        'Filosof\u00EDa oriental ',
-        'Mitolog\u00EDa y folclore ',
-        'C\u00F3mics y novelas gr\u00E1ficas',
-      ]
-    > &
-      Schema.Attribute.Required;
-    TemaL_2: Schema.Attribute.Enumeration<
-      [
-        'Ficci\u00F3n ',
-        'No ficci\u00F3n ',
-        'Novela ',
-        'Cuentos ',
-        'Poes\u00EDa ',
-        'Biograf\u00EDas y autobiograf\u00EDas ',
-        'Ensayos ',
-        'Historia ',
-        'Ciencia ',
-        'Psicolog\u00EDa y desarrollo personal ',
-        'Filosof\u00EDa ',
-        'Negocios y econom\u00EDa ',
-        'Autoayuda y motivaci\u00F3n ',
-        'Salud y bienestar',
-        'Religi\u00F3n y espiritualidad ',
-        'Educaci\u00F3n y pedagog\u00EDa ',
-        'Tecnolog\u00EDa e inform\u00E1tica ',
-        'Viajes y turismo ',
-        'Gastronom\u00EDa y cocina',
-        'Arte y fotograf\u00EDa',
-        'Literatura infantil ',
-        'Literatura juvenil ',
-        'Misterio y suspense ',
-        'Novela polic\u00EDaca',
-        'Fantas\u00EDa \u00E9pica ',
-        'Distop\u00EDa',
-        'Romance contempor\u00E1neo ',
-        'Romance hist\u00F3rico ',
-        'Horror y terror ',
-        'G\u00E9nero g\u00F3tico ',
-        'Novela hist\u00F3rica ',
-        'Filosof\u00EDa oriental ',
-        'Mitolog\u00EDa y folclore ',
-        'C\u00F3mics y novelas gr\u00E1ficas',
-      ]
-    > &
-      Schema.Attribute.Required;
+    TemaL_1: Schema.Attribute.String;
+    TemaL_2: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

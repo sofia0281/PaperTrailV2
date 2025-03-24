@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Mail, Lock } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { loginUser, fetchUserData } from '@/services/getLogin'
+import { loginUser, fetchUserData } from '@/services/userCRUD'
 import { useAuth } from '@/context/AuthContext';
 const Login = () => {
   const { setAuthToken, setAuthUser, setAuthRole } = useAuth();

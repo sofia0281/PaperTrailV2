@@ -97,89 +97,15 @@
       "type": "string",
       "required": true
     },
-    "TemaL_1": {
-      "type": "enumeration",
-      "enum": [
-        "Ficción ",
-        "No ficción ",
-        "Novela ",
-        "Cuentos ",
-        "Poesía ",
-        "Biografías y autobiografías ",
-        "Ensayos ",
-        "Historia ",
-        "Ciencia ",
-        "Psicología y desarrollo personal ",
-        "Filosofía ",
-        "Negocios y economía ",
-        "Autoayuda y motivación ",
-        "Salud y bienestar",
-        "Religión y espiritualidad ",
-        "Educación y pedagogía ",
-        "Tecnología e informática ",
-        "Viajes y turismo ",
-        "Gastronomía y cocina",
-        "Arte y fotografía",
-        "Literatura infantil ",
-        "Literatura juvenil ",
-        "Misterio y suspense ",
-        "Novela policíaca",
-        "Fantasía épica ",
-        "Distopía",
-        "Romance contemporáneo ",
-        "Romance histórico ",
-        "Horror y terror ",
-        "Género gótico ",
-        "Novela histórica ",
-        "Filosofía oriental ",
-        "Mitología y folclore ",
-        "Cómics y novelas gráficas"
-      ],
-      "required": true
-    },
-    "TemaL_2": {
-      "type": "enumeration",
-      "enum": [
-        "Ficción ",
-        "No ficción ",
-        "Novela ",
-        "Cuentos ",
-        "Poesía ",
-        "Biografías y autobiografías ",
-        "Ensayos ",
-        "Historia ",
-        "Ciencia ",
-        "Psicología y desarrollo personal ",
-        "Filosofía ",
-        "Negocios y economía ",
-        "Autoayuda y motivación ",
-        "Salud y bienestar",
-        "Religión y espiritualidad ",
-        "Educación y pedagogía ",
-        "Tecnología e informática ",
-        "Viajes y turismo ",
-        "Gastronomía y cocina",
-        "Arte y fotografía",
-        "Literatura infantil ",
-        "Literatura juvenil ",
-        "Misterio y suspense ",
-        "Novela policíaca",
-        "Fantasía épica ",
-        "Distopía",
-        "Romance contemporáneo ",
-        "Romance histórico ",
-        "Horror y terror ",
-        "Género gótico ",
-        "Novela histórica ",
-        "Filosofía oriental ",
-        "Mitología y folclore ",
-        "Cómics y novelas gráficas"
-      ],
-      "required": true
-    },
     "Direccion": {
       "type": "string",
       "required": true
+    },
+    "TemaL_1": {
+      "type": "string"
+    },
+    "TemaL_2": {
+      "type": "string"
     }
   }
 }
