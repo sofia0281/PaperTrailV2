@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
     const [authUser, setAuthUser] = useState(null);
     const [authToken, setAuthToken] = useState(null);
     const [authRole, setAuthRole] = useState(null);
-    const [loading, setLoading] = useState(true); // Estado de carga
+    const [loading, setLoading] = useState(true); 
 
     useEffect(() => {
         const storedToken = localStorage.getItem('authToken');

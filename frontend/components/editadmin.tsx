@@ -1,29 +1,78 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import withAuth from '@/components/withAuth';
+import { getAdminData, putAdminData } from "@/services/adminCRUD";
 
-const EditAdmin = () => {
+
+const EditAdmin =  ({ adminID }: { adminID: string }) => {
+  console.log(adminID)
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
     fechaNacimiento: "",
     lugarNacimiento: "",
-    nuip: "",
+    cedula: "",
     genero: "",
     correo: "",
     direccion: "",
     usuario: "",
-    contraseña: "",
+    password: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    console.log("Campo cambiado:", e.target.name, "Nuevo valor:", e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Datos enviados:", formData);
-  };
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      console.log("Datos guardados:", formData);
+      const userData = await getAdminData(adminID);
+      try {
+          const updatedUserData = {
+            "username":formData.usuario,
+            "email":formData.correo,
+            "Nombre":formData.nombre,
+            "Apellido":formData.apellido,
+            "cedula":formData.cedula,
+            "Genero":formData.genero,
+            "Fecha_nacimiento":formData.fechaNacimiento,
+            "Lugar_nacimiento":formData.lugarNacimiento,
+            "Direccion":formData.direccion,
+            "password":formData.password
+          };
+        const actualizado = await putAdminData(updatedUserData,adminID);
+        console.log('Usuario actualizado:', actualizado);
+      } catch (error) {
+      console.error('Error:', error.message);
+      alert('Error al actualizar los datos');
+      }
+    };
 
+  useEffect(() => {
+      const loadAdminData = async () => {
+        const userData = await getAdminData(adminID);
+        if (userData) {
+          setFormData({
+            nombre: userData.Nombre || "",
+            apellido: userData.Apellido || "",
+            cedula: userData.cedula || "",  // Nota: 'cedula' en minúscula (como en tu API)
+            genero: userData.Genero || "",
+            fechaNacimiento: userData.Fecha_nacimiento || "",
+            lugarNacimiento: userData.Lugar_nacimiento || "",
+            direccion: userData.Direccion || "",
+            correo: userData.email || "",  // Añadido para consistencia
+            usuario: userData.username || "",
+            password: ""  // Siempre vacío por seguridad
+          });
+        }
+      };
+  
+      loadAdminData();
+    }, []);
+    const handleCancelar = () => {
+      router.push('/loginHome');  // Redirecciona a la página "About"
+    };
   return (
     <div className="flex w-full max-w-5xl mx-auto p-6 justify-center">
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
@@ -43,15 +92,27 @@ const EditAdmin = () => {
           {/* Columna 1 */}
           <div className="space-y-3">
             <label className="block text-sm font-semibold">Nombre</label>
-            <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} 
+            <input                 
+                type="text"
+                name="nombre"
+                value={formData.nombre}
+                onChange={handleChange}
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Apellido</label>
-            <input type="text" name="apellido" value={formData.apellido} onChange={handleChange} 
+            <input 
+                type="text" 
+                name="apellido" 
+                value={formData.apellido} 
+                onChange={handleChange} 
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Fecha de nacimiento</label>
-            <input type="date" name="fechaNacimiento" value={formData.fechaNacimiento} onChange={handleChange} 
+            <input 
+              type="date" 
+              name="fechaNacimiento" 
+              value={formData.fechaNacimiento} 
+              onChange={handleChange} 
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Lugar de nacimiento</label>
@@ -61,31 +122,53 @@ const EditAdmin = () => {
 
           {/* Columna 2 */}
           <div className="space-y-3">
-            <label className="block text-sm font-semibold">NUIP</label>
-            <input type="text" name="nuip" value={formData.nuip} onChange={handleChange} 
+            <label className="block text-sm font-semibold">Cedula</label>
+            <input 
+              type="text" 
+              name="cedula" 
+              value={formData.cedula} 
+              onChange={handleChange} 
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Género</label>
-            <input type="text" name="genero" value={formData.genero} onChange={handleChange} 
+            <input 
+              type="text" 
+              name="genero" 
+              value={formData.genero} 
+              onChange={handleChange} 
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Correo</label>
-            <input type="email" name="correo" value={formData.correo} onChange={handleChange} 
+            <input 
+              type="email" 
+              name="correo" 
+              value={formData.correo} onChange={handleChange} 
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Dirección</label>
-            <input type="text" name="direccion" value={formData.direccion} onChange={handleChange} 
+            <input type="text" 
+                name="direccion" 
+                value={formData.direccion} 
+                onChange={handleChange} 
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
           </div>
 
           {/* Columna 3 */}
           <div className="space-y-3">
             <label className="block text-sm font-semibold">Usuario</label>
-            <input type="text" name="usuario" value={formData.usuario} onChange={handleChange} 
+            <input 
+              type="text" 
+              name="usuario"
+              value={formData.usuario} 
+              onChange={handleChange} 
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Contraseña</label>
-            <input type="password" name="contraseña" value={formData.contraseña} onChange={handleChange} 
+            <input 
+              type="password" 
+              name="password" 
+              value={formData.password} 
+              onChange={handleChange} 
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             {/* Botón de Enviar */}

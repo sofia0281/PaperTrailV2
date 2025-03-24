@@ -114,7 +114,7 @@ const obtenerIdRol = async () => {
   };
   
   // Función para crear un usuario en Strapi
-  export const createUser = async (userData) => {
+export const createUser = async (userData) => {
     try {
       const roleId = await obtenerIdRol(); // Obtén el ID del rol "Authenticated"
       const datosUsuario = {

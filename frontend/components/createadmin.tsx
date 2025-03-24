@@ -1,31 +1,57 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
+import { createAdmin } from '@/services/adminCRUD';
 const CreateAdmin = () => {
+  const router = useRouter()
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
+    cedula: "",
+    genero: "",
     fechaNacimiento: "",
     lugarNacimiento: "",
-    nuip: "",
-    genero: "",
-    correo: "",
     direccion: "",
+    email: "",
     usuario: "",
-    contraseña: "",
+    password: "",
+    // confirmarPassword: "",
   });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    console.log("Campo cambiado:", e.target.name, "Nuevo valor:", e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Datos enviados:", formData);
-  };
+    try {
+        // Crear una copia de formData sin los campos no deseados
+        const createAdminData = {
+          "username":formData.usuario,
+          "password":formData.password,
+          "email":formData.email,
+          "Nombre":formData.nombre,
+          "Apellido":formData.apellido,
+          "cedula":formData.cedula,
+          "Genero":formData.genero,
+          "Fecha_nacimiento":formData.fechaNacimiento,
+          "Lugar_nacimiento":formData.lugarNacimiento,
+          "Direccion":formData.direccion,
+          "resetPasswordToken":"null",
+          "confirmationToken":"null",
+          "confirmed":true,
+          "blocked":true,
+          "role":null,
+          "provider":"null"
+        };
+      const creado = await createAdmin(createAdminData);
+      console.log('Usuario creado:', creado);
+    } catch (error) {
+      console.error('Error:', error.message);
+      alert('Error al actualizar los datos');
+    }
 
-  const router = useRouter()
+  }
   return (
     <div className="flex w-full max-w-5xl mx-auto p-6 justify-center">
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
@@ -64,16 +90,25 @@ const CreateAdmin = () => {
 
           {/* Columna 2 */}
           <div className="space-y-3">
-            <label className="block text-sm font-semibold">NUIP</label>
-            <input type="text" name="nuip" value={formData.nuip} onChange={handleChange} 
+            <label className="block text-sm font-semibold">Cédula</label>
+            <input type="text" name="cedula" value={formData.cedula} onChange={handleChange} 
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
-            <label className="block text-sm font-semibold">Género</label>
-            <input type="text" name="genero" value={formData.genero} onChange={handleChange} 
-              className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
-
+            <label className="block text-sm font-medium">Género</label>
+              <select
+                name="genero"
+                value={formData.genero}
+                onChange={handleChange}
+                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                required
+              >
+                <option value="">Selecciona tu género</option>
+                <option value="masculino">Masculino</option>
+                <option value="femenino">Femenino</option>
+                <option value="otro">Otro</option>
+              </select>
             <label className="block text-sm font-semibold">Correo</label>
-            <input type="email" name="correo" value={formData.correo} onChange={handleChange} 
+            <input type="email" name="email" value={formData.email} onChange={handleChange} 
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Dirección</label>
@@ -88,11 +123,11 @@ const CreateAdmin = () => {
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Contraseña</label>
-            <input type="password" name="contraseña" value={formData.contraseña} onChange={handleChange} 
+            <input type="password" name="password" value={formData.password} onChange={handleChange} 
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             {/* Botón de Enviar */}
-            <button type="submit" className="cursor-pointer w-full bg-orange-500 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:scale-105" onClick={() => router.push('/gestionroot')}>
+            <button type="submit" className="cursor-pointer w-full bg-orange-500 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:scale-105" onClick={() => router.push('/routes/gestionroot')}>
               CREAR ADMINISTRADOR
             </button>
           </div>
