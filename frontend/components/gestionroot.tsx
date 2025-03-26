@@ -34,7 +34,6 @@ const GestionRoot = () => {
   }, []);
 
   if (loading) {
-    setAdmins(prev => prev.filter(admin => admin.id !== adminID));
     return (
       <div className="p-6 max-w-4xl mx-auto">
         <p>Cargando administradores...</p>

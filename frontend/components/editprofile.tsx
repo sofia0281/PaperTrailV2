@@ -76,6 +76,7 @@ const EditProfile = () => {
         };
       const actualizado = await putUserData(updatedUserData);
       console.log('Usuario actualizado:', actualizado);
+      router.push('/routes/loginHome');
     } catch (error) {
     console.error('Error:', error.message);
     alert('Error al actualizar los datos');
@@ -327,6 +328,6 @@ const EditProfile = () => {
   );
 };
 
-export default withAuth(EditProfile);
+export default EditProfile;
 
 

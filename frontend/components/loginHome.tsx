@@ -40,4 +40,4 @@ const LoginHome = () => {
     );
 };
 
-export default withAuth(LoginHome);
+export default LoginHome;

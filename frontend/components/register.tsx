@@ -54,7 +54,7 @@ const Register = () => {
       console.log('Usuario creado:', creado);
     } catch (error) {
     console.error('Error:', error.message);
-    alert('Error al actualizar los datos');
+    alert('Error al crear usuario');
     }
   };
   return (
