@@ -143,7 +143,7 @@ const Login = () => {
 
           <p className="text-xs md:text-sm text-gray-600 text-center mt-4">
             ¿No tienes cuenta? 
-            <span className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline transition-colors duration-300" onClick={() => router.push("/register")}>
+            <span className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline transition-colors duration-300" onClick={() => router.push("routes/register")}>
               REGÍSTRATE
             </span>
           </p>
