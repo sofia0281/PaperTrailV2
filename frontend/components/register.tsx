@@ -21,40 +21,54 @@ const Register = () => {
     temaLiterario1: "",
     temaLiterario2: "",
   });
+
+  {/*Ventana emergente a la hora del registro */}
+  const [alert, setAlert] = useState({ message: "", type: "", visible: false });
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    console.log("Campo cambiado:", e.target.name, "Nuevo valor:", e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        // Crear una copia de formData sin los campos no deseados
-        const createUserData = {
-          "username":formData.usuario,
-          "password":formData.password,
-          "email":formData.email,
-          "Nombre":formData.nombre,
-          "Apellido":formData.apellido,
-          "cedula":formData.cedula,
-          "Genero":formData.genero,
-          "Fecha_nacimiento":formData.fechaNacimiento,
-          "Lugar_nacimiento":formData.lugarNacimiento,
-          "TemaL_1":formData.temaLiterario1,
-          "TemaL_2":formData.temaLiterario2,
-          "Direccion":formData.direccion,
-          "resetPasswordToken":"null",
-          "confirmationToken":"null",
-          "confirmed":true,
-          "blocked":true,
-          "role":null,
-          "provider":"null"
-        };
+      const createUserData = {
+        username: formData.usuario,
+        password: formData.password,
+        email: formData.email,
+        Nombre: formData.nombre,
+        Apellido: formData.apellido,
+        cedula: formData.cedula,
+        Genero: formData.genero,
+        Fecha_nacimiento: formData.fechaNacimiento,
+        Lugar_nacimiento: formData.lugarNacimiento,
+        TemaL_1: formData.temaLiterario1,
+        TemaL_2: formData.temaLiterario2,
+        Direccion: formData.direccion,
+        resetPasswordToken: "null",
+        confirmationToken: "null",
+        confirmed: true,
+        blocked: false,
+        role: null,
+        provider: "null",
+      };
+
       const creado = await createUser(createUserData);
-      console.log('Usuario creado:', creado);
+      console.log("Usuario creado:", creado);
+      
+      setAlert({ message: "Registro exitoso", type: "success", visible: true });
+
+      setTimeout(() => {
+        setAlert({ message: "", type: "", visible: false });
+        router.push("/login"); // Redirige después del registro
+      }, 2000);
     } catch (error) {
-    console.error('Error:', error.message);
-    alert('Error al crear usuario');
+      console.error("Error:", error.message);
+      setAlert({ message: "Error al crear usuario", type: "error", visible: true });
+
+      setTimeout(() => {
+        setAlert({ message: "", type: "", visible: false });
+      }, 3000);
     }
   };
   return (
