@@ -1,7 +1,7 @@
 "use client";
-import { ShoppingCart, User, Search, Settings, Shield } from "lucide-react";
+import { ShoppingCart, User, Search, Settings, Shield, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import axios from "axios";
 
@@ -10,8 +10,35 @@ type UserType = {
 } | null;
 
 const Navbar = () => {
+    {/* Estado de menú plegable */}
+    const [user, setUser] = useState<UserType>(null);
+    const [isClient, setIsClient] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
     const router = useRouter();
-    const role = localStorage.getItem('role');
+
+    useEffect(() => {
+        setIsClient(true); // Indica que el componente ya se está ejecutando en el cliente
+        const storedUser: UserType = { nombre: "root" }; // Simula un usuario root
+        setUser(storedUser);
+    }, []);
+
+    // Cerrar el menú al hacer clic fuera
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setMenuOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    if (!isClient) return null;
+    
+    const role = "ROOT";
+    {/*localStorage.getItem('role'); */}
     console.log(role)
 
     return (
@@ -44,21 +71,93 @@ const Navbar = () => {
 
             {/* Íconos de usuario y carrito/ Root*/}
             <div className="flex items-center space-x-4 text-white">
-                {role && role.toString().toUpperCase().replace(/"/g, '') === "ROOT" ?  (
+                {role && role.toString().toUpperCase().replace(/"/g, '') === "ROOT" ? (
                     <>
                     <span className="font-bold uppercase">ROOT</span>
-                    <Shield
-                        strokeWidth={1}
-                        className="cursor-pointer"
-                        onClick={() => router.push("/admin")}
-                    />
-                    <Settings
-                        strokeWidth={1}
-                        className="cursor-pointer"
-                        onClick={() => router.push("/settings")}
-                    />
+                        <Shield
+                            strokeWidth={1}
+                            className="cursor-pointer"
+                            onClick={() => router.push("/admin")}
+                        />
+                    <div className="relative" ref={menuRef}>
+                        <Settings
+                            strokeWidth={1}
+                            className="cursor-pointer"
+                            onClick={() => setMenuOpen(!menuOpen)}
+                        />
+                        {/* Menú desplegable */}
+                        {menuOpen && (
+                                    <div className="absolute right-0 mt-5 mr-0 w-52 bg-[#5FAEC9] text-white shadow-lg rounded-lg overflow-hidden z-50">
+                                        <button
+                                            className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
+                                            onClick={() => router.push("/profile")}
+                                        >
+                                            PerfilROOT
+                                        </button>
+                                        <button
+                                            className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
+                                            onClick={() => router.push("/settings")}
+                                        >
+                                            ConfigROOT
+                                        </button>
+                                        <button
+                                            className="w-full px-4 py-2 text-left hover:bg-red-100 text-red-500 flex items-center justify-between cursor-pointer"
+                                            onClick={() => {
+                                                setUser(null);
+                                                setMenuOpen(false);
+                                                router.push("/login");
+                                            }}
+                                        >
+                                            Log-Out <LogOut size={16} />
+                                        </button>
+                                    </div>
+                                )}
+                    </div>
                     </>
-                ) : (
+                ) : role && role.toString().toUpperCase().replace(/"/g, '') === "CLIENT" ? (
+                    <>
+                    {/* Ícono de usuario con menú desplegable */}
+                    <div className="relative" ref={menuRef}>
+                        <User 
+                            strokeWidth={1} 
+                            className="cursor-pointer" 
+                            onClick={() => setMenuOpen(!menuOpen)} 
+                        />
+                        {/* Menú desplegable */}
+                        {menuOpen && (
+                                <div className="absolute right-0 mt-5 mr-0 w-52 bg-[#5FAEC9] text-white shadow-lg rounded-lg overflow-hidden z-50">
+                                    <button
+                                        className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
+                                        onClick={() => router.push("/profile")}
+                                    >
+                                        Mi perfil
+                                    </button>
+                                    <button
+                                        className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
+                                        onClick={() => router.push("/settings")}
+                                    >
+                                        Opciones
+                                    </button>
+                                    <button
+                                        className="w-full px-4 py-2 text-left hover:bg-red-100 text-red-500 flex items-center justify-between cursor-pointer"
+                                        onClick={() => {
+                                            setUser(null);
+                                            setMenuOpen(false);
+                                            router.push("/login");
+                                        }}
+                                    >
+                                        Cerrar sesión <LogOut size={16} />
+                                    </button>
+                                </div>
+                            )}
+                        <ShoppingCart 
+                            strokeWidth={1} 
+                            className="cursor-pointer" 
+                            onClick={() => router.push("/cart")} 
+                        />
+                    </div>
+                    </>
+                ):(
                     <>
                     <User 
                         strokeWidth={1} 
