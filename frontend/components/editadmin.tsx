@@ -2,10 +2,18 @@
 import { useState, useEffect } from "react";
 import withAuth from '@/components/withAuth';
 import { getAdminData, putAdminData } from "@/services/adminCRUD";
-
+import { motion } from "framer-motion";
+import { XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const EditAdmin =  ({ adminID }: { adminID: string }) => {
-  console.log(adminID)
+
+  const router = useRouter();
+
+  {/*Estados para las ventanas de confirmación */}
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
@@ -20,56 +28,58 @@ const EditAdmin =  ({ adminID }: { adminID: string }) => {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    console.log("Campo cambiado:", e.target.name, "Nuevo valor:", e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      console.log("Datos guardados:", formData);
-      const userData = await getAdminData(adminID);
-      try {
-          const updatedUserData = {
-            "username":formData.usuario,
-            "email":formData.correo,
-            "Nombre":formData.nombre,
-            "Apellido":formData.apellido,
-            "cedula":formData.cedula,
-            "Genero":formData.genero,
-            "Fecha_nacimiento":formData.fechaNacimiento,
-            "Lugar_nacimiento":formData.lugarNacimiento,
-            "Direccion":formData.direccion,
-            "password":formData.password
-          };
-        const actualizado = await putAdminData(updatedUserData,adminID);
-        console.log('Usuario actualizado:', actualizado);
-      } catch (error) {
-      console.error('Error:', error.message);
-      alert('Error al actualizar los datos');
-      }
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowConfirm(true);
+  };
+
+  const confirmSubmit = async () => {
+    setShowConfirm(false);
+    try {
+      const updatedUserData = {
+        "username": formData.usuario,
+        "email": formData.correo,
+        "Nombre": formData.nombre,
+        "Apellido": formData.apellido,
+        "cedula": formData.cedula,
+        "Genero": formData.genero,
+        "Fecha_nacimiento": formData.fechaNacimiento,
+        "Lugar_nacimiento": formData.lugarNacimiento,
+        "Direccion": formData.direccion,
+        "password": formData.password
+      };
+      await putAdminData(updatedUserData, adminID);
+      setMessage("Administrador editado correctamente");
+      setTimeout(() => setMessage(null), 3000);
+    } catch (error) {
+      console.error("Error:", error.message);
+      setMessage("Error al actualizar los datos");
+    }
+  };
 
   useEffect(() => {
-      const loadAdminData = async () => {
-        const userData = await getAdminData(adminID);
-        if (userData) {
-          setFormData({
-            nombre: userData.Nombre || "",
-            apellido: userData.Apellido || "",
-            cedula: userData.cedula || "",  // Nota: 'cedula' en minúscula (como en tu API)
-            genero: userData.Genero || "",
-            fechaNacimiento: userData.Fecha_nacimiento || "",
-            lugarNacimiento: userData.Lugar_nacimiento || "",
-            direccion: userData.Direccion || "",
-            correo: userData.email || "",  // Añadido para consistencia
-            usuario: userData.username || "",
-            password: ""  // Siempre vacío por seguridad
-          });
-        }
-      };
-  
-      loadAdminData();
-    }, []);
+    const loadAdminData = async () => {
+      const userData = await getAdminData(adminID);
+      if (userData) {
+        setFormData({
+          nombre: userData.Nombre || "",
+          apellido: userData.Apellido || "",
+          cedula: userData.cedula || "",
+          genero: userData.Genero || "",
+          fechaNacimiento: userData.Fecha_nacimiento || "",
+          lugarNacimiento: userData.Lugar_nacimiento || "",
+          direccion: userData.Direccion || "",
+          correo: userData.email || "",
+          usuario: userData.username || "",
+          password: ""
+        });
+      }
+    };
+    loadAdminData();
+  }, []);
     const handleCancelar = () => {
       router.push('/loginHome');  // Redirecciona a la página "About"
     };
@@ -181,6 +191,32 @@ const EditAdmin =  ({ adminID }: { adminID: string }) => {
           </div>
         </form>
       </div>
+        {/* Modal de confirmación */}
+        {showConfirm && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-80 text-center border z-50">
+          <p className="text-lg font-semibold">¿Deseas continuar con los cambios?</p>
+          <div className="mt-4 flex justify-center space-x-4">
+            <button className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm" onClick={() => setShowConfirm(false)}>
+              Cancelar
+            </button>
+            <button className="bg-orange-500 text-white px-4 py-2 rounded-md text-sm" onClick={confirmSubmit}>
+              Sí, editar
+            </button>
+          </div>
+        </div>
+      )}
+      {/* Notificación emergente */}
+      {message && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 bg-orange-500 text-white p-6 rounded-lg shadow-lg text-center text-sm z-50 flex items-center justify-between"
+        >
+          <span className="flex-1 text-center">{message}</span>
+          <XCircle size={20} className="cursor-pointer hover:text-gray-200" onClick={() => setMessage(null)} />
+        </motion.div>
+      )}
     </div>
   );
 };
