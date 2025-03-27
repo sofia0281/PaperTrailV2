@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createUser} from "@/services/userCRUD";
-import { useState } from "react";
 import { XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -104,7 +103,7 @@ const Register = () => {
                 name="nombre"
                 value={formData.nombre}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Tu nombre"
                 required
               />
@@ -116,7 +115,7 @@ const Register = () => {
                 name="apellido"
                 value={formData.apellido}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Tu apellido"
                 required
               />
@@ -128,7 +127,7 @@ const Register = () => {
                 name="cedula"
                 value={formData.cedula}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Tu cédula"
                 required
               />
@@ -139,7 +138,7 @@ const Register = () => {
                 name="genero"
                 value={formData.genero}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 required
               >
                 <option value="">Selecciona tu género</option>
@@ -160,7 +159,7 @@ const Register = () => {
                 name="fechaNacimiento"
                 value={formData.fechaNacimiento}
                 onChange={handleChange}
-                className="flex-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 required
               />
             </div>
@@ -174,7 +173,7 @@ const Register = () => {
               name="lugarNacimiento"
               value={formData.lugarNacimiento}
               onChange={handleChange}
-              className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+              className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
               placeholder="Ciudad o país"
               required
             />
@@ -188,7 +187,7 @@ const Register = () => {
               name="direccion"
               value={formData.direccion}
               onChange={handleChange}
-              className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+              className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
               placeholder="Tu dirección"
               required
             />
@@ -198,7 +197,7 @@ const Register = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium">Correo Electrónico</label>
-              <div className="flex items-center border rounded-md p-2 mt-1">
+              <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <Mail size={18} className="text-gray-500 mr-2" />
                 <input
                   type="email"
@@ -213,14 +212,14 @@ const Register = () => {
             </div>
             <div>
               <label className="block text-sm font-medium">Usuario</label>
-              <div className="flex items-center border rounded-md p-2 mt-1">
+              <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <User size={18} className="text-gray-500 mr-2" />
                 <input
                   type="text"
                   name="usuario"
                   value={formData.usuario}
                   onChange={handleChange}
-                  className="flex-1 outline-none text-sm"
+                  className="flex-1 outline-none text-sm "
                   placeholder="Tu usuario"
                   required
                 />
@@ -232,7 +231,7 @@ const Register = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium">Contraseña</label>
-              <div className="flex items-center border rounded-md p-2 mt-1">
+              <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <Lock size={18} className="text-gray-500 mr-2" />
                 <input
                   type="password"
@@ -247,7 +246,7 @@ const Register = () => {
             </div>
             <div>
               <label className="block text-sm font-medium">Validar Contraseña</label>
-              <div className="flex items-center border rounded-md p-2 mt-1">
+              <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <Lock size={18} className="text-gray-500 mr-2" />
                 <input
                   type="password"
@@ -270,7 +269,7 @@ const Register = () => {
                 name="temaLiterario1"
                 value={formData.temaLiterario1}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                 required
               >
                 <option value="">Selecciona un tema</option>
@@ -286,7 +285,7 @@ const Register = () => {
                 name="temaLiterario2"
                 value={formData.temaLiterario2}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                 required
               >
                 <option value="">Selecciona un tema</option>
