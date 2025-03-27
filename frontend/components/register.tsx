@@ -30,7 +30,7 @@ const Register = () => {
     temaLiterario2: "",
   });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    console.log("Campo cambiado:", e.target.name, "Nuevo valor:", e.target.value);
+    //console.log("Campo cambiado:", e.target.name, "Nuevo valor:", e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -60,10 +60,18 @@ const Register = () => {
           "provider":"null"
         };
       const creado = await createUser(createUserData);
-      console.log('Usuario creado:', creado);
+      //console.log('Usuario creado:', creado);
+      setSuccessMessage("Usuario creado exitosamente.");
+      setErrorMessage(null);
+      setTimeout(() => {
+        setSuccessMessage(null);
+        router.push("/");
+      }, 3000);
     } catch (error) {
-    console.error('Error:', error.message);
-    alert('Error al crear usuario');
+    //console.error('Error:', error.message);
+      setErrorMessage("Error al crear usuario.");
+      setSuccessMessage(null);
+      setTimeout(() => setErrorMessage(null), 3000);
     }
   };
   return (
@@ -91,7 +99,28 @@ const Register = () => {
       </div>
 
       {/* Sección derecha - Formulario */}
-      <div className="w-full md:w-2/5 flex flex-col items-center justify-center p-6 md:p-10">
+      <div className="w-full md:w-2/5 flex flex-col items-center justify-center p-6 md:p-10 relative">
+      {/* Notificación emergente */}
+      {(successMessage || errorMessage) && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
+            successMessage ? "bg-orange-500" : "bg-black"
+          }`}
+        >
+          <span>{successMessage || errorMessage}</span>
+          <XCircle
+            size={22}
+            className="cursor-pointer hover:text-gray-200"
+            onClick={() => {
+              setSuccessMessage(null);
+              setErrorMessage(null);
+            }}
+          />
+        </motion.div>
+      )} 
         <h1 className="text-2xl md:text-3xl font-semibold text-orange-400 mb-6 text-center">CREAR UN USUARIO</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Inputs en dos columnas desde móviles */}
@@ -306,7 +335,7 @@ const Register = () => {
           </button>
         </form>
           <p className="text-xs text-gray-600 text-center mt-4">
-            ¿Ya tienes una cuenta? <span className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline transition-colors duration-300" onClick={()=>router.push("/login")}>INICIA SESIÓN</span>
+            ¿Ya tienes una cuenta? <span className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline transition-colors duration-300" onClick={()=>router.push("/routes/login")}>INICIA SESIÓN</span>
           </p>
         </div>
       </div>
