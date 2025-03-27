@@ -37,7 +37,7 @@ const Navbar = () => {
 
     if (!isClient) return null;
     
-    const role = "ROOT";
+    const role = "null";
     {/*localStorage.getItem('role'); */}
     console.log(role)
 
@@ -71,8 +71,10 @@ const Navbar = () => {
 
             {/* Íconos de usuario y carrito/ Root*/}
             <div className="flex items-center space-x-4 text-white">
+                
                 {role && role.toString().toUpperCase().replace(/"/g, '') === "ROOT" ? (
                     <>
+                    {/* Íconos de usuario y carrito ROOT*/}
                     <span className="font-bold uppercase">ROOT</span>
                         <Shield
                             strokeWidth={1}
@@ -116,6 +118,15 @@ const Navbar = () => {
                     </>
                 ) : role && role.toString().toUpperCase().replace(/"/g, '') === "CLIENT" ? (
                     <>
+
+                    {/* Íconos de usuario y carrito LOGUEADO*/}
+
+                    <ShoppingCart 
+                                strokeWidth={1} 
+                                className="cursor-pointer" 
+                                onClick={() => router.push("/cart")} 
+                            />
+
                     {/* Ícono de usuario con menú desplegable */}
                     <div className="relative" ref={menuRef}>
                         <User 
@@ -150,24 +161,22 @@ const Navbar = () => {
                                     </button>
                                 </div>
                             )}
-                        <ShoppingCart 
-                            strokeWidth={1} 
-                            className="cursor-pointer" 
-                            onClick={() => router.push("/cart")} 
-                        />
                     </div>
                     </>
-                ):(
+                ):( 
+                    
                     <>
-                    <User 
-                        strokeWidth={1} 
-                        className="cursor-pointer" 
-                        onClick={() => router.push("/routes/login")} 
-                    />
+
+                    {/* Íconos de usuario y carrito NO LOGUEADO*/}
                     <ShoppingCart 
                         strokeWidth={1} 
                         className="cursor-pointer" 
                         onClick={() => router.push("/cart")} 
+                    />
+                    <User 
+                        strokeWidth={1} 
+                        className="cursor-pointer" 
+                        onClick={() => router.push("/routes/login")} 
                     />
                     </>
                 )}
