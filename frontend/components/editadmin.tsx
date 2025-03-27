@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import withAuth from '@/components/withAuth';
+import withAuthROOT from '@/components/withAuthROOT';
 import { getAdminData, putAdminData } from "@/services/adminCRUD";
 
 
@@ -185,4 +185,4 @@ const EditAdmin =  ({ adminID }: { adminID: string }) => {
   );
 };
 
-export default EditAdmin;
+export default withAuthROOT(EditAdmin);

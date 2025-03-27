@@ -4,7 +4,14 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createUser} from "@/services/userCRUD";
+import { XCircle } from "lucide-react";
+import { motion } from "framer-motion";
+
 const Register = () => {
+  {/*Estados para la ventana emergente */}
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
   const router = useRouter();
   const [formData, setFormData] = useState({
     nombre: "",
@@ -28,6 +35,7 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     try {
         // Crear una copia de formData sin los campos no deseados
         const createUserData = {
@@ -58,6 +66,7 @@ const Register = () => {
     }
   };
   return (
+    
     <div className="flex flex-col md:flex-row min-h-screen">
       {/* Sección izquierda - Logo, Beneficios */}
       <div className="w-full md:w-3/5 bg-[#3C88A3] flex flex-col items-center justify-center p-6 md:p-10 text-white md:sticky md:top-0 md:h-screen md:overflow-y-auto">
@@ -93,7 +102,7 @@ const Register = () => {
                 name="nombre"
                 value={formData.nombre}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Tu nombre"
                 required
               />
@@ -105,7 +114,7 @@ const Register = () => {
                 name="apellido"
                 value={formData.apellido}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Tu apellido"
                 required
               />
@@ -117,7 +126,7 @@ const Register = () => {
                 name="cedula"
                 value={formData.cedula}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Tu cédula"
                 required
               />
@@ -128,7 +137,7 @@ const Register = () => {
                 name="genero"
                 value={formData.genero}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 required
               >
                 <option value="">Selecciona tu género</option>
@@ -149,7 +158,7 @@ const Register = () => {
                 name="fechaNacimiento"
                 value={formData.fechaNacimiento}
                 onChange={handleChange}
-                className="flex-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 required
               />
             </div>
@@ -163,7 +172,7 @@ const Register = () => {
               name="lugarNacimiento"
               value={formData.lugarNacimiento}
               onChange={handleChange}
-              className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+              className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
               placeholder="Ciudad o país"
               required
             />
@@ -177,7 +186,7 @@ const Register = () => {
               name="direccion"
               value={formData.direccion}
               onChange={handleChange}
-              className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+              className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
               placeholder="Tu dirección"
               required
             />
@@ -187,7 +196,7 @@ const Register = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium">Correo Electrónico</label>
-              <div className="flex items-center border rounded-md p-2 mt-1">
+              <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <Mail size={18} className="text-gray-500 mr-2" />
                 <input
                   type="email"
@@ -202,14 +211,14 @@ const Register = () => {
             </div>
             <div>
               <label className="block text-sm font-medium">Usuario</label>
-              <div className="flex items-center border rounded-md p-2 mt-1">
+              <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <User size={18} className="text-gray-500 mr-2" />
                 <input
                   type="text"
                   name="usuario"
                   value={formData.usuario}
                   onChange={handleChange}
-                  className="flex-1 outline-none text-sm"
+                  className="flex-1 outline-none text-sm "
                   placeholder="Tu usuario"
                   required
                 />
@@ -221,7 +230,7 @@ const Register = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium">Contraseña</label>
-              <div className="flex items-center border rounded-md p-2 mt-1">
+              <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <Lock size={18} className="text-gray-500 mr-2" />
                 <input
                   type="password"
@@ -236,7 +245,7 @@ const Register = () => {
             </div>
             <div>
               <label className="block text-sm font-medium">Validar Contraseña</label>
-              <div className="flex items-center border rounded-md p-2 mt-1">
+              <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <Lock size={18} className="text-gray-500 mr-2" />
                 <input
                   type="password"
@@ -259,14 +268,43 @@ const Register = () => {
                 name="temaLiterario1"
                 value={formData.temaLiterario1}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                 required
               >
-                <option value="">Selecciona un tema</option>
-                <option value="ficcion">Ficción</option>
-                <option value="no-ficcion">No Ficción</option>
-                <option value="fantasia">Fantasía</option>
-                <option value="ciencia">Ciencia</option>
+<option value="Ficción">Ficción</option>
+                <option value="No ficción">No ficción</option>
+                <option value="Novela">Novela</option>
+                <option value="Cuentos">Cuentos</option>
+                <option value="Poesía">Poesía</option>
+                <option value="Biografías y autobiografías">Biografías y autobiografías</option>
+                <option value="Ensayos">Ensayos</option>
+                <option value="Historia">Historia</option>
+                <option value="Ciencia">Ciencia</option>
+                <option value="Psicología y desarrollo personal">Psicología y desarrollo personal</option>
+                <option value="Filosofía">Filosofía</option>
+                <option value="Negocios y economía">Negocios y economía</option>
+                <option value="Autoayuda y motivación">Autoayuda y motivación</option>
+                <option value="Salud y bienestar">Salud y bienestar</option>
+                <option value="Religión y espiritualidad">Religión y espiritualidad</option>
+                <option value="Educación y pedagogía">Educación y pedagogía</option>
+                <option value="Tecnología e informática">Tecnología e informática</option>
+                <option value="Viajes y turismo">Viajes y turismo</option>
+                <option value="Gastronomía y cocina">Gastronomía y cocina</option>
+                <option value="Arte y fotografía">Arte y fotografía</option>
+                <option value="Literatura infantil">Literatura infantil</option>
+                <option value="Literatura juvenil">Literatura juvenil</option>
+                <option value="Misterio y suspense">Misterio y suspense</option>
+                <option value="Novela policíaca">Novela policíaca</option>
+                <option value="Fantasía épica">Fantasía épica</option>
+                <option value="Distopía">Distopía</option>
+                <option value="Romance contemporáneo">Romance contemporáneo</option>
+                <option value="Romance histórico">Romance histórico</option>
+                <option value="Horror y terror">Horror y terror</option>
+                <option value="Género gótico">Género gótico</option>
+                <option value="Novela histórica">Novela histórica</option>
+                <option value="Filosofía oriental">Filosofía oriental</option>
+                <option value="Mitología y folclore">Mitología y folclore</option>
+                <option value="Cómics y novelas gráficas">Cómics y novelas gráficas</option>
               </select>
             </div>
             <div>
@@ -275,14 +313,43 @@ const Register = () => {
                 name="temaLiterario2"
                 value={formData.temaLiterario2}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                 required
               >
-                <option value="">Selecciona un tema</option>
-                <option value="ficcion">Ficción</option>
-                <option value="no-ficcion">No Ficción</option>
-                <option value="fantasia">Fantasía</option>
-                <option value="ciencia">Ciencia</option>
+                <option value="Ficción">Ficción</option>
+                <option value="No ficción">No ficción</option>
+                <option value="Novela">Novela</option>
+                <option value="Cuentos">Cuentos</option>
+                <option value="Poesía">Poesía</option>
+                <option value="Biografías y autobiografías">Biografías y autobiografías</option>
+                <option value="Ensayos">Ensayos</option>
+                <option value="Historia">Historia</option>
+                <option value="Ciencia">Ciencia</option>
+                <option value="Psicología y desarrollo personal">Psicología y desarrollo personal</option>
+                <option value="Filosofía">Filosofía</option>
+                <option value="Negocios y economía">Negocios y economía</option>
+                <option value="Autoayuda y motivación">Autoayuda y motivación</option>
+                <option value="Salud y bienestar">Salud y bienestar</option>
+                <option value="Religión y espiritualidad">Religión y espiritualidad</option>
+                <option value="Educación y pedagogía">Educación y pedagogía</option>
+                <option value="Tecnología e informática">Tecnología e informática</option>
+                <option value="Viajes y turismo">Viajes y turismo</option>
+                <option value="Gastronomía y cocina">Gastronomía y cocina</option>
+                <option value="Arte y fotografía">Arte y fotografía</option>
+                <option value="Literatura infantil">Literatura infantil</option>
+                <option value="Literatura juvenil">Literatura juvenil</option>
+                <option value="Misterio y suspense">Misterio y suspense</option>
+                <option value="Novela policíaca">Novela policíaca</option>
+                <option value="Fantasía épica">Fantasía épica</option>
+                <option value="Distopía">Distopía</option>
+                <option value="Romance contemporáneo">Romance contemporáneo</option>
+                <option value="Romance histórico">Romance histórico</option>
+                <option value="Horror y terror">Horror y terror</option>
+                <option value="Género gótico">Género gótico</option>
+                <option value="Novela histórica">Novela histórica</option>
+                <option value="Filosofía oriental">Filosofía oriental</option>
+                <option value="Mitología y folclore">Mitología y folclore</option>
+                <option value="Cómics y novelas gráficas">Cómics y novelas gráficas</option>
               </select>
             </div>
           </div>
@@ -296,7 +363,7 @@ const Register = () => {
           </button>
         </form>
           <p className="text-xs text-gray-600 text-center mt-4">
-            ¿Ya tienes una cuenta? <span className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline transition-colors duration-300" onClick={()=>router.push("/login")}>INICIA SESIÓN</span>
+            ¿Ya tienes una cuenta? <span className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline transition-colors duration-300" onClick={()=>router.push("/routes/login")}>INICIA SESIÓN</span>
           </p>
         </div>
       </div>

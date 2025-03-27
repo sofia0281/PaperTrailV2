@@ -1,4 +1,5 @@
 import React from "react";
+import withAuthROOT from './withAuthROOT';
 
 const EditarContrasena = () => {
   return (
@@ -67,4 +68,4 @@ const EditarContrasena = () => {
   );
 };
 
-export default EditarContrasena;
+export default withAuthROOT(EditarContrasena);

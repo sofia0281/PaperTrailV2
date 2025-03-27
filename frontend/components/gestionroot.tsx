@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import withAuth from '@/components/withAuth';
 import { getAdminsData, deleteAdmin } from '@/services/adminCRUD';
+import withAuthROOT from "./withAuthROOT";
 
 interface Admin {
   id: number;
@@ -116,4 +117,4 @@ const GestionRoot = () => {
   );
 };
 
-export default withAuth(GestionRoot);
+export default withAuthROOT(GestionRoot);

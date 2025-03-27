@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 const withAuth = (WrappedComponent: React.ComponentType) => {
   const Wrapper = (props: any) => {
     const router = useRouter();
-    const { authUser, authToken, loading } = useAuth();
+    const { authUser, authToken, authRole, loading } = useAuth();
     const [checkedAuth, setCheckedAuth] = useState(false);
 
     useEffect(() => {
       if (!loading && !checkedAuth) {
-        if (!authUser || !authToken) {
+        if ((authRole === "ROOT") ||  (authRole === null)) {
           router.push("/routes/login");
         }
         setCheckedAuth(true); // Evita revisar múltiples veces

@@ -2,6 +2,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createAdmin } from '@/services/adminCRUD';
+import NavbarROOT from "@/components/navbarROOT";
+import withAuthROOT from '@/components/withAuthROOT';
 const CreateAdmin = () => {
   const router = useRouter()
   const [formData, setFormData] = useState({
@@ -53,6 +55,7 @@ const CreateAdmin = () => {
 
   }
   return (
+
     <div className="flex w-full max-w-5xl mx-auto p-6 justify-center">
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
         {/* Sección Izquierda */}
@@ -137,4 +140,4 @@ const CreateAdmin = () => {
   );
 };
 
-export default CreateAdmin;
+export default withAuthROOT(CreateAdmin);

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { loginUser, fetchUserData } from '@/services/userCRUD'
 import { useAuth } from '@/context/AuthContext';
 const Login = () => {
-  const { setAuthToken, setAuthUser, setAuthRole } = useAuth();
+  const {setAuthToken, setAuthUser, setAuthRole } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -143,9 +143,9 @@ const Login = () => {
 
           <p className="text-xs md:text-sm text-gray-600 text-center mt-4">
             ¿No tienes cuenta? 
-            <span className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline transition-colors duration-300" onClick={() => router.push("/register")}>
-              REGÍSTRATE
-            </span>
+          <span className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline transition-colors duration-300" onClick={() => router.push("/routes/register")}>
+            REGÍSTRATE
+          </span>
           </p>
         </form>
       </div>
