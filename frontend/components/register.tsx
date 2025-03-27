@@ -4,7 +4,16 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createUser} from "@/services/userCRUD";
+import { useState } from "react";
+import { XCircle } from "lucide-react";
+import { motion } from "framer-motion";
+
 const Register = () => {
+  
+  {/*Estados para la ventana emergente */}
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
   const router = useRouter();
   const [formData, setFormData] = useState({
     nombre: "",
@@ -21,57 +30,45 @@ const Register = () => {
     temaLiterario1: "",
     temaLiterario2: "",
   });
-
-  {/*Ventana emergente a la hora del registro */}
-  const [alert, setAlert] = useState({ message: "", type: "", visible: false });
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    console.log("Campo cambiado:", e.target.name, "Nuevo valor:", e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     try {
-      const createUserData = {
-        username: formData.usuario,
-        password: formData.password,
-        email: formData.email,
-        Nombre: formData.nombre,
-        Apellido: formData.apellido,
-        cedula: formData.cedula,
-        Genero: formData.genero,
-        Fecha_nacimiento: formData.fechaNacimiento,
-        Lugar_nacimiento: formData.lugarNacimiento,
-        TemaL_1: formData.temaLiterario1,
-        TemaL_2: formData.temaLiterario2,
-        Direccion: formData.direccion,
-        resetPasswordToken: "null",
-        confirmationToken: "null",
-        confirmed: true,
-        blocked: false,
-        role: null,
-        provider: "null",
-      };
-
+        // Crear una copia de formData sin los campos no deseados
+        const createUserData = {
+          "username":formData.usuario,
+          "password":formData.password,
+          "email":formData.email,
+          "Nombre":formData.nombre,
+          "Apellido":formData.apellido,
+          "cedula":formData.cedula,
+          "Genero":formData.genero,
+          "Fecha_nacimiento":formData.fechaNacimiento,
+          "Lugar_nacimiento":formData.lugarNacimiento,
+          "TemaL_1":formData.temaLiterario1,
+          "TemaL_2":formData.temaLiterario2,
+          "Direccion":formData.direccion,
+          "resetPasswordToken":"null",
+          "confirmationToken":"null",
+          "confirmed":true,
+          "blocked":true,
+          "role":null,
+          "provider":"null"
+        };
       const creado = await createUser(createUserData);
-      console.log("Usuario creado:", creado);
-      
-      setAlert({ message: "Registro exitoso", type: "success", visible: true });
-
-      setTimeout(() => {
-        setAlert({ message: "", type: "", visible: false });
-        router.push("/login"); // Redirige después del registro
-      }, 2000);
+      console.log('Usuario creado:', creado);
     } catch (error) {
-      console.error("Error:", error.message);
-      setAlert({ message: "Error al crear usuario", type: "error", visible: true });
-
-      setTimeout(() => {
-        setAlert({ message: "", type: "", visible: false });
-      }, 3000);
+    console.error('Error:', error.message);
+    alert('Error al crear usuario');
     }
   };
   return (
+    
     <div className="flex flex-col md:flex-row min-h-screen">
       {/* Sección izquierda - Logo, Beneficios */}
       <div className="w-full md:w-3/5 bg-[#3C88A3] flex flex-col items-center justify-center p-6 md:p-10 text-white md:sticky md:top-0 md:h-screen md:overflow-y-auto">
