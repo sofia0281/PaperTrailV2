@@ -28,8 +28,24 @@ const EditAdmin =  ({ adminID }: { adminID: string }) => {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    let formattedValue = value;
+
+    if (name === "nombre" || name === "apellido" || name === "lugarNacimiento") {
+      formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, ""); // Solo letras y espacios
+    }
+
+    if (name === "cedula") {
+      formattedValue = value.replace(/\D/g, "").slice(0, 10); // Solo números, máximo 10 dígitos
+    }
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: formattedValue,
+    }));
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
