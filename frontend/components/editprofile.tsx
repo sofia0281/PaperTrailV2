@@ -2,8 +2,17 @@
 import { useState, useEffect } from "react";
 import withAuth from '@/components/withAuth';
 import { fetchUserData, putUserData } from "@/services/userCRUD";
+import { useRouter } from "next/navigation";
+import { XCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 const EditProfile = () => {
+    const router = useRouter();
+
+   {/*Estados para las ventanas de confirmación */}
+   const [showConfirm, setShowConfirm] = useState(false);
+   const [message, setMessage] = useState<string | null>(null);   
+
     const [formData, setFormData] = useState({
       nombre: "",
       apellido: "",
@@ -24,6 +33,8 @@ const EditProfile = () => {
       router.push('/loginHome');  // Redirecciona a la página "About"
     };
   // Obtener los datos del usuario al cargar la página
+
+  {/*
   useEffect(() => {
     const loadUserData = async () => {
       const userData = await fetchUserData();
@@ -49,15 +60,19 @@ const EditProfile = () => {
 
     loadUserData();
   }, []);
-
+*/}
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     console.log("Campo cambiado:", e.target.name, "Nuevo valor:", e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Datos guardados:", formData);
+    setShowConfirm(true);
+  };
+
+  const confirmSubmit = async (e: React.FormEvent) => {
+    setShowConfirm(false);
+    //console.log("Datos guardados:", formData);
     const userData = await fetchUserData();
     try {
         // Crear una copia de formData sin los campos no deseados
@@ -76,18 +91,24 @@ const EditProfile = () => {
         };
       const actualizado = await putUserData(updatedUserData);
       console.log('Usuario actualizado:', actualizado);
+
+      {/*Ventana emergente */}
+      setMessage("Perfil editado correctamente");
+      setTimeout(() => setMessage(null), 3000);
+
       router.push('/routes/loginHome');
     } catch (error) {
-    console.error('Error:', error.message);
-    alert('Error al actualizar los datos');
+      console.error('Error:', error.message);
+      setMessage("Error al actualizar los datos");
+      setTimeout(() => setMessage(null), 3000);
     }
   };
-  const userString = localStorage.getItem('user'); // Obtener el objeto user como cadena JSON
-  const user = JSON.parse(userString); // Parsear la cadena JSON a un objeto
-  const userName = user.username; // Acceder al campo id
+  //const userString = localStorage.getItem('user'); // Obtener el objeto user como cadena JSON
+  //const user = userString ? JSON.parse(userString) : null; // Parsear la cadena JSON a un objeto si no es null
+  //const userName = user.username; // Acceder al campo id
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md">
-      <h2 className="text-2xl font-bold text-gray-700 mb-4">Hola, {userName}</h2>
+      <h2 className="text-2xl font-bold text-gray-700 mb-4">Hola, {/*{userame}*/} </h2>
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -96,40 +117,42 @@ const EditProfile = () => {
             <div>
               <label className="block text-sm font-medium">Nombre</label>
               <input
+                required
                 type="text"
                 name="nombre"
                 value={formData.nombre}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" 
               />
             </div>
             <div>
               <label className="block text-sm font-medium">Apellido</label>
               <input
+                required
                 type="text"
                 name="apellido"
                 value={formData.apellido}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
-              />
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               />
             </div>
             <div>
               <label className="block text-sm font-medium">Cédula</label>
               <input
+                required
                 type="text"
                 name="cedula"
                 value={formData.cedula}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
-              />
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               />
             </div>
             <div>
               <label className="block text-sm font-medium">Género</label>
               <select
+                required
                 name="genero"
                 value={formData.genero}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
               >
                 <option>Masculino</option>
                 <option>Femenino</option>
@@ -139,22 +162,22 @@ const EditProfile = () => {
             <div>
               <label className="block text-sm font-medium">Lugar de Nacimiento</label>
               <input
+                required
                 type="text"
                 name="lugarNacimiento"
                 value={formData.lugarNacimiento}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
-              />
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               />
             </div>
             <div>
               <label className="block text-sm font-medium">Fecha de Nacimiento</label>
               <input
+                required
                 type="date"
                 name="nacimiento"
                 value={formData.nacimiento}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
-              />
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               />
             </div>
           </div>
 
@@ -163,40 +186,41 @@ const EditProfile = () => {
             <div>
               <label className="block text-sm font-medium">Dirección de Envío</label>
               <input
+                required
                 type="text"
                 name="direccion"
                 value={formData.direccion}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
-              />
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               />
             </div>
             <div>
               <label className="block text-sm font-medium">Correo Electrónico</label>
               <input
+                required
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
-              />
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               />
             </div>
             <div>
               <label className="block text-sm font-medium">Usuario</label>
               <input
+                required
                 type="text"
                 name="usuario"
                 value={formData.usuario}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
-              />
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               />
             </div>
             <div>
               <label className="block text-sm font-medium">Tema Literario de Preferencia 1</label>
               <select
+                required
                 name="preferencia1"
                 value={formData.preferencia1}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
               >
                 <option value="Ficción">Ficción</option>
                 <option value="No ficción">No ficción</option>
@@ -237,10 +261,11 @@ const EditProfile = () => {
             <div>
               <label className="block text-sm font-medium">Tema Literario de Preferencia 2</label>
               <select
+                required
                 name="preferencia2"
                 value={formData.preferencia2}
                 onChange={handleChange}
-                className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
               >
                 <option value="Ficción">Ficción</option>
                 <option value="No ficción">No ficción</option>
@@ -291,7 +316,7 @@ const EditProfile = () => {
             type="password"
             name="passwordActual"
             onChange={handleChange}
-            className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+            className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
           />
           <p className="text-xs text-gray-600 mt-2">
             Nueva contraseña (déjalo en blanco para no cambiarla)
@@ -300,7 +325,7 @@ const EditProfile = () => {
             type="password"
             name="passwordNueva"
             onChange={handleChange}
-            className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+            className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
           />
           <p className="text-xs text-gray-600 mt-2">
             Confirmar nueva contraseña (déjalo en blanco para no cambiarla)
@@ -309,21 +334,44 @@ const EditProfile = () => {
             type="password"
             name="passwordConfirmar"
             onChange={handleChange}
-            className="w-full border rounded-md p-2 mt-1 outline-none text-sm"
+            className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
           />
         </div>
 
         {/* Botones */}
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-end w-full mt-6">
           {/* sacar este boton de aqui para poder cancelar la edición del usuario */}
-          <button className="bg-gray-400 text-white px-4 py-2 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer" >
-            CANCELAR
-          </button>
           <button type="submit" className="bg-orange-400 text-white px-4 py-2 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer">
             GUARDAR CAMBIOS
           </button>
         </div>
       </form>
+      {/* Modal de confirmación */}
+      {showConfirm && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-80 text-center border z-50">
+          <p className="text-lg font-semibold">¿Deseas continuar con los cambios?</p>
+          <div className="mt-4 flex justify-center space-x-4">
+            <button className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm" onClick={() => setShowConfirm(false)}>
+              Cancelar
+            </button>
+            <button className="bg-orange-500 text-white px-4 py-2 rounded-md text-sm" onClick={confirmSubmit}>
+              Sí, editar
+            </button>
+          </div>
+        </div>
+      )}
+      {/* Notificación emergente */}
+      {message && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 bg-orange-500 text-white p-6 rounded-lg shadow-lg text-center text-sm z-50 flex items-center justify-between"
+        >
+          <span className="flex-1 text-center">{message}</span>
+          <XCircle size={20} className="cursor-pointer hover:text-gray-200" onClick={() => setMessage(null)} />
+        </motion.div>
+      )}
     </div>
   );
 };
