@@ -185,7 +185,10 @@ const EditAdmin =  ({ adminID }: { adminID: string }) => {
             <button type="submit" className="w-full bg-orange-500 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:scale-105 cursor-pointer">
               EDITAR ADMINISTRADOR
             </button>
-            <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer">
+            <button 
+            type="button" 
+            className="w-full bg-blue-500 text-white py-2 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer"
+            onClick={()=>router.push("/routes/gestionroot")}>
               CANCELAR
             </button>
           </div>
