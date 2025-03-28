@@ -30,7 +30,7 @@ const EditProfile = () => {
       passwordConfirmar: "",
     });
     const handleCancelar = () => {
-      router.push('/loginHome');  // Redirecciona a la página "About"
+      router.push('/routes/loginHome');  // Redirecciona a la página "About"
     };
   // Obtener los datos del usuario al cargar la página
 
@@ -354,9 +354,15 @@ const EditProfile = () => {
         </div>
 
         {/* Botones */}
-        <div className="flex justify-end w-full mt-6">
+        <div className="flex justify-between w-full mt-6">
           {/* sacar este boton de aqui para poder cancelar la edición del usuario */}
-          <button type="submit" className="bg-orange-400 text-white px-4 py-2 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer">
+          <button 
+          type="button" 
+          className="bg-blue-500 text-white px-4 py-2 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer"
+          onClick={handleCancelar}>
+            CANCELAR
+          </button>
+          <button type="submit" className="bg-orange-500 text-white px-4 py-2 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer">
             GUARDAR CAMBIOS
           </button>
         </div>
