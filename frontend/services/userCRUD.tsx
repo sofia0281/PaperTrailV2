@@ -71,7 +71,6 @@ export const putUserData = async (userDataForm) => {
 
         const updatedUser = await response.json();
         console.log('Usuario actualizado:', updatedUser);
-        alert('Datos actualizados correctamente');
         return updatedUser;
     } catch (error) {
         console.error('Error:', error.message);

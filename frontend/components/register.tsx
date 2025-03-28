@@ -8,6 +8,7 @@ import { XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Register = () => {
+  
   {/*Estados para la ventana emergente */}
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -29,8 +30,22 @@ const Register = () => {
     temaLiterario2: "",
   });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    console.log("Campo cambiado:", e.target.name, "Nuevo valor:", e.target.value);
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    let formattedValue = value;
+
+    if (name === "nombre" || name === "apellido" || name === "lugarNacimiento") {
+      formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, ""); // Solo letras y espacios
+    }
+
+    if (name === "cedula") {
+      formattedValue = value.replace(/\D/g, "").slice(0, 10); // Solo números, máximo 10 dígitos
+    }
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: formattedValue,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,10 +74,18 @@ const Register = () => {
           "provider":"null"
         };
       const creado = await createUser(createUserData);
-      console.log('Usuario creado:', creado);
+      //console.log('Usuario creado:', creado);
+      setSuccessMessage("Usuario creado exitosamente.");
+      setErrorMessage(null);
+      setTimeout(() => {
+        setSuccessMessage(null);
+        router.push("/");
+      }, 3000);
     } catch (error) {
-    console.error('Error:', error.message);
-    alert('Error al crear usuario');
+    //console.error('Error:', error.message);
+      setErrorMessage("Error al crear usuario.");
+      setSuccessMessage(null);
+      setTimeout(() => setErrorMessage(null), 3000);
     }
   };
   return (
@@ -90,7 +113,28 @@ const Register = () => {
       </div>
 
       {/* Sección derecha - Formulario */}
-      <div className="w-full md:w-2/5 flex flex-col items-center justify-center p-6 md:p-10">
+      <div className="w-full md:w-2/5 flex flex-col items-center justify-center p-6 md:p-10 relative">
+      {/* Notificación emergente */}
+      {(successMessage || errorMessage) && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
+            successMessage ? "bg-orange-500" : "bg-black"
+          }`}
+        >
+          <span>{successMessage || errorMessage}</span>
+          <XCircle
+            size={22}
+            className="cursor-pointer hover:text-gray-200"
+            onClick={() => {
+              setSuccessMessage(null);
+              setErrorMessage(null);
+            }}
+          />
+        </motion.div>
+      )} 
         <h1 className="text-2xl md:text-3xl font-semibold text-orange-400 mb-6 text-center">CREAR UN USUARIO</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Inputs en dos columnas desde móviles */}
@@ -271,40 +315,11 @@ const Register = () => {
                 className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                 required
               >
-<option value="Ficción">Ficción</option>
-                <option value="No ficción">No ficción</option>
-                <option value="Novela">Novela</option>
-                <option value="Cuentos">Cuentos</option>
-                <option value="Poesía">Poesía</option>
-                <option value="Biografías y autobiografías">Biografías y autobiografías</option>
-                <option value="Ensayos">Ensayos</option>
-                <option value="Historia">Historia</option>
-                <option value="Ciencia">Ciencia</option>
-                <option value="Psicología y desarrollo personal">Psicología y desarrollo personal</option>
-                <option value="Filosofía">Filosofía</option>
-                <option value="Negocios y economía">Negocios y economía</option>
-                <option value="Autoayuda y motivación">Autoayuda y motivación</option>
-                <option value="Salud y bienestar">Salud y bienestar</option>
-                <option value="Religión y espiritualidad">Religión y espiritualidad</option>
-                <option value="Educación y pedagogía">Educación y pedagogía</option>
-                <option value="Tecnología e informática">Tecnología e informática</option>
-                <option value="Viajes y turismo">Viajes y turismo</option>
-                <option value="Gastronomía y cocina">Gastronomía y cocina</option>
-                <option value="Arte y fotografía">Arte y fotografía</option>
-                <option value="Literatura infantil">Literatura infantil</option>
-                <option value="Literatura juvenil">Literatura juvenil</option>
-                <option value="Misterio y suspense">Misterio y suspense</option>
-                <option value="Novela policíaca">Novela policíaca</option>
-                <option value="Fantasía épica">Fantasía épica</option>
-                <option value="Distopía">Distopía</option>
-                <option value="Romance contemporáneo">Romance contemporáneo</option>
-                <option value="Romance histórico">Romance histórico</option>
-                <option value="Horror y terror">Horror y terror</option>
-                <option value="Género gótico">Género gótico</option>
-                <option value="Novela histórica">Novela histórica</option>
-                <option value="Filosofía oriental">Filosofía oriental</option>
-                <option value="Mitología y folclore">Mitología y folclore</option>
-                <option value="Cómics y novelas gráficas">Cómics y novelas gráficas</option>
+                <option value="">Selecciona un tema</option>
+                <option value="ficcion">Ficción</option>
+                <option value="no-ficcion">No Ficción</option>
+                <option value="fantasia">Fantasía</option>
+                <option value="ciencia">Ciencia</option>
               </select>
             </div>
             <div>
@@ -316,40 +331,11 @@ const Register = () => {
                 className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                 required
               >
-                <option value="Ficción">Ficción</option>
-                <option value="No ficción">No ficción</option>
-                <option value="Novela">Novela</option>
-                <option value="Cuentos">Cuentos</option>
-                <option value="Poesía">Poesía</option>
-                <option value="Biografías y autobiografías">Biografías y autobiografías</option>
-                <option value="Ensayos">Ensayos</option>
-                <option value="Historia">Historia</option>
-                <option value="Ciencia">Ciencia</option>
-                <option value="Psicología y desarrollo personal">Psicología y desarrollo personal</option>
-                <option value="Filosofía">Filosofía</option>
-                <option value="Negocios y economía">Negocios y economía</option>
-                <option value="Autoayuda y motivación">Autoayuda y motivación</option>
-                <option value="Salud y bienestar">Salud y bienestar</option>
-                <option value="Religión y espiritualidad">Religión y espiritualidad</option>
-                <option value="Educación y pedagogía">Educación y pedagogía</option>
-                <option value="Tecnología e informática">Tecnología e informática</option>
-                <option value="Viajes y turismo">Viajes y turismo</option>
-                <option value="Gastronomía y cocina">Gastronomía y cocina</option>
-                <option value="Arte y fotografía">Arte y fotografía</option>
-                <option value="Literatura infantil">Literatura infantil</option>
-                <option value="Literatura juvenil">Literatura juvenil</option>
-                <option value="Misterio y suspense">Misterio y suspense</option>
-                <option value="Novela policíaca">Novela policíaca</option>
-                <option value="Fantasía épica">Fantasía épica</option>
-                <option value="Distopía">Distopía</option>
-                <option value="Romance contemporáneo">Romance contemporáneo</option>
-                <option value="Romance histórico">Romance histórico</option>
-                <option value="Horror y terror">Horror y terror</option>
-                <option value="Género gótico">Género gótico</option>
-                <option value="Novela histórica">Novela histórica</option>
-                <option value="Filosofía oriental">Filosofía oriental</option>
-                <option value="Mitología y folclore">Mitología y folclore</option>
-                <option value="Cómics y novelas gráficas">Cómics y novelas gráficas</option>
+                <option value="">Selecciona un tema</option>
+                <option value="ficcion">Ficción</option>
+                <option value="no-ficcion">No Ficción</option>
+                <option value="fantasia">Fantasía</option>
+                <option value="ciencia">Ciencia</option>
               </select>
             </div>
           </div>

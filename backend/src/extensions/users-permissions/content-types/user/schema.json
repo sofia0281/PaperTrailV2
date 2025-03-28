@@ -80,15 +80,6 @@
       "min": "99999",
       "unique": false
     },
-    "Genero": {
-      "type": "enumeration",
-      "enum": [
-        "Femenino",
-        "Masculino",
-        "Otro"
-      ],
-      "required": true
-    },
     "Fecha_nacimiento": {
       "type": "date",
       "required": true
@@ -105,6 +96,9 @@
       "type": "string"
     },
     "TemaL_2": {
+      "type": "string"
+    },
+    "Genero": {
       "type": "string"
     }
   }

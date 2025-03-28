@@ -79,7 +79,7 @@ export const getAdminsData = async () => {
 };
 
 
-export const getAdminData = async (adminID: string) => {
+export const getAdminData = async (adminID: number) => {
     const token = localStorage.getItem('authToken');
     try {
         const response = await fetch(
@@ -111,7 +111,7 @@ export const getAdminData = async (adminID: string) => {
       console.error('Error en getAdminData:', error);
       throw error;
     }
-  };
+};
 
   export const putAdminData = async (userAdminForm , adminID) => {
     try {
@@ -126,12 +126,13 @@ export const getAdminData = async (adminID: string) => {
         });
 
         if (!response.ok) {
+            console.log(response)
             throw new Error('Error al actualizar los datos del usuario');
         }
 
         const updatedUser = await response.json();
         console.log('Usuario actualizado:', updatedUser);
-        alert('Datos actualizados correctamente');
+        // alert('Datos actualizados correctamente');
         return updatedUser;
     } catch (error) {
         console.error('Error:', error.message);

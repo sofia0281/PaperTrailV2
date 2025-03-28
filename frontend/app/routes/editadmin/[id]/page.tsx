@@ -1,9 +1,12 @@
+// app/routes/editadmin/[id]/page.tsx
 import EditAdmin from '@/components/editadmin';
 
-export default function EditAdminPage({
+export default async function EditAdminPage({
   params
 }: {
-  params: { id: string } // ← Ahora usa 'id' en lugar de 'adminID'
+  params: { id: number }
 }) {
-  return <EditAdmin adminID={params.id} />; // Pasa params.id como adminID
+  // Puedes cargar datos aquí directamente
+  return <EditAdmin adminID={params.id} />;
 }
+

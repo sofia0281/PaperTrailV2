@@ -48,15 +48,17 @@ const Login = () => {
         setAuthRole(userRole);
 
 
-        if (userRole === "Admin") {
-          router.push("/routes/loginHome");
-        } else if (userRole === "Authenticated") {
-          router.push("/routes/loginHome"); // Redirigir a la página de usuario autenticado
-        } else if (userRole === "ROOT"){
-          router.push("/routes/gestionroot");
-        } else {
-          setMessage("Rol no reconocido. Contacta al administrador.");
-        }
+    
+        // Luego redirige después de un pequeño retraso (100ms)
+        setTimeout(() => {
+          if (userRole === "Admin") {
+            router.push("/routes/loginHome");
+          } else if (userRole === "Authenticated") {
+            router.push("/routes/loginHome");
+          } else if (userRole === "ROOT") {
+            router.push("/routes/gestionroot");
+          }
+        }, 100);
       } else {
         console.error("No se recibieron datos del usuario en la respuesta.");
         setMessage("Usuario no encontrado o credenciales incorrectas.");
