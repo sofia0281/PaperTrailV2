@@ -29,18 +29,35 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    
     const { name, value } = e.target;
 
     let formattedValue = value;
 
+    // Validación para fecha de nacimiento
+    if (name === "fechaNacimiento") {
+      const selectedDate = new Date(value);
+      const minDate = new Date("2006-01-01"); // Fecha mínima (1 de enero de 2006)
+      
+      if (selectedDate > minDate) {
+        // Si la fecha seleccionada es posterior a 2006, mostrar error
+        setMessage("Debes tener al menos 18 años (nacido antes de 2006)");
+        setTimeout(() => setMessage(null), 3000);
+        return; // No actualizar el estado
+      }
+      
+      formattedValue = value; // Aceptar la fecha si es válida
+    }
+
     if (name === "nombre" || name === "apellido" || name === "lugarNacimiento") {
-      formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, ""); // Solo letras y espacios
+      formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, "") // Solo letras y espacios
+      .replace(/^\s+/, ""); 
     }
 
     if (name === "cedula") {
-      formattedValue = value.replace(/\D/g, "").slice(0, 10); // Solo números, máximo 10 dígitos
+      formattedValue = value.replace(/\D/g, "").slice(0, 10) // Solo números, máximo 10 dígitos
+      .replace(/^\s+/, "")
     }
-
     setFormData((prevData) => ({
       ...prevData,
       [name]: formattedValue,
@@ -202,14 +219,15 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
             <button type="submit" className="w-full bg-orange-500 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:scale-105 cursor-pointer">
               EDITAR ADMINISTRADOR
             </button>
-          </div>
-        </form>
-        <button 
+            <button 
               type="button" 
               className="w-full bg-blue-500 text-white py-2 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer"
               onClick={()=>router.push("/routes/gestionroot")}>
               CANCELAR
-        </button>
+            </button>
+          </div>
+        </form>
+
       </div>
         {/* Modal de confirmación */}
         {showConfirm && (

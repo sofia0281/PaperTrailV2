@@ -102,7 +102,7 @@ const Login = () => {
         <form className="w-full max-w-xs md:max-w-sm space-y-4" onSubmit={handleLogin}>
           <div>
             <label className="block text-sm font-medium">Correo Electrónico</label>
-            <div className="flex items-center border rounded-md p-2 mt-1">
+            <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
               <Mail size={18} className="text-gray-500 mr-2" />
               <input 
                 type="email"
@@ -117,7 +117,7 @@ const Login = () => {
 
           <div>
             <label className="block text-sm font-medium">Contraseña</label>
-            <div className="flex items-center border rounded-md p-2 mt-1">
+            <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
               <Lock size={18} className="text-gray-500 mr-2" />
               <input 
                 type="password"
