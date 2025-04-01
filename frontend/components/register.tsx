@@ -1,14 +1,35 @@
 "use client";
-import { Mail, Lock, Calendar, User } from "lucide-react";
+import { Mail, Lock, Calendar, User, Eye, EyeOff, XCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createUser} from "@/services/userCRUD";
-import { XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Register = () => {
+
+  const maxLengths: Record<string, number> = {
+    nombre: 20,
+    apellido: 30,
+    direccion: 80,
+    email: 30,
+    usuario: 15,
+    password: 20,
+    confirmarPassword: 20
+  };
+
+  const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
   
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword); // Alternar la visibilidad
+  };
+  
+  {/*Confirmar contraseña en tiempo real */}
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  {/*Confirmar correo en tiempo real */}
+  const [EmailError, setEmailError] = useState<string | null>(null);
+
   {/*Estados para la ventana emergente */}
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -34,15 +55,20 @@ const Register = () => {
     const { name, value } = e.target;
 
     let formattedValue = value;
-
+    
     // Validación para fecha de nacimiento
     if (name === "fechaNacimiento") {
       const selectedDate = new Date(value);
       const minDate = new Date("2006-01-01"); // Fecha mínima (1 de enero de 2006)
-      
+      const maxDate = new Date("1900-01-01"); // Fecha máxima (1 de enero de 1900)
       if (selectedDate > minDate) {
         // Si la fecha seleccionada es posterior a 2006, mostrar error
         setErrorMessage("Debes tener al menos 18 años (nacido antes de 2006)");
+        setTimeout(() => setErrorMessage(null), 3000);
+        return; // No actualizar el estado
+
+      }else if(selectedDate < maxDate){
+        setErrorMessage("La edad máxima es a partir de 1900");
         setTimeout(() => setErrorMessage(null), 3000);
         return; // No actualizar el estado
       }
@@ -50,22 +76,74 @@ const Register = () => {
       formattedValue = value; // Aceptar la fecha si es válida
     }
 
-    if (name === "nombre" || name === "apellido" || name === "lugarNacimiento") {
-      formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, "") // Solo letras y espacios
-      .replace(/^\s+/, ""); 
-    }
+    if (
+      name === "nombre" || 
+      name === "apellido" || 
+      name === "direccion" || 
+      name === "email" || 
+      name === "usuario" || 
+      name === "password" || 
+      name === "confirmarPassword"
+    ) {
+      if (name === "email") {
+        // Para el campo email, eliminar los espacios
+        formattedValue = value.replace(/\s+/g, "");
 
-    if (name === "cedula") {
+      } else if (name === "password" || name === "confirmarPassword" || name === "usuario") {
+        // Para contraseñas, no aplicamos ningún filtro, solo eliminamos espacios al principio y al final
+        formattedValue = value.trim();
+      } else {
+        // Para los otros campos, eliminar caracteres no deseados y los espacios al principio
+        formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, "") // Solo letras y espacios
+                               .replace(/^\s+/, ""); // Eliminar espacios al principio
+      }
+    } else if (name === "cedula") {
+      // Para el campo cédula, solo permitir números y limitar a 10 dígitos
       formattedValue = value.replace(/\D/g, "").slice(0, 10) // Solo números, máximo 10 dígitos
-      .replace(/^\s+/, "")
+                             .replace(/^\s+/, ""); // Eliminar espacios al principio
     }
-
+    
+    // Aplicar límite de longitud a los inputs
+    if (maxLengths[name]) {
+      formattedValue = formattedValue.slice(0, maxLengths[name]);
+    }
+    
+    // Verificar si las contraseñas coinciden
+    if (name === "password" || name === "confirmarPassword") {
+      const newPassword = (name === "password" ? formattedValue : formData.password);
+      const confirmPassword = (name === "confirmarPassword" ? formattedValue : formData.confirmarPassword);
+    
+      if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+        setPasswordError("Las contraseñas no coinciden");
+      } else {
+        setPasswordError(null); // Eliminar mensaje si coinciden
+      }
+    }
+    
+    // Actualizar el estado con el valor formateado
     setFormData((prevData) => ({
       ...prevData,
       [name]: formattedValue,
     }));
+    
+    
   };
 
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    if (name === "email") {
+      // Expresión regular para validar el formato del correo
+      const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+      // Verificamos si el correo es válido
+      if (!emailPattern.test(value)) {
+        setEmailError("Por favor, ingresa un correo válido.");
+      } else {
+        setEmailError(null); // Limpiar mensaje de error si es válido
+      }
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -265,11 +343,14 @@ const Register = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
+                  onBlur={handleBlur} // Validar al salir del campo
+                  onInput={(e) => e.target.value = e.target.value.replace(/\s+/g, "")} // Elimina espacios en tiempo real
                   className="flex-1 outline-none text-sm"
                   placeholder="Tu correo"
                   required
                 />
               </div>
+              {EmailError && <p className="text-red-500 text-sm">{EmailError}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium">Usuario</label>
@@ -295,7 +376,7 @@ const Register = () => {
               <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <Lock size={18} className="text-gray-500 mr-2" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"} // Cambiar el tipo según la visibilidad
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
@@ -303,6 +384,17 @@ const Register = () => {
                   placeholder="Tu contraseña"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={handleTogglePasswordVisibility}
+                  className="ml-2"
+                  >
+                  {showPassword ? (
+                    <EyeOff size={18} className="text-gray-500" />
+                  ) : (
+                    <Eye size={18} className="text-gray-500" />
+                  )}
+                </button>
               </div>
             </div>
             <div>
@@ -310,7 +402,7 @@ const Register = () => {
               <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <Lock size={18} className="text-gray-500 mr-2" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"} // Cambiar el tipo según la visibilidad
                   name="confirmarPassword"
                   value={formData.confirmarPassword}
                   onChange={handleChange}
@@ -318,7 +410,19 @@ const Register = () => {
                   placeholder="Repite tu contraseña"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={handleTogglePasswordVisibility}
+                  className="ml-2"
+                  >
+                  {showPassword ? (
+                    <EyeOff size={18} className="text-gray-500" />
+                  ) : (
+                    <Eye size={18} className="text-gray-500" />
+                  )}
+                </button>
               </div>
+              {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
             </div>
           </div>
 
