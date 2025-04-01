@@ -7,6 +7,17 @@ import { XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const EditProfile = () => {
+
+  const maxLengths: Record<string, number> = {
+    nombre: 20,
+    apellido: 30,
+    direccion: 80,
+    email: 30,
+    usuario: 15,
+    password: 20,
+    confirmarPassword: 20
+  };
+
     const router = useRouter();
     const role = localStorage.getItem('role');
    {/*Estados para las ventanas de confirmación */}
@@ -62,39 +73,53 @@ const EditProfile = () => {
   }, []);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     
-      const { name, value } = e.target;
-  
-      let formattedValue = value;
-  
-      // Validación para fecha de nacimiento
-      if (name === "fechaNacimiento") {
-        const selectedDate = new Date(value);
-        const minDate = new Date("2006-01-01"); // Fecha mínima (1 de enero de 2006)
-        
-        if (selectedDate > minDate) {
-          // Si la fecha seleccionada es posterior a 2006, mostrar error
-          setMessage("Debes tener al menos 18 años (nacido antes de 2006)");
-          setTimeout(() => setMessage(null), 3000);
-          return; // No actualizar el estado
-        }
-        
-        formattedValue = value; // Aceptar la fecha si es válida
-      }
-  
-      if (name === "nombre" || name === "apellido" || name === "lugarNacimiento") {
-        formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, "") // Solo letras y espacios
-        .replace(/^\s+/, ""); 
-      }
-  
-      if (name === "cedula") {
-        formattedValue = value.replace(/\D/g, "").slice(0, 10) // Solo números, máximo 10 dígitos
-        .replace(/^\s+/, "")
-      }
+    const { name, value } = e.target;
 
+    let formattedValue = value;
+
+    if (
+      name === "nombre" || 
+      name === "apellido" || 
+      name === "direccion" || 
+      name === "password" || 
+      name === "confirmarPassword"
+    ) {
+      if (name === "password" || name === "confirmarPassword") {
+        // Para contraseñas, no aplicamos ningún filtro, solo eliminamos espacios al principio y al final
+        formattedValue = value.trim();
+      } else {
+        // Para los otros campos, eliminar caracteres no deseados y los espacios al principio
+        formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, "") // Solo letras y espacios
+                               .replace(/^\s+/, ""); // Eliminar espacios al principio
+                               
+      }
+      // Aplicar límite de longitud a los inputs
+      if (maxLengths[name]) {
+        formattedValue = formattedValue.slice(0, maxLengths[name]);
+      }
+    }
+    
+    {/*
+    // Verificar si las contraseñas coinciden
+    if (name === "password" || name === "confirmarPassword") {
+      const newPassword = (name === "password" ? formattedValue : formData.password);
+      const confirmPassword = (name === "confirmarPassword" ? formattedValue : formData.confirmarPassword);
+    
+      if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+        setPasswordError("Las contraseñas no coinciden");
+      } else {
+        setPasswordError(null); // Eliminar mensaje si coinciden
+      }
+    }
+    */}
+
+    // Actualizar el estado con el valor formateado
     setFormData((prevData) => ({
       ...prevData,
       [name]: formattedValue,
     }));
+    
+    
 };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -175,7 +200,9 @@ const EditProfile = () => {
                 name="cedula"
                 value={formData.cedula}
                 onChange={handleChange}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               />
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               
+                readOnly
+                />
             </div>
             <div>
               <label className="block text-sm font-medium">Género</label>
@@ -199,7 +226,8 @@ const EditProfile = () => {
                 name="lugarNacimiento"
                 value={formData.lugarNacimiento}
                 onChange={handleChange}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               />
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                readOnly               />
             </div>
             <div>
               <label className="block text-sm font-medium">Fecha de Nacimiento</label>
@@ -209,7 +237,8 @@ const EditProfile = () => {
                 name="nacimiento"
                 value={formData.nacimiento}
                 onChange={handleChange}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               />
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                readOnly               />
             </div>
           </div>
 
@@ -233,7 +262,8 @@ const EditProfile = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               />
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                readOnly               />
             </div>
             <div>
               <label className="block text-sm font-medium">Usuario</label>
@@ -243,7 +273,8 @@ const EditProfile = () => {
                 name="usuario"
                 value={formData.usuario}
                 onChange={handleChange}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               />
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                readOnly               />
             </div>
             <div>
             {role && role.toString().replace(/"/g, '') === "Authenticated" && (
