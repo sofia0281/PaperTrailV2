@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Mail, Lock } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,58 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
+
+  {/*Confirmar correo en tiempo real */}
+  const [EmailError, setEmailError] = useState<string | null>(null);
+
+    
+  const maxLengths: Record<string, number> = {
+    email: 30,
+    password: 20
+  };
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    
+    if (name === "email") {
+      // Expresión regular para validar el formato del correo
+      const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+      // Verificamos si el correo es válido
+      if (!emailPattern.test(value)) {
+        setEmailError("Por favor, ingresa un correo válido.");
+      } else {
+        setEmailError(null); // Limpiar mensaje de error si es válido
+      }
+    }
+  };
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+
+    let formattedValue = value;
+      // Validación de los campos
+      if (name === "email") {
+        // Para el campo email, eliminar los espacios
+        formattedValue = value.replace(/\s+/g, "");
+
+      } else if (name === "password") {
+        // Para contraseñas, no aplicamos ningún filtro, solo eliminamos espacios al principio y al final
+        formattedValue = value.trim();
+      }
+
+    // Limitar el número máximo de caracteres
+    if (maxLengths[name]) {
+      formattedValue = formattedValue.slice(0, maxLengths[name]);
+    }
+
+    // Actualizar el estado según el nombre del campo
+    if (name === "email") {
+      setEmail(formattedValue);
+    } else if (name === "password") {
+      setPassword(formattedValue);
+    }
+
+  }
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault(); // Evitar recarga de la página
 
@@ -107,12 +159,16 @@ const Login = () => {
               <input 
                 type="email"
                 className="flex-1 outline-none text-sm"
+                name="email"
                 placeholder="Tu correo"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleChange}
+                onBlur={handleBlur} // Validar al salir del campo
+                onInput={(e) => e.target.value = e.target.value.replace(/\s+/g, "")} // Elimina espacios en tiempo real
                 required
               />
             </div>
+            {EmailError && <p className="text-red-500 text-sm">{EmailError}</p>}
           </div>
 
           <div>
@@ -122,9 +178,10 @@ const Login = () => {
               <input 
                 type="password"
                 className="flex-1 outline-none text-sm"
+                name="password"
                 placeholder="Tu contraseña"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handleChange}
                 required
               />
             </div>
