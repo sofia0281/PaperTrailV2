@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { loginUser, fetchUserData } from '@/services/userCRUD'
@@ -16,7 +16,12 @@ const Login = () => {
   {/*Confirmar correo en tiempo real */}
   const [EmailError, setEmailError] = useState<string | null>(null);
 
-    
+  const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
+  
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword); // Alternar la visibilidad
+  };
+  
   const maxLengths: Record<string, number> = {
     email: 30,
     password: 20
@@ -176,7 +181,7 @@ const Login = () => {
             <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
               <Lock size={18} className="text-gray-500 mr-2" />
               <input 
-                type="password"
+                type={showPassword ? "text" : "password"} // Cambiar el tipo según la visibilidad
                 className="flex-1 outline-none text-sm"
                 name="password"
                 placeholder="Tu contraseña"
@@ -184,6 +189,17 @@ const Login = () => {
                 onChange={handleChange}
                 required
               />
+                <button
+                  type="button"
+                  onClick={handleTogglePasswordVisibility}
+                  className="ml-2"
+                  >
+                  {showPassword ? (
+                    <EyeOff size={18} className="text-gray-500" />
+                  ) : (
+                    <Eye size={18} className="text-gray-500" />
+                  )}
+                </button>
             </div>
           </div>
 
