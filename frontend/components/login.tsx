@@ -72,6 +72,21 @@ const Login = () => {
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault(); // Evitar recarga de la página
 
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    
+    // Validar el formato del correo electrónico
+    if (!emailPattern.test(email)) {
+      setMessage("Por favor, ingresa un correo válido.");
+      setTimeout(() => {setMessage("")}, 3000);
+      return;
+    }
+
+    // Validar la contraseña
+    if (password.length < 8) {
+      setMessage("La contraseña debe tener al menos 8 caracteres.");
+      setTimeout(() => {setMessage("")}, 3000);
+      return;
+    }
     try {
       // Iniciar sesión
       const data = await loginUser(email, password);
@@ -119,10 +134,12 @@ const Login = () => {
       } else {
         console.error("No se recibieron datos del usuario en la respuesta.");
         setMessage("Usuario no encontrado o credenciales incorrectas.");
+        setTimeout(() => setMessage(""), 3000); // Limpiar mensaje después de 3 segundos
       }
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       setMessage("Usuario no encontrado o credenciales incorrectas.");
+      setTimeout(() => setMessage(""), 3000); // Limpiar mensaje después de 3 segundos
     }
   };
 
