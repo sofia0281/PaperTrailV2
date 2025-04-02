@@ -36,7 +36,7 @@ const Navbar = () => {
     return (
         <div className="flex items-center justify-between w-full bg-[#3C88A3] p-3">
             {/* Logo e ícono */}
-            <div className="flex items-center cursor-pointer" onClick={() => router.push("/")}>
+            <div className="flex items-center cursor-pointer transition-transform duration-300 transform hover:scale-105" onClick={() => router.push("/")}>
                 <Image
                     src="/img/icono.png"
                     alt="Icono PaperTrail"
@@ -44,7 +44,7 @@ const Navbar = () => {
                     height={32}
                     className="mr-2"
                 />
-                <h1 className="text-2xl text-white">
+                <h1 className="text-2xl text-white ">
                     PAPER <span className="font-bold">TRAIL</span>
                 </h1>
             </div>
@@ -56,7 +56,7 @@ const Navbar = () => {
                     placeholder="Título, Autor, Año, ISSN"
                     className="w-full p-2 pl-4 pr-10 rounded-lg bg-white text-black focus:outline-none shadow-md"
                 />
-                <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600">
+                <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 transition-transform duration-300 transform hover:scale-110 cursor-pointer">
                     <Search size={20} />
                 </button>
             </div> 
@@ -74,7 +74,8 @@ const Navbar = () => {
                             // aqui no sé qué poner
                             onClick={() => router.push("/routes/editpasswordadmin")}
                         /> */}
-                    <div className="relative" ref={menuRef}>
+                    <div className="relative flex items-center space-x-2 transition-transform duration-300 transform hover:scale-105 cursor-pointer" ref={menuRef}>
+                        <span>Hola, {role && role.toString().replace(/"/g, '')}</span>
                         <Settings
                             strokeWidth={1}
                             className="cursor-pointer"
@@ -113,7 +114,8 @@ const Navbar = () => {
                     <>
 
                     {/* Ícono de usuario con menú desplegable */}
-                    <div className="relative" ref={menuRef}>
+                    <div className="relative flex items-center space-x-2 transition-transform duration-300 transform hover:scale-105 cursor-pointer" ref={menuRef}>
+                        <span>Hola, {role && role.toString().replace(/"/g, '')}</span>
                         <User 
                             strokeWidth={1} 
                             className="cursor-pointer" 
@@ -150,9 +152,9 @@ const Navbar = () => {
                     </>
                 ):(role && role.toString().replace(/"/g, '') === "Authenticated") ? (
                     <>
-
+                <div className="relative flex items-center space-x-2 transition-transform duration-300 transform hover:scale-105 cursor-pointer">
                     {/* Íconos de usuario y carrito LOGUEADO*/}
-
+                    <span>Hola, {role && role.toString().replace(/"/g, '')}</span>
                     <ShoppingCart 
                                 strokeWidth={1} 
                                 className="cursor-pointer" 
@@ -194,6 +196,7 @@ const Navbar = () => {
                                 </div>
                             )}
                     </div>
+                </div>
                     </>               
                 ):( 
                     
@@ -205,11 +208,14 @@ const Navbar = () => {
                         className="cursor-pointer" 
                         // onClick={() => router.push("/cart")} 
                     /> */}
-                    <User 
-                        strokeWidth={1} 
-                        className="cursor-pointer" 
-                        onClick={() => router.push("/routes/login")} 
-                    />
+                    <div className="relative flex items-center space-x-2 transition-transform duration-300 transform hover:scale-105 cursor-pointer" 
+                    onClick={() => router.push("/routes/login")} 
+                    >
+                        <span>Inicia Sesión</span>
+                        <User 
+                            strokeWidth={1} 
+                        />
+                    </div>
                     </>
                 )}
                 </div>
