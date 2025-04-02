@@ -18,6 +18,15 @@ const Register = () => {
     confirmarPassword: 20
   };
 
+  const minDate = "1900-01-01"; // Fecha mínima fija
+
+  // Fecha máxima dinámica (hoy menos 18 años)
+  const today = new Date();
+  const maxYear = today.getFullYear() - 18;
+  const maxMonth = String(today.getMonth() + 1).padStart(2, "0"); // Asegurar formato MM
+  const maxDay = String(today.getDate()).padStart(2, "0"); // Asegurar formato DD
+  const maxDate = `${maxYear}-${maxMonth}-${maxDay}`; // Generar fecha máxima exacta
+
   const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
   
   const handleTogglePasswordVisibility = () => {
@@ -56,26 +65,6 @@ const Register = () => {
 
     let formattedValue = value;
     
-    // Validación para fecha de nacimiento
-    if (name === "fechaNacimiento") {
-      const selectedDate = new Date(value);
-      const minDate = new Date("2006-01-01"); // Fecha mínima (1 de enero de 2006)
-      const maxDate = new Date("1900-01-01"); // Fecha máxima (1 de enero de 1900)
-      if (selectedDate > minDate) {
-        // Si la fecha seleccionada es posterior a 2006, mostrar error
-        setErrorMessage("Debes tener al menos 18 años (nacido antes de 2006)");
-        setTimeout(() => setErrorMessage(null), 3000);
-        return; // No actualizar el estado
-
-      }else if(selectedDate < maxDate){
-        setErrorMessage("La edad máxima es a partir de 1900");
-        setTimeout(() => setErrorMessage(null), 3000);
-        return; // No actualizar el estado
-      }
-      
-      formattedValue = value; // Aceptar la fecha si es válida
-    }
-
     if (
       name === "nombre" || 
       name === "apellido" || 
@@ -121,6 +110,10 @@ const Register = () => {
       }
     }
     
+    // Validación para fecha de nacimiento
+    if (name === "fechaNacimiento") {
+      formattedValue = value; // Aceptar la fecha si es válida
+    }
     // Actualizar el estado con el valor formateado
     setFormData((prevData) => ({
       ...prevData,
@@ -154,27 +147,77 @@ const Register = () => {
       }
     }
     
+    // Validación para fecha de nacimiento
+    if (name === "fechaNacimiento") {
+      const selectedDate = new Date(value);
+      const minDate = new Date("2006-01-01"); // Fecha mínima (1 de enero de 2006)
+      const maxDate = new Date("1900-01-01"); // Fecha máxima (1 de enero de 1900)
+
+      if (selectedDate < minDate || selectedDate > maxDate) {
+        // Si la fecha seleccionada es posterior a 2006, mostrar error
+        setErrorMessage("Debes tener al menos 18 años (nacido antes de 2006)");
+        setTimeout(() => setErrorMessage(null), 3000);
+        return; // No actualizar el estado
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const minDate = new Date("1900-01-01");
+    const maxDate = new Date("2006-12-31");
+    const birthDate = new Date(formData.fechaNacimiento);
+
+    if (birthDate < minDate || birthDate > maxDate) {
+      setErrorMessage("La fecha debe estar entre el 1 de enero de 1900 y el 31 de diciembre de 2006.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
 
     // Verificamos si el correo es válido
     if (!emailPattern.test(formData.email)) {
       setErrorMessage("Por favor, ingresa un correo válido.");
+      setTimeout(() => setErrorMessage(null), 3000);
       return;
      }
      
     // Validar la longitud de la contraseña
     if (formData.password.length < 8) {
       setErrorMessage("La contraseña debe tener al menos 8 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
       return;
     }
     // Validar que las contraseñas coincidan
     if (formData.password !== formData.confirmarPassword) {
       setErrorMessage("Las contraseñas no coinciden.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.nombre.length < 2) {
+      setErrorMessage("El nombre debe tener al menos 2 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.apellido.length < 2) {
+      setErrorMessage("El apellido debe tener al menos 2 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.cedula.length < 6) {
+      setErrorMessage("La cédula debe tener al menos 6 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.direccion.length < 10) {
+      setErrorMessage("La dirección debe tener al menos 10 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if(formData.usuario.length < 4){
+      setErrorMessage("El usuario debe tener al menos 4 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
       return;
     }
     try {
@@ -329,6 +372,8 @@ const Register = () => {
                 value={formData.fechaNacimiento}
                 onChange={handleChange}
                 className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                min={minDate}
+                max={maxDate}
                 required
               />
             </div>
