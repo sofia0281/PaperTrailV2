@@ -24,9 +24,6 @@ const Register = () => {
     setShowPassword(!showPassword); // Alternar la visibilidad
   };
   
-  {/*Estado para validar el formulario */}
-  const [isFormValid, setIsFormValid] = useState(false);
-
   {/*Confirmar contraseña en tiempo real */}
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
@@ -149,20 +146,33 @@ const Register = () => {
 
     if (name === "password" || name === "confirmarPassword") {
       if (value.length < 8) {
-      setPasswordError("La contraseña debe tener al menos 8 caracteres");
-      setIsFormValid(false);
-      } else {
-      setPasswordError(null); // Limpiar mensaje de error si es válido
-      setIsFormValid(true);
+        setPasswordError("La contraseña debe tener al menos 8 caracteres");
+      }else {
+        setPasswordError(null); // Limpiar mensaje de error si es válido
       }
     }
+    
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    if (formData.password.length < 8 || formData.confirmarPassword.length < 8) {
-      setPasswordError("La contraseña debe tener al menos 8 caracteres");
+    // Verificamos si el correo es válido
+    if (!emailPattern.test(formData.email)) {
+      setErrorMessage("Por favor, ingresa un correo válido.");
+      return;
+     }
+     
+    // Validar la longitud de la contraseña
+    if (formData.password.length < 8) {
+      setErrorMessage("La contraseña debe tener al menos 8 caracteres.");
+      return;
+    }
+    // Validar que las contraseñas coincidan
+    if (formData.password !== formData.confirmarPassword) {
+      setErrorMessage("Las contraseñas no coinciden.");
       return;
     }
     try {
@@ -424,6 +434,7 @@ const Register = () => {
                   name="confirmarPassword"
                   value={formData.confirmarPassword}
                   onChange={handleChange}
+                  onBlur={handleBlur} // Validar al salir del campo
                   className="flex-1 outline-none text-sm"
                   placeholder="Repite tu contraseña"
                   required
@@ -482,8 +493,7 @@ const Register = () => {
           {/* Botón de registro */}
           <button
             type="submit"
-            disabled={!isFormValid}
-            className={`${!isFormValid ? "opacity-50 w-full bg-orange-400 text-white py-2 rounded-md mt-4 cursor-not-allowed" : "w-full bg-orange-400 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:scale-105 cursor-pointer"}`}
+            className="w-full bg-orange-400 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:scale-105 cursor-pointer"
           >
             Registrarse
           </button>
