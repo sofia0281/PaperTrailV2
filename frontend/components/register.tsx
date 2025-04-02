@@ -24,6 +24,9 @@ const Register = () => {
     setShowPassword(!showPassword); // Alternar la visibilidad
   };
   
+  {/*Estado para validar el formulario */}
+  const [isFormValid, setIsFormValid] = useState(false);
+
   {/*Confirmar contraseña en tiempo real */}
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
@@ -143,10 +146,25 @@ const Register = () => {
         setEmailError(null); // Limpiar mensaje de error si es válido
       }
     }
+
+    if (name === "password" || name === "confirmarPassword") {
+      if (value.length < 8) {
+      setPasswordError("La contraseña debe tener al menos 8 caracteres");
+      setIsFormValid(false);
+      } else {
+      setPasswordError(null); // Limpiar mensaje de error si es válido
+      setIsFormValid(true);
+      }
+    }
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    if (formData.password.length < 8 || formData.confirmarPassword.length < 8) {
+      setPasswordError("La contraseña debe tener al menos 8 caracteres");
+      return;
+    }
     try {
         // Crear una copia de formData sin los campos no deseados
         const createUserData = {
@@ -374,12 +392,13 @@ const Register = () => {
             <div>
               <label className="block text-sm font-medium">Contraseña</label>
               <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
-                <Lock size={18} className="text-gray-500 mr-2" />
+                <Lock size={14} className="text-gray-500 mr-1" />
                 <input
                   type={showPassword ? "text" : "password"} // Cambiar el tipo según la visibilidad
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
+                  onBlur={handleBlur} // Validar al salir del campo
                   className="flex-1 outline-none text-sm"
                   placeholder="Tu contraseña"
                   required
@@ -387,12 +406,11 @@ const Register = () => {
                 <button
                   type="button"
                   onClick={handleTogglePasswordVisibility}
-                  className="ml-2"
                   >
                   {showPassword ? (
-                    <EyeOff size={18} className="text-gray-500" />
+                    <EyeOff size={14} className="text-gray-500" />
                   ) : (
-                    <Eye size={18} className="text-gray-500" />
+                    <Eye size={14} className="text-gray-500" />
                   )}
                 </button>
               </div>
@@ -400,7 +418,7 @@ const Register = () => {
             <div>
               <label className="block text-sm font-medium">Validar Contraseña</label>
               <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
-                <Lock size={18} className="text-gray-500 mr-2" />
+                <Lock size={14} className="text-gray-500 mr-1" />
                 <input
                   type={showPassword ? "text" : "password"} // Cambiar el tipo según la visibilidad
                   name="confirmarPassword"
@@ -413,12 +431,11 @@ const Register = () => {
                 <button
                   type="button"
                   onClick={handleTogglePasswordVisibility}
-                  className="ml-2"
                   >
                   {showPassword ? (
-                    <EyeOff size={18} className="text-gray-500" />
+                    <EyeOff size={14} className="text-gray-500" />
                   ) : (
-                    <Eye size={18} className="text-gray-500" />
+                    <Eye size={14} className="text-gray-500" />
                   )}
                 </button>
               </div>
@@ -465,7 +482,8 @@ const Register = () => {
           {/* Botón de registro */}
           <button
             type="submit"
-            className="w-full bg-orange-400 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:scale-105 cursor-pointer"
+            disabled={!isFormValid}
+            className={`${!isFormValid ? "opacity-50 w-full bg-orange-400 text-white py-2 rounded-md mt-4 cursor-not-allowed" : "w-full bg-orange-400 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:scale-105 cursor-pointer"}`}
           >
             Registrarse
           </button>
