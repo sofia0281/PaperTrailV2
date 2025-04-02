@@ -5,6 +5,9 @@ import { fetchUserData, putUserData } from "@/services/userCRUD";
 import { useRouter } from "next/navigation";
 import { XCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { prefetchDNS } from "react-dom";
+import { PrefetchRSCPathnameNormalizer } from "next/dist/server/normalizers/request/prefetch-rsc";
+import { PassThrough } from "stream";
 
 const EditProfile = () => {
 
@@ -12,17 +15,27 @@ const EditProfile = () => {
     nombre: 20,
     apellido: 30,
     direccion: 80,
-    email: 30,
-    usuario: 15,
-    password: 20,
-    confirmarPassword: 20
+    passwordActual: 20,
+    passwordNueva: 20,
+    passwordConfirmar: 20
   };
 
     const router = useRouter();
     const role = localStorage.getItem('role');
-   {/*Estados para las ventanas de confirmación */}
-   const [showConfirm, setShowConfirm] = useState(false);
-   const [message, setMessage] = useState<string | null>(null);   
+    {/*Estados para las ventanas de confirmación */}
+
+    const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
+    
+    const handleTogglePasswordVisibility = () => {
+      setShowPassword(!showPassword); // Alternar la visibilidad
+    };
+
+    {/*Confirmar contraseña en tiempo real */}
+    const [passwordError, setPasswordError] = useState<string | null>(null);
+
+
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [message, setMessage] = useState<string | null>(null);   
 
     const [formData, setFormData] = useState({
       nombre: "",
@@ -45,7 +58,6 @@ const EditProfile = () => {
     };
   // Obtener los datos del usuario al cargar la página
 
-  
   useEffect(() => {
     const loadUserData = async () => {
       const userData = await fetchUserData();
@@ -79,39 +91,37 @@ const EditProfile = () => {
 
     if (
       name === "nombre" || 
-      name === "apellido" || 
-      name === "direccion" || 
-      name === "password" || 
-      name === "confirmarPassword"
+      name === "apellido" ||
+      name === "direccion" ||
+      name === "passwordActual" || 
+      name === "passwordNueva" || 
+      name === "passwordConfirmar"
     ) {
-      if (name === "password" || name === "confirmarPassword") {
+      if (name === "passwordNueva" || name === "passwordConfirmar" || name === "passwordActual") {
         // Para contraseñas, no aplicamos ningún filtro, solo eliminamos espacios al principio y al final
         formattedValue = value.trim();
       } else {
         // Para los otros campos, eliminar caracteres no deseados y los espacios al principio
         formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, "") // Solo letras y espacios
                                .replace(/^\s+/, ""); // Eliminar espacios al principio
-                               
       }
+
+      // Verificar si las contraseñas coinciden
+      if (name === "passwordNueva" || name === "passwordConfirmar") {
+        const newPassword = (name === "passwordNueva" ? formattedValue : formData.passwordNueva);
+        const confirmPassword = (name === "passwordConfirmar" ? formattedValue : formData.passwordConfirmar);
+      
+        if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+          setPasswordError("Las contraseñas no coinciden");
+
+        } else {
+          setPasswordError(null); // Eliminar mensaje si coinciden
+        }
       // Aplicar límite de longitud a los inputs
       if (maxLengths[name]) {
         formattedValue = formattedValue.slice(0, maxLengths[name]);
       }
     }
-    
-    {/*
-    // Verificar si las contraseñas coinciden
-    if (name === "password" || name === "confirmarPassword") {
-      const newPassword = (name === "password" ? formattedValue : formData.password);
-      const confirmPassword = (name === "confirmarPassword" ? formattedValue : formData.confirmarPassword);
-    
-      if (newPassword && confirmPassword && newPassword !== confirmPassword) {
-        setPasswordError("Las contraseñas no coinciden");
-      } else {
-        setPasswordError(null); // Eliminar mensaje si coinciden
-      }
-    }
-    */}
 
     // Actualizar el estado con el valor formateado
     setFormData((prevData) => ({
@@ -151,7 +161,7 @@ const EditProfile = () => {
 
       {/*Ventana emergente */}
       setMessage("Perfil editado correctamente");
-      setTimeout(() => setMessage(null), 10000);
+      setTimeout(() => setMessage(null), 3000);
 
       // router.push('/routes/loginHome');
     } catch (error) {
@@ -166,13 +176,13 @@ const EditProfile = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md">
       <h2 className="text-2xl font-bold text-gray-700 mb-4">Hola, {userName} </h2>
-
+      <p className="text-xs text-gray-400 text-center mt-4">Los campos con (<span className="text-red-500">*</span>) son editables.</p>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Sección Izquierda */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium">Nombre</label>
+              <label className="block text-sm font-medium">Nombre <span className="text-red-500">*</span></label>
               <input
                 required
                 type="text"
@@ -183,7 +193,7 @@ const EditProfile = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium">Apellido</label>
+              <label className="block text-sm font-medium">Apellido <span className="text-red-500">*</span></label>
               <input
                 required
                 type="text"
@@ -199,13 +209,12 @@ const EditProfile = () => {
                 type="text"
                 name="cedula"
                 value={formData.cedula}
-                onChange={handleChange}
                 className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               
                 readOnly
                 />
             </div>
             <div>
-              <label className="block text-sm font-medium">Género</label>
+              <label className="block text-sm font-medium">Género <span className="text-red-500">*</span></label>
               <select
                 required
                 name="genero"
@@ -225,7 +234,6 @@ const EditProfile = () => {
                 type="text"
                 name="lugarNacimiento"
                 value={formData.lugarNacimiento}
-                onChange={handleChange}
                 className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 readOnly               />
             </div>
@@ -236,7 +244,6 @@ const EditProfile = () => {
                 type="date"
                 name="nacimiento"
                 value={formData.nacimiento}
-                onChange={handleChange}
                 className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 readOnly               />
             </div>
@@ -245,7 +252,7 @@ const EditProfile = () => {
           {/* Sección Derecha */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium">Dirección de Envío</label>
+              <label className="block text-sm font-medium">Dirección de Envío <span className="text-red-500">*</span></label>
               <input
                 required
                 type="text"
@@ -261,7 +268,6 @@ const EditProfile = () => {
                 type="email"
                 name="email"
                 value={formData.email}
-                onChange={handleChange}
                 className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 readOnly               />
             </div>
@@ -272,14 +278,13 @@ const EditProfile = () => {
                 type="text"
                 name="usuario"
                 value={formData.usuario}
-                onChange={handleChange}
                 className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 readOnly               />
             </div>
             <div>
             {role && role.toString().replace(/"/g, '') === "Authenticated" && (
                 <>
-              <label className="block text-sm font-medium">Tema Literario de Preferencia 1</label>
+              <label className="block text-sm font-medium">Tema Literario de Preferencia 1 <span className="text-red-500">*</span></label>
               <select
                 required
                 name="preferencia1"
@@ -328,7 +333,7 @@ const EditProfile = () => {
             <div>
             {role && role.toString().replace(/"/g, '') === "Authenticated" && (
                 <>
-              <label className="block text-sm font-medium">Tema Literario de Preferencia 2</label>
+              <label className="block text-sm font-medium">Tema Literario de Preferencia 2 <span className="text-red-500">*</span></label>
               <select
                 required
                 name="preferencia2"
