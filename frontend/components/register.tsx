@@ -304,12 +304,13 @@ const Register = () => {
           />
         </motion.div>
       )} 
-        <h1 className="text-2xl md:text-3xl font-semibold text-orange-400 mb-6 text-center">CREAR UN USUARIO</h1>
+        <h1 className="text-2xl md:text-3xl font-semibold text-orange-400 mb-2 text-center">CREAR UN USUARIO</h1>
+        <p className="text-xs text-gray-400 text-center mb-6">Los campos con (<span className="text-red-500">*</span>) son obligatorios.</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Inputs en dos columnas desde móviles */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium">Nombre</label>
+              <label className="block text-sm font-medium">Nombre <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 name="nombre"
@@ -321,7 +322,7 @@ const Register = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium">Apellido</label>
+              <label className="block text-sm font-medium">Apellido <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 name="apellido"
@@ -333,7 +334,7 @@ const Register = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium">Cédula</label>
+              <label className="block text-sm font-medium">Cédula <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 name="cedula"
@@ -345,7 +346,7 @@ const Register = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium">Género</label>
+              <label className="block text-sm font-medium">Género <span className="text-red-500">*</span></label>
               <select
                 name="genero"
                 value={formData.genero}
@@ -363,7 +364,7 @@ const Register = () => {
 
           {/* Fecha de nacimiento */}
           <div>
-            <label className="block text-sm font-medium">Fecha de nacimiento</label>
+            <label className="block text-sm font-medium">Fecha de nacimiento <span className="text-red-500">*</span></label>
             <div className="flex items-center border rounded-md p-2 mt-1">
               <Calendar size={18} className="text-gray-500 mr-2" />
               <input
@@ -381,7 +382,7 @@ const Register = () => {
 
           {/* Lugar de nacimiento */}
           <div>
-            <label className="block text-sm font-medium">Lugar de Nacimiento</label>
+            <label className="block text-sm font-medium">Lugar de Nacimiento <span className="text-red-500">*</span></label>
             <input
               type="text"
               name="lugarNacimiento"
@@ -395,7 +396,7 @@ const Register = () => {
 
           {/* Dirección de envío */}
           <div>
-            <label className="block text-sm font-medium">Dirección de envío</label>
+            <label className="block text-sm font-medium">Dirección de envío <span className="text-red-500">*</span></label>
             <input
               type="text"
               name="direccion"
@@ -410,7 +411,7 @@ const Register = () => {
           {/* Correo electrónico y usuario */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium">Correo Electrónico</label>
+              <label className="block text-sm font-medium">Correo Electrónico <span className="text-red-500">*</span></label>
               <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <Mail size={18} className="text-gray-500 mr-2" />
                 <input
@@ -428,7 +429,7 @@ const Register = () => {
               {EmailError && <p className="text-red-500 text-sm">{EmailError}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium">Usuario</label>
+              <label className="block text-sm font-medium">Usuario <span className="text-red-500">*</span></label>
               <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <User size={18} className="text-gray-500 mr-2" />
                 <input
@@ -447,7 +448,7 @@ const Register = () => {
           {/* Contraseña y validar contraseña */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium">Contraseña</label>
+              <label className="block text-sm font-medium">Contraseña <span className="text-red-500">*</span></label>
               <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <Lock size={14} className="text-gray-500 mr-1" />
                 <input
@@ -473,7 +474,7 @@ const Register = () => {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium">Validar Contraseña</label>
+              <label className="block text-sm font-medium">Validar Contraseña <span className="text-red-500">*</span></label>
               <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
                 <Lock size={14} className="text-gray-500 mr-1" />
                 <input
@@ -510,7 +511,6 @@ const Register = () => {
                 value={formData.temaLiterario1}
                 onChange={handleChange}
                 className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-                required
               >
                 <option value="">Selecciona un tema</option>
                 <option value="ficcion">Ficción</option>
@@ -526,7 +526,6 @@ const Register = () => {
                 value={formData.temaLiterario2}
                 onChange={handleChange}
                 className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-                required
               >
                 <option value="">Selecciona un tema</option>
                 <option value="ficcion">Ficción</option>
