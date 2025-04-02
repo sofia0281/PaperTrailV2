@@ -115,6 +115,7 @@ const Register = () => {
     
       if (newPassword && confirmPassword && newPassword !== confirmPassword) {
         setPasswordError("Las contraseñas no coinciden");
+
       } else {
         setPasswordError(null); // Eliminar mensaje si coinciden
       }
@@ -147,6 +148,7 @@ const Register = () => {
     if (name === "password" || name === "confirmarPassword") {
       if (value.length < 8) {
         setPasswordError("La contraseña debe tener al menos 8 caracteres");
+        setTimeout(() => setPasswordError(null), 3000);
       }else {
         setPasswordError(null); // Limpiar mensaje de error si es válido
       }
