@@ -5,6 +5,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createUser} from "@/services/userCRUD";
 import { motion } from "framer-motion";
+import { AutocompleteLocation } from "./ui/AutocompleteLocation"; // Importación directa desde la misma carpeta
+// Importación directa desde la misma carpeta
+
 
 const Register = () => {
 
@@ -382,14 +385,11 @@ const Register = () => {
 
           {/* Lugar de nacimiento */}
           <div>
-            <label className="block text-sm font-medium">Lugar de Nacimiento <span className="text-red-500">*</span></label>
-            <input
-              type="text"
-              name="lugarNacimiento"
+            <label className="block text-sm font-medium">Ciudad de Nacimiento</label>
+            <AutocompleteLocation
               value={formData.lugarNacimiento}
-              onChange={handleChange}
-              className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="Ciudad o país"
+              onChange={(value) => setFormData({...formData, lugarNacimiento: value})}
+              placeholder="Lugar de nacimiento"
               required
             />
           </div>
