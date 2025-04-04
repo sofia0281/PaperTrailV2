@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createUser} from "@/services/userCRUD";
 import { motion } from "framer-motion";
-import { AutocompleteLocation } from "./ui/AutocompleteLocation"; // Importación directa desde la misma carpeta
+import { AutocompleteLocation } from "./ui/register/AutocompleteLocation"; // Importación directa desde la misma carpeta
 // Importación directa desde la misma carpeta
 
 
