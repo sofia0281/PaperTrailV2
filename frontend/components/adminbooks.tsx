@@ -19,7 +19,7 @@ const ManageBooks = () => {
           <input 
             type="text" 
             placeholder="Título, Autor, Año, ISSN" 
-            className="border rounded-md px-3 py-2 pl-10 w-full"
+            className="rounded-md px-3 py-2 pl-10 w-full border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
           <Search size={18} className="absolute left-3 top-3 text-gray-500" />
         </div>
