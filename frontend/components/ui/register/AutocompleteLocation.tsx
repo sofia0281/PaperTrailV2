@@ -13,7 +13,7 @@ interface AutocompleteLocationProps {
 export const AutocompleteLocation = ({
   value,
   onChange,
-  placeholder = "Ciudad de nacimiento",
+  placeholder = "Ciudad o país de nacimiento", // Cambiado el placeholder
   required = false,
   className = ""
 }: AutocompleteLocationProps) => {
@@ -23,7 +23,6 @@ export const AutocompleteLocation = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Event listener para clicks fuera del componente
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
@@ -46,10 +45,11 @@ export const AutocompleteLocation = ({
       return;
     }
 
-    const isCityValid = citiesData.some(city => 
-      city.name.toLowerCase() === inputValue.toLowerCase()
+    const isInputValid = citiesData.some(city => 
+      city.name.toLowerCase() === inputValue.toLowerCase() ||
+      city.country.toLowerCase() === inputValue.toLowerCase()
     );
-    setError(isCityValid ? null : 'Por favor ingrese una ciudad válida');
+    setError(isInputValid ? null : 'Por favor ingrese una ciudad o país válido');
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,14 +58,25 @@ export const AutocompleteLocation = ({
     setError(null);
 
     if (inputValue.trim().length > 0) {
-      const cityMatches = citiesData
-        .filter(city => 
-          city.name.toLowerCase().includes(inputValue.toLowerCase()) ||
-          city.country.toLowerCase().includes(inputValue.toLowerCase())
-        )
-        .slice(0, 10);
+      // Primero busca coincidencias exactas de país
+      const countryMatches = citiesData.filter(city => 
+        city.country.toLowerCase() === inputValue.toLowerCase()
+      );
 
-      setSuggestions(cityMatches);
+      // Si encontramos país exacto, mostramos todas sus ciudades
+      if (countryMatches.length > 0) {
+        setSuggestions(countryMatches);
+      } else {
+        // Si no, buscamos coincidencias parciales en ciudades y países
+        const cityMatches = citiesData
+          .filter(city => 
+            city.name.toLowerCase().includes(inputValue.toLowerCase()) ||
+            city.country.toLowerCase().includes(inputValue.toLowerCase())
+          )
+          .slice(0, 10);
+        setSuggestions(cityMatches);
+      }
+      
       setShowSuggestions(true);
     } else {
       setSuggestions([]);
@@ -81,10 +92,19 @@ export const AutocompleteLocation = ({
 
   const handleInputFocus = () => {
     if (value) {
-      const cityMatches = citiesData
-        .filter(city => city.name.toLowerCase().includes(value.toLowerCase()))
-        .slice(0, 10);
-      setSuggestions(cityMatches);
+      // Misma lógica de búsqueda que en handleInputChange
+      const countryMatches = citiesData.filter(city => 
+        city.country.toLowerCase() === value.toLowerCase()
+      );
+
+      if (countryMatches.length > 0) {
+        setSuggestions(countryMatches);
+      } else {
+        const cityMatches = citiesData
+          .filter(city => city.name.toLowerCase().includes(value.toLowerCase()))
+          .slice(0, 10);
+        setSuggestions(cityMatches);
+      }
       setShowSuggestions(true);
     }
   };
@@ -128,4 +148,4 @@ export const AutocompleteLocation = ({
       )}
     </div>
   );
-};
+};  
