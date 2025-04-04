@@ -44,7 +44,7 @@ const PurchaseHistory = () => {
                 <td className="py-2 px-4">{purchase.status}</td>
                 <td className="py-2 px-4">${purchase.total.toLocaleString()}</td>
                 <td className="py-2 px-4">
-                  <button className="bg-gray-700 text-white px-3 py-1 rounded-md hover:bg-gray-800">
+                  <button className="bg-gray-700 text-white px-3 py-1 rounded-md hover:bg-gray-800 cursor-pointer">
                     Ver más
                   </button>
                 </td>
