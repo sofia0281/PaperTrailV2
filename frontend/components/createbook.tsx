@@ -121,21 +121,21 @@ const CreateBook = () => {
           formattedValue = value.replace(/\D/g, "").slice(0, 5) // Solo números, máximo 5 dígitos
         }
         if (name === "titulo") {
-          formattedValue = value.slice(0,255)// Solo 255 caracteres
+          formattedValue = value.slice(0,100)// Solo 255 caracteres
                                 .replace(/^\s+/, "");// Eliminar espacios al principio
         }
         if (name === "autor") {
           // Para el campo autor, solo permitir letras y espacios
-          formattedValue = value.slice(0,255)// Solo 255 caracteres
+          formattedValue = value.slice(0,100)// Solo 255 caracteres
                                 .replace(/^\s+/, "")// Eliminar espacios al principio
                                 .replace(/[^a-zA-Z]/g, "");
         }
         if(name === "resena") {
-          formattedValue = value.slice(0,1000)// Solo 1000 caracteres
+          formattedValue = value.slice(0,255)// Solo 1000 caracteres
                                 .replace(/^\s+/, "");// Eliminar espacios al principio
         }
         if(name === "editorial") {
-          formattedValue = value.slice(0,100)// Solo 255 caracteres
+          formattedValue = value.slice(0,50)// Solo 255 caracteres
                                 .replace(/^\s+/, "");// Eliminar espacios al principio
         }
         if(name === "genero") {
