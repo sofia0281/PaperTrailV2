@@ -309,6 +309,7 @@ const CreateBook = () => {
         <div className="col-span-2 flex justify-center gap-4 mt-6">
           <button
             type="button"
+            onClick={() => router.push("/routes/adminbooks")}
             className="bg-blue-500 text-white px-6 py-2 rounded-md cursor-pointer transition-transform duration-300 transform hover:scale-105"
           >
             Cancelar

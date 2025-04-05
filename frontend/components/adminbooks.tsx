@@ -1,6 +1,9 @@
-import { Search, Trash2 } from "lucide-react";
+"use client";
+import { Router, Search, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const ManageBooks = () => {
+  const router =  useRouter();
   const books = [
     { title: "Libro 1", author: "NN", price: 130000, quantity: 200, status: "Disponible" },
   ];
@@ -12,7 +15,9 @@ const ManageBooks = () => {
       
       {/* Barra de herramientas */}
       <div className="flex flex-wrap md:flex-nowrap justify-between items-center mb-4 gap-2 w-full">
-        <button className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 whitespace-nowrap">
+        <button 
+        onClick={() => router.push("/routes/createbook")} 
+        className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 whitespace-nowrap cursor-pointer">
           Agregar Libro
         </button>
         <div className="relative flex-grow md:flex-grow-0 md:w-64">
