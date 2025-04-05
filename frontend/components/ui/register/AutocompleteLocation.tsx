@@ -117,7 +117,7 @@ export const AutocompleteLocation = ({
         onChange={handleInputChange}
         onFocus={handleInputFocus}
         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-        className={`w-full border rounded-md p-2 mt-1 outline-none text-sm ${
+        className={`border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 ${
           error ? 'border-red-500' : 'border-gray-300'
         }`}
         placeholder={placeholder}

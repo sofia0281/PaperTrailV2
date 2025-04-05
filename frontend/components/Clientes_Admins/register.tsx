@@ -5,9 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createUser} from "@/services/userCRUD";
 import { motion } from "framer-motion";
-import {AutocompleteLocation} from "@/components/ui/register/AutocompleteLocation"
-
-
+import { AutocompleteLocation } from "@/components/ui/register/AutocompleteLocation"; // Importación directa desde la misma carpeta
 // Importación directa desde la misma carpeta
 
 
@@ -96,7 +94,11 @@ const Register = () => {
       formattedValue = value.replace(/\D/g, "").slice(0, 10) // Solo números, máximo 10 dígitos
                              .replace(/^\s+/, ""); // Eliminar espacios al principio
     }
-    
+    if(name === "direccion"){
+      // Para el campo dirección, eliminar caracteres no deseados y los espacios al principio
+      formattedValue = value.replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s.,#-]/g, "") // Solo letras, números, espacios y caracteres permitidos
+                             .replace(/^\s+/, ""); // Eliminar espacios al principio
+    }
     // Aplicar límite de longitud a los inputs
     if (maxLengths[name]) {
       formattedValue = formattedValue.slice(0, maxLengths[name]);
@@ -152,17 +154,23 @@ const Register = () => {
       }
     }
     
-    // Validación para fecha de nacimiento
+    const minDate = "1900-01-01";
+
+    // Calcular fecha máxima dinámica (hoy menos 18 años)
+    const today = new Date();
+    const maxDateObj = new Date(today);
+    maxDateObj.setFullYear(today.getFullYear() - 18);
+    const maxDate = maxDateObj.toISOString().split("T")[0]; // YYYY-MM-DD
+    
     if (name === "fechaNacimiento") {
       const selectedDate = new Date(value);
-      const minDate = new Date("2006-01-01"); // Fecha mínima (1 de enero de 2006)
-      const maxDate = new Date("1900-01-01"); // Fecha máxima (1 de enero de 1900)
-
-      if (selectedDate < minDate || selectedDate > maxDate) {
-        // Si la fecha seleccionada es posterior a 2006, mostrar error
-        setErrorMessage("Debes tener al menos 18 años (nacido antes de 2006)");
+      const minDateObj = new Date(minDate);
+      const selectedDateOnly = new Date(selectedDate.toISOString().split("T")[0]);
+      
+      if (selectedDateOnly < minDateObj || selectedDateOnly > maxDateObj) {
+        setErrorMessage(`Debes tener al menos 18 años (nacido antes del ${maxDate})`);
         setTimeout(() => setErrorMessage(null), 3000);
-        return; // No actualizar el estado
+        return;
       }
     }
   };
@@ -171,14 +179,24 @@ const Register = () => {
     e.preventDefault();
     
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const minDate = new Date("1900-01-01");
-    const maxDate = new Date("2006-12-31");
-    const birthDate = new Date(formData.fechaNacimiento);
+    const minDate = "1900-01-01";
 
-    if (birthDate < minDate || birthDate > maxDate) {
-      setErrorMessage("La fecha debe estar entre el 1 de enero de 1900 y el 31 de diciembre de 2006.");
-      setTimeout(() => setErrorMessage(null), 3000);
-      return;
+    // Calcular fecha máxima dinámica (hoy menos 18 años)
+    const today = new Date();
+    const maxDateObj = new Date(today);
+    maxDateObj.setFullYear(today.getFullYear() - 18);
+    const maxDate = maxDateObj.toISOString().split("T")[0]; // YYYY-MM-DD
+    
+    if (formData.fechaNacimiento === "fechaNacimiento") {
+      const selectedDate = new Date(formData.fechaNacimiento);
+      const minDateObj = new Date(minDate);
+      const selectedDateOnly = new Date(selectedDate.toISOString().split("T")[0]);
+      
+      if (selectedDateOnly < minDateObj || selectedDateOnly > maxDateObj) {
+        setErrorMessage(`Debes tener al menos 18 años (nacido antes del ${maxDate})`);
+        setTimeout(() => setErrorMessage(null), 3000);
+        return;
+      }
     }
 
     // Verificamos si el correo es válido
@@ -422,10 +440,7 @@ const Register = () => {
                   value={formData.email}
                   onChange={handleChange}
                   onBlur={handleBlur} // Validar al salir del campo
-                  onInput={(e) => {
-                    const target = e.target as HTMLInputElement;
-                    target.value = target.value.replace(/\s+/g, "");
-                  }} // Elimina espacios en tiempo real
+                  onInput={(e) => e.target.value = e.target.value.replace(/\s+/g, "")} // Elimina espacios en tiempo real
                   className="flex-1 outline-none text-sm"
                   placeholder="Tu correo"
                   required
