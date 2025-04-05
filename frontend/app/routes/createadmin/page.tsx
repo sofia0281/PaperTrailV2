@@ -1,4 +1,4 @@
-import CreateAdmin from "@/components/createadmin";
+import CreateAdmin from "@/components/GestionRoot/createadmin";
 
 
 export default function Page(){

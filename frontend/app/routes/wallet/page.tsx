@@ -1,4 +1,4 @@
-import Wallet from "@/components/monedero";
+import Wallet from "@/components/Clientes_Admins/monedero";
 
 export default function Page() {
     return (

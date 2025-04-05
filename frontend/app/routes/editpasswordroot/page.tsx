@@ -1,4 +1,4 @@
-import EditarContrasena from '@/components/editpasswordROOT';
+import EditarContrasena from '@/components/GestionRoot/changepasswordROOT';
 
 
 export default function Page(){

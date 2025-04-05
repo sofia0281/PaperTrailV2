@@ -1,5 +1,5 @@
 // app/routes/editadmin/[id]/page.tsx
-import EditAdmin from '@/components/editadmin';
+import EditAdmin from '@/components/GestionRoot/editadmin';
 
 export default async function EditAdminPage({
   params

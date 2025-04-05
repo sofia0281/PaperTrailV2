@@ -1,4 +1,4 @@
-import GestionRoot from "@/components/gestionroot";
+import GestionRoot from "@/components/GestionRoot/gestionroot";
 
 
 export default function Page(){

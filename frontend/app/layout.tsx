@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Urbanist } from "next/font/google"; // Importa la fuente Urbanist
 import "./globals.css";
-import Navbar from "@/components/navbar";
-import Footer from "@/components/footer";
+import Navbar from "@/components/General/navbar";
+import Footer from "@/components/General/footer";
 import { AuthProvider } from '@/context/AuthContext';
 // Importa la fuente Urbanist
 const urbanist = Urbanist({

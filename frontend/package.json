@@ -9,12 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "framer-motion": "^12.6.2",
+    "countries-cities": "^0.0.11",
+    "countries-list": "^3.1.1",
+    "country-list-json": "^1.1.0",
+    "country-state-city": "^3.2.1",
+    "framer-motion": "^12.6.3",
     "lucide-react": "^0.483.0",
     "next": "15.2.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwindcss-animate": "^1.0.7"
+    "react-icons": "^5.5.0",
+    "tailwindcss-animate": "^1.0.7",
+    "world-countries": "^5.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
