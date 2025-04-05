@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createUser} from "@/services/userCRUD";
+import { createUsuario} from "@/services/usuarioCRUD";
 import { XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -40,7 +41,7 @@ const Register = () => {
       const selectedDate = new Date(value);
       const minDate = new Date("2006-01-01"); // Fecha mínima (1 de enero de 2006)
       
-      if (selectedDate > minDate) {
+      if (selectedDate >= minDate) {
         // Si la fecha seleccionada es posterior a 2006, mostrar error
         setErrorMessage("Debes tener al menos 18 años (nacido antes de 2006)");
         setTimeout(() => setErrorMessage(null), 3000);
@@ -91,7 +92,25 @@ const Register = () => {
           "role":null,
           "provider":"null"
         };
+        const createUsuarioData = {
+          "username":formData.usuario,
+          "password":formData.password,
+          "email":formData.email,
+          "nombre":formData.nombre,
+          "apellido":formData.apellido,
+          "cedula":formData.cedula,
+          "genero":formData.genero,
+          "fecha_nacimiento":formData.fechaNacimiento,
+          "lugar_nacimiento":formData.lugarNacimiento,
+          "TemaL_1":formData.temaLiterario1,
+          "TemaL_2":formData.temaLiterario2,
+          "direccion":formData.direccion,
+          "resetPasswordToken":"null",
+          "confirmationToken":"null",
+          "role": "Authenticated"
+        };
       const creado = await createUser(createUserData);
+      const creado2 = await createUsuario(createUsuarioData);
       //console.log('Usuario creado:', creado);
       setSuccessMessage("Usuario creado exitosamente.");
       setErrorMessage(null);
