@@ -128,7 +128,6 @@ const CreateBook = () => {
           // Para el campo autor, solo permitir letras y espacios
           formattedValue = value.slice(0,100)// Solo 255 caracteres
                                 .replace(/^\s+/, "")// Eliminar espacios al principio
-                                .replace(/[^a-zA-Z]/g, "");
         }
         if(name === "resena") {
           formattedValue = value.slice(0,255)// Solo 1000 caracteres
