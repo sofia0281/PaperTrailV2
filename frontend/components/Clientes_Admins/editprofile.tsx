@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import withAuth from '@/components/Auth/withAuth';
 import { fetchUserData, putUserData } from "@/services/userCRUD";
+import { putUsuarioData } from "@/services/usuarioCRUD";
 import { useRouter } from "next/navigation";
 import { XCircle } from "lucide-react";
 import { motion } from "framer-motion";
@@ -143,6 +144,7 @@ const EditProfile = () => {
       };
 
       const actualizado = await putUserData(updatedUserData);
+      const actualizado2 = await putUsuarioData(updatedUserData)
       console.log("Usuario actualizado:", actualizado);
 
       setMessage("Perfil editado correctamente");

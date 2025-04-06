@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createUser} from "@/services/userCRUD";
+import {createUsuario} from "@/services/usuarioCRUD";
 import { motion } from "framer-motion";
 import { AutocompleteLocation } from "@/components/ui/register/AutocompleteLocation"; // Importación directa desde la misma carpeta
 // Importación directa desde la misma carpeta
@@ -261,12 +262,14 @@ const Register = () => {
           "resetPasswordToken":"null",
           "confirmationToken":"null",
           "confirmed":true,
-          "blocked":true,
+          "blocked":false,
           "role":null,
           "provider":"null"
         };
       const creado = await createUser(createUserData);
-      //console.log('Usuario creado:', creado);
+      console.log('Usuario creado:', creado);
+      const creado2 = await createUsuario(createUserData);
+      console.log('Usuario creado:', creado2);
       setSuccessMessage("Usuario creado exitosamente.");
       setErrorMessage(null);
       setTimeout(() => {

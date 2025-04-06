@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createAdmin } from '@/services/adminCRUD';
+import { createUsuarioAdmin } from '@/services/usuarioAdminCRUD';
 import { motion } from "framer-motion";
 import { XCircle } from "lucide-react";
 import withAuthROOT from '@/components/Auth/withAuthROOT';
@@ -84,8 +85,8 @@ const CreateAdmin = () => {
           "role":null,
           "provider":null
         };
-      const creado = await createAdmin(createAdminData);
-      console.log('Usuario creado:', creado);
+      await createAdmin(createAdminData);
+      await createUsuarioAdmin(createAdminData);
       
       setSuccessMessage("Usuario creado exitosamente.");
       setErrorMessage(null);

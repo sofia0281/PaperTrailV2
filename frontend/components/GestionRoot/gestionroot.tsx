@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import withAuthROOT from '@/components/Auth/withAuthROOT';
 import { getAdminsData, deleteAdmin } from '@/services/adminCRUD';
+import {deleteNameAdmin } from '@/services/usuarioAdminCRUD';
 import { motion } from "framer-motion";
 import { XCircle } from "lucide-react";
+import { NextDataPathnameNormalizer } from "next/dist/server/normalizers/request/next-data";
 
 interface Admin {
   id: number;
@@ -23,6 +25,7 @@ const GestionRoot = () => {
   const [error, setError] = useState<string | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState<number | null>(null);
+  const [selectedNameAdmin,setSelectedNameAdmin] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
 
@@ -50,6 +53,7 @@ const GestionRoot = () => {
     if (selectedAdmin === null) return;
     try {
       await deleteAdmin(selectedAdmin);
+      await deleteNameAdmin(selectedNameAdmin);
       setAdmins(prev => prev.filter(admin => admin.id !== selectedAdmin));
       setMessage("Administrador eliminado exitosamente");
       setTimeout(() => setMessage(null), 3000);
@@ -121,7 +125,7 @@ const GestionRoot = () => {
               <div className="flex space-x-2">
                 <button 
                   className="text-red-600 border border-red-600 px-3 py-1 rounded-md hover:bg-red-50 transition-colors"
-                  onClick={() => { setShowConfirm(true); setSelectedAdmin(admin.id); }}
+                  onClick={() => { setShowConfirm(true); setSelectedAdmin(admin.id); setSelectedNameAdmin(admin.username)}}
                 >
                   ELIMINAR
                 </button>

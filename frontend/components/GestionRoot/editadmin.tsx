@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import withAuthROOT from '@/components/Auth/withAuthROOT';
 import { getAdminData, putAdminData } from "@/services/adminCRUD";
+import { putUsuarioAdminData } from '@/services/usuarioAdminCRUD';
 import { motion } from "framer-motion";
 import { XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -86,6 +87,7 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
         // "password": formData.password 
       };
       await putAdminData(updatedUserData, adminID);
+      await putUsuarioAdminData(updatedUserData);
       setMessage("Administrador editado correctamente");
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {

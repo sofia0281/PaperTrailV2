@@ -11,11 +11,14 @@ type UserType = {
 const Navbar = () => {
     {/* Estado de menú plegable */}
     const [user, setUser] = useState<UserType>(null);
-    const [isClient, setIsClient] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const role = localStorage.getItem('role');
+    const userString = localStorage.getItem("user");
+    const userName = userString ? JSON.parse(userString) : null;
+    const user_Name = userName?.username;
+
     console.log(role)
 
     // Cerrar el menú al hacer clic fuera
@@ -75,7 +78,7 @@ const Navbar = () => {
                             onClick={() => router.push("/routes/editpasswordadmin")}
                         /> */}
                     <div className="relative flex items-center space-x-2 transition-transform duration-300 transform hover:scale-105 cursor-pointer" ref={menuRef}>
-                        <span>Hola, {role && role.toString().replace(/"/g, '')}</span>
+                        <span>Hola, {user_Name}</span>
                         <Settings
                             strokeWidth={1}
                             className="cursor-pointer"
@@ -115,7 +118,7 @@ const Navbar = () => {
 
                     {/* Ícono de usuario con menú desplegable */}
                     <div className="relative flex items-center space-x-2 transition-transform duration-300 transform hover:scale-105 cursor-pointer" ref={menuRef}>
-                        <span>Hola, {role && role.toString().replace(/"/g, '')}</span>
+                        <span>Hola, {user_Name}</span>
                         <User 
                             strokeWidth={1} 
                             className="cursor-pointer" 
@@ -154,7 +157,7 @@ const Navbar = () => {
                     <>
                 <div className="relative flex items-center space-x-2 transition-transform duration-300 transform hover:scale-105 cursor-pointer">
                     {/* Íconos de usuario y carrito LOGUEADO*/}
-                    <span>Hola, {role && role.toString().replace(/"/g, '')}</span>
+                    <span>Hola, {user_Name}</span>
                     <ShoppingCart 
                                 strokeWidth={1} 
                                 className="cursor-pointer" 
