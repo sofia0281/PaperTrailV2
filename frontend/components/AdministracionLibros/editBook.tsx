@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const CreateBook = () => {
+const EditBook = () => {
   const router = useRouter();
 
   // Función para formatear el precio
@@ -156,7 +156,7 @@ const CreateBook = () => {
     <div className="w-full max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       {/* Encabezado */}
       <div className="bg-orange-600 text-white p-9 rounded-t-lg relative">
-        <h1 className="text-2xl font-bold">CREAR LIBRO</h1>
+        <h1 className="text-2xl font-bold">EDITAR LIBRO</h1>
         <div className="absolute top-10 right-5 transform translate-x-0 bg-gray-200 p-2 rounded-md shadow-md mb-10
                         sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:right-auto">
             <img 
@@ -168,7 +168,7 @@ const CreateBook = () => {
       </div>
 
       {/* Formulario */}
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 p-6">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16 p-6">
         <div>
           <label className="block text-sm font-medium">ISSN</label>
           <input 
@@ -311,7 +311,7 @@ const CreateBook = () => {
         </div>
 
         {/* Botones */}
-        <div className="col-span-2 flex justify-center gap-4 mt-6">
+        <div className="col-span-2 flex justify-end gap-4 mt-6">
           <button
             type="button"
             onClick={() => router.push("/routes/adminbooks")}
@@ -323,7 +323,7 @@ const CreateBook = () => {
             type="submit"
             className="bg-orange-500 text-white px-6 py-2 rounded-md cursor-pointer transition-transform duration-300 transform hover:scale-105"
           >
-            Crear Libro
+            Guardar cambios
           </button>
         </div>
       </form>
@@ -331,4 +331,4 @@ const CreateBook = () => {
   );
 };
 
-export default CreateBook;
+export default EditBook;
