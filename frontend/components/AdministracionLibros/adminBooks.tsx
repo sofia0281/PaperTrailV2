@@ -52,7 +52,9 @@ const ManageBooks = () => {
                 <td className="py-2 px-4">{book.quantity}</td>
                 <td className="py-2 px-4">{book.status}</td>
                 <td className="py-2 px-4 text-center">
-                  <span className="text-orange-500 cursor-pointer hover:underline">Editar</span>
+                  <span className="text-orange-500 cursor-pointer hover:underline"
+                  onClick={() => router.push("/routes/editbook")}
+                  >Editar</span>
                   <Trash2 size={18} className="inline ml-3 text-red-500 cursor-pointer hover:text-red-700" />
                 </td>
               </tr>

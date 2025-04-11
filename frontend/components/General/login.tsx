@@ -133,9 +133,15 @@ const Login = () => {
           // Notificar al Navbar
           window.dispatchEvent(new Event("userLoggedIn"));
         
-          if (userRole === "Admin" || userRole === "Authenticated") {
+          if (userRole === "Admin")
+          {
+            router.push("/routes/adminbooks");
+          }
+          else if(userRole === "Authenticated") 
+            {
             router.push("/routes/loginHome");
-          } else if (userRole === "ROOT") {
+          } 
+          else if (userRole === "ROOT") {
             router.push("/routes/gestionroot");
           }
         }

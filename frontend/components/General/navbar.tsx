@@ -99,11 +99,15 @@ const Navbar = () => {
                 /> */}
             <div className="relative flex items-center" ref={menuRef}>
                 <span className="transition-transform duration-300 transform hover:scale-105">Hola, {userName}</span>
-                <Settings
+
+                <div
+                    title="Perfil"
+                    className="transition-transform duration-300 transform hover:scale-110 cursor-pointer ml-1"
+                    onClick={() => setMenuOpen(!menuOpen)}>
+                <User
                     strokeWidth={1}
-                    className="transition-transform duration-300 transform hover:scale-110 cursor-pointer"
-                    onClick={() => setMenuOpen(!menuOpen)}
-                />
+                /> 
+                </div> 
                 {/* Menú desplegable */}
                 {menuOpen && (
                             <div className="absolute right-0 mt-35 w-52 bg-[#5FAEC9] text-white shadow-lg rounded-lg overflow-hidden z-50">
@@ -139,11 +143,24 @@ const Navbar = () => {
             {/* Ícono de usuario con menú desplegable */}
             <div className="relative flex items-center" ref={menuRef}>
                 <span className="transition-transform duration-300 transform hover:scale-105">Hola, {userName}</span>
-                <User 
-                    strokeWidth={1} 
-                    className="transition-transform duration-300 transform hover:scale-110 ml-2 cursor-pointer" 
-                    onClick={() => setMenuOpen(!menuOpen)} 
-                />
+                <div
+                    title="Administración de libros"
+                    className="transition-transform duration-300 transform hover:scale-110 cursor-pointer ml-1"
+                    onClick={() => router.push("/routes/adminbooks") }>
+                <Settings
+                    strokeWidth={1}
+                /> 
+                </div>
+                <div
+                    title="Perfil"
+                    className="transition-transform duration-300 transform hover:scale-110 cursor-pointer ml-1"
+                    onClick={() => setMenuOpen(!menuOpen)}>
+                <User
+                    strokeWidth={1}
+                /> 
+                </div>  
+                     
+
                 {/* Menú desplegable */}
                 {menuOpen && (
                         <div className="absolute right-0 mt-35 w-52 bg-[#5FAEC9] text-white shadow-lg rounded-lg overflow-hidden z-50">
@@ -178,19 +195,25 @@ const Navbar = () => {
         <div className="relative flex items-center ">
             {/* Íconos de usuario y carrito LOGUEADO*/}
             <span className="transition-transform duration-300 transform hover:scale-105" >Hola, {userName}</span>
-            <ShoppingCart 
-                        strokeWidth={1} 
-                        className="transition-transform duration-300 transform hover:scale-110 cursor-pointer" 
-                        // onClick={() => router.push("/cart")} 
-                    />
+            <div
+                    title="Perfil"
+                    className="transition-transform duration-300 transform hover:scale-110 cursor-pointer ml-1"
+                    onClick={() => router.push("/routes/cart")}>
+                <ShoppingCart
+                    strokeWidth={1}
+                /> 
+                </div> 
 
             {/* Ícono de usuario con menú desplegable */}
             <div className="relative" ref={menuRef}>
-                <User 
-                    strokeWidth={1} 
-                    className="transition-transform duration-300 transform hover:scale-110 cursor-pointer ml-2" 
-                    onClick={() => setMenuOpen(!menuOpen)} 
-                />
+                <div
+                        title="Perfil"
+                        className="transition-transform duration-300 transform hover:scale-110 cursor-pointer ml-1"
+                        onClick={() => setMenuOpen(!menuOpen)}>
+                    <User
+                        strokeWidth={1}
+                    /> 
+                </div> 
                 {/* Menú desplegable */}
                 {menuOpen && (
                         <div className="absolute right-0 mt-8 w-52 bg-[#5FAEC9] text-white shadow-lg rounded-lg overflow-hidden z-50">

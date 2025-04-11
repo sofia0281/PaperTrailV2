@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -156,13 +157,15 @@ const CreateBook = () => {
     <div className="w-full max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       {/* Encabezado */}
       <div className="bg-orange-600 text-white p-9 rounded-t-lg relative">
-        <h1 className="text-2xl font-bold">CREAR LIBRO</h1>
+        <h1 className="text-2xl font-bold">EDITAR LIBRO</h1>
         <div className="absolute top-10 right-5 transform translate-x-0 bg-gray-200 p-2 rounded-md shadow-md mb-10
                         sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:right-auto">
-            <img 
-            src="https://media.istockphoto.com/id/1023006620/es/vector/pila-de-libros-ilustraci%C3%B3n-vectorial-plana-simple-libros-de-tapa-dura-con-cubiertas-de.jpg?s=612x612&w=0&k=20&c=VaCciK2-WVgwpDtFEU6cTY1XEQ0B5wp1T-4sgqu1XlA=" 
-            alt="Imagen de ejemplo"
-            className="w-full max-w-[100px] h-auto mx-auto"
+            <Image 
+              src="https://media.istockphoto.com/id/1023006620/es/vector/pila-de-libros-ilustraci%C3%B3n-vectorial-plana-simple-libros-de-tapa-dura-con-cubiertas-de.jpg?s=612x612&w=0&k=20&c=VaCciK2-WVgwpDtFEU6cTY1XEQ0B5wp1T-4sgqu1XlA=" 
+              alt="Imagen de ejemplo"
+              width={100}
+              height={100}
+              className="mx-auto"
             />
         </div>
       </div>
@@ -311,7 +314,7 @@ const CreateBook = () => {
         </div>
 
         {/* Botones */}
-        <div className="col-span-2 flex justify-center gap-4 mt-6">
+        <div className="col-span-2 flex justify-end gap-4 mt-6">
           <button
             type="button"
             onClick={() => router.push("/routes/adminbooks")}
@@ -323,7 +326,7 @@ const CreateBook = () => {
             type="submit"
             className="bg-orange-500 text-white px-6 py-2 rounded-md cursor-pointer transition-transform duration-300 transform hover:scale-105"
           >
-            Crear Libro
+            Editar Libro
           </button>
         </div>
       </form>
