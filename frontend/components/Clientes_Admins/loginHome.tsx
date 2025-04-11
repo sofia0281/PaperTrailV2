@@ -51,11 +51,12 @@ const LoginHome = () => {
       {/* Sección de destacados */}
       <section className="flex justify-center items-center py-8">
       <div className="w-3/4 h-[400px] rounded-lg overflow-hidden">
-        <img 
+        <Image
           src="/img/bannerPaperTrail.webp" 
           alt="Banner"
           className="w-full h-full object-cover"
-          style={{ objectPosition: "center 20%" }}
+          width={1200}
+          height={400}
         />
       </div>
     </section>
