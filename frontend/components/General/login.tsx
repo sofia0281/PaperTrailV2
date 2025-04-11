@@ -119,9 +119,30 @@ const Login = () => {
         localStorage.setItem("role", JSON.stringify(userRole)); // Guardar el rol en localStorage
         setAuthRole(userRole);
 
-
-    
+        if (data.jwt && data.user) {
+          const userData = await fetchUserData();
+          const userRole = userData.role?.name;
+        
+          localStorage.setItem("authToken", data.jwt);
+          localStorage.setItem("user", JSON.stringify({ id: data.user.id, username: data.user.username }));
+          localStorage.setItem("role", JSON.stringify(userRole));
+        
+          setAuthToken(data.jwt);
+          setAuthRole(userRole);
+        
+          // Notificar al Navbar
+          window.dispatchEvent(new Event("userLoggedIn"));
+        
+          if (userRole === "Admin" || userRole === "Authenticated") {
+            router.push("/routes/loginHome");
+          } else if (userRole === "ROOT") {
+            router.push("/routes/gestionroot");
+          }
+        }
+        
+        
         // Luego redirige después de un pequeño retraso (100ms)
+        {/*}
         setTimeout(() => {
           if (userRole === "Admin") {
             router.push("/routes/loginHome");
@@ -131,6 +152,8 @@ const Login = () => {
             router.push("/routes/gestionroot");
           }
         }, 100);
+        */}
+
       } else {
         console.error("No se recibieron datos del usuario en la respuesta.");
         setMessage("Usuario no encontrado o credenciales incorrectas.");

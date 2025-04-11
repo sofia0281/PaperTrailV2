@@ -14,11 +14,31 @@ const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
-    const role = localStorage.getItem('role');
-    const userString = localStorage.getItem("user");
-    const userName = userString ? JSON.parse(userString) : null;
-    const user_Name = userName?.username;
 
+    const [role, setRole] = useState<string | null>(null);
+    const [userName, setUserName] = useState<string | null>(null);
+
+    useEffect(() => {
+        const loadUserData = () => {
+          const storedRole = localStorage.getItem('role');
+          const userString = localStorage.getItem("user");
+          const userObj = userString ? JSON.parse(userString) : null;
+      
+          setRole(storedRole?.replace(/"/g, '') || null);
+          setUserName(userObj?.username || null);
+        };
+      
+        loadUserData();
+      
+        // Escucha el evento de login
+        window.addEventListener("userLoggedIn", loadUserData);
+      
+        return () => {
+          window.removeEventListener("userLoggedIn", loadUserData);
+        };
+      }, []);
+      
+    
     console.log(role)
 
     // Cerrar el menú al hacer clic fuera
@@ -67,7 +87,7 @@ const Navbar = () => {
             {/* Íconos de usuario y carrito/ Root*/}
             <div className="flex items-center space-x-4 text-white">
                 
-                {role && role.toString().toUpperCase().replace(/"/g, '') === "ROOT" ? (
+                {role === "ROOT" ? (
                     <>
                     {/* Íconos de usuario y carrito ROOT*/}
                     {/* <span className="font-bold uppercase">ROOT</span>
@@ -78,7 +98,7 @@ const Navbar = () => {
                             onClick={() => router.push("/routes/editpasswordadmin")}
                         /> */}
                     <div className="relative flex items-center space-x-2 transition-transform duration-300 transform hover:scale-105 cursor-pointer" ref={menuRef}>
-                        <span>Hola, {user_Name}</span>
+                        <span>Hola, {userName}</span>
                         <Settings
                             strokeWidth={1}
                             className="cursor-pointer"
@@ -113,12 +133,12 @@ const Navbar = () => {
                                 )}
                     </div>
                     </>
-                ) : (role && role.toString().replace(/"/g, '') === "Admin") ? (
+                ) : (role === "Admin") ? (
                     <>
 
                     {/* Ícono de usuario con menú desplegable */}
                     <div className="relative flex items-center space-x-2 transition-transform duration-300 transform hover:scale-105 cursor-pointer" ref={menuRef}>
-                        <span>Hola, {user_Name}</span>
+                        <span>Hola, {userName}</span>
                         <User 
                             strokeWidth={1} 
                             className="cursor-pointer" 
@@ -153,11 +173,11 @@ const Navbar = () => {
                             )}
                     </div>
                     </>
-                ):(role && role.toString().replace(/"/g, '') === "Authenticated") ? (
+                ):(role  === "Authenticated") ? (
                     <>
                 <div className="relative flex items-center space-x-2 transition-transform duration-300 transform hover:scale-105 cursor-pointer">
                     {/* Íconos de usuario y carrito LOGUEADO*/}
-                    <span>Hola, {user_Name}</span>
+                    <span>Hola, {userName}</span>
                     <ShoppingCart 
                                 strokeWidth={1} 
                                 className="cursor-pointer" 
