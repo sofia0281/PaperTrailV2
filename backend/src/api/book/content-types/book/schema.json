@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "books",
+  "info": {
+    "singularName": "book",
+    "pluralName": "books",
+    "displayName": "BOOK",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "price": {
+      "type": "integer"
+    },
+    "cover": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "author": {
+      "type": "string"
+    },
+    "condition": {
+      "type": "string"
+    },
+    "fecha_publicacion": {
+      "type": "date"
+    },
+    "genero": {
+      "type": "string"
+    },
+    "numero_paginas": {
+      "type": "string"
+    },
+    "editorial": {
+      "type": "string"
+    },
+    "ISBN_ISSN": {
+      "type": "string",
+      "unique": true,
+      "required": true
+    },
+    "idioma": {
+      "type": "string"
+    },
+    "idLibro": {
+      "type": "uid",
+      "targetField": "ISBN_ISSN"
+    },
+    "cantidad": {
+      "type": "integer"
+    }
+  }
+}
