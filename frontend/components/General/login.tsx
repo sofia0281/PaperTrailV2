@@ -232,7 +232,8 @@ const Login = () => {
             Ingresar
           </button>
 
-          <p className="text-xs md:text-sm text-gray-600 text-center mt-2 transition-transform duration-300 transform hover:scale-105 cursor-pointer">
+          <p className="text-xs md:text-sm text-gray-600 text-center mt-2 transition-transform duration-300 transform hover:scale-105 cursor-pointer"
+          onClick={() => router.push("/routes/changepassword")}>	
             ¿Olvidaste tu contraseña?
           </p>
 
