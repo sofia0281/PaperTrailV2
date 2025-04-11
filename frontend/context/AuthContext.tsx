@@ -1,5 +1,6 @@
 // context/AuthContext.js
 "use client";
+import Loader from '@/components/ui/Loader';
 import React, { useState, useEffect, useContext } from 'react';
 
 export const AuthContext = React.createContext();
@@ -43,7 +44,11 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     if (loading) {
-        return <div>Cargando...</div>; // Mostrar un indicador de carga
+        return (
+            <div>
+                <Loader />
+            </div>
+        ) 
     }
 
     return (
