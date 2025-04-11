@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
     if (loading) {
         return (
             <div>
-                <Loader />
+                <p>Loading...</p>
             </div>
         ) 
     }
