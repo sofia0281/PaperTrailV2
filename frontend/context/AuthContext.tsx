@@ -1,6 +1,5 @@
 // context/AuthContext.js
 "use client";
-import Loader from '@/components/ui/Loader';
 import React, { useState, useEffect, useContext } from 'react';
 
 export const AuthContext = React.createContext();

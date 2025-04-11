@@ -97,11 +97,11 @@ const Navbar = () => {
                     // aqui no sé qué poner
                     onClick={() => router.push("/routes/editpasswordadmin")}
                 /> */}
-            <div className="relative flex items-center transition-transform duration-300 transform hover:scale-105 cursor-pointer" ref={menuRef}>
-                <span>Hola, {userName}</span>
+            <div className="relative flex items-center" ref={menuRef}>
+                <span className="transition-transform duration-300 transform hover:scale-105">Hola, {userName}</span>
                 <Settings
                     strokeWidth={1}
-                    className="cursor-pointer"
+                    className="transition-transform duration-300 transform hover:scale-110 cursor-pointer"
                     onClick={() => setMenuOpen(!menuOpen)}
                 />
                 {/* Menú desplegable */}
@@ -137,11 +137,11 @@ const Navbar = () => {
             <>
 
             {/* Ícono de usuario con menú desplegable */}
-            <div className="relative flex items-center transition-transform duration-300 transform hover:scale-105 cursor-pointer" ref={menuRef}>
-                <span>Hola, {userName}</span>
+            <div className="relative flex items-center" ref={menuRef}>
+                <span className="transition-transform duration-300 transform hover:scale-105">Hola, {userName}</span>
                 <User 
                     strokeWidth={1} 
-                    className="cursor-pointer" 
+                    className="transition-transform duration-300 transform hover:scale-110 ml-2 cursor-pointer" 
                     onClick={() => setMenuOpen(!menuOpen)} 
                 />
                 {/* Menú desplegable */}
@@ -175,12 +175,12 @@ const Navbar = () => {
             </>
         ):(role  === "Authenticated") ? (
             <>
-        <div className="relative flex items-center transition-transform duration-300 transform hover:scale-105 cursor-pointer">
+        <div className="relative flex items-center ">
             {/* Íconos de usuario y carrito LOGUEADO*/}
-            <span>Hola, {userName}</span>
+            <span className="transition-transform duration-300 transform hover:scale-105" >Hola, {userName}</span>
             <ShoppingCart 
                         strokeWidth={1} 
-                        className="cursor-pointer" 
+                        className="transition-transform duration-300 transform hover:scale-110 cursor-pointer" 
                         // onClick={() => router.push("/cart")} 
                     />
 
@@ -188,12 +188,12 @@ const Navbar = () => {
             <div className="relative" ref={menuRef}>
                 <User 
                     strokeWidth={1} 
-                    className="cursor-pointer" 
+                    className="transition-transform duration-300 transform hover:scale-110 cursor-pointer ml-2" 
                     onClick={() => setMenuOpen(!menuOpen)} 
                 />
                 {/* Menú desplegable */}
                 {menuOpen && (
-                        <div className="absolute right-0 mt-35 w-52 bg-[#5FAEC9] text-white shadow-lg rounded-lg overflow-hidden z-50">
+                        <div className="absolute right-0 mt-8 w-52 bg-[#5FAEC9] text-white shadow-lg rounded-lg overflow-hidden z-50">
                             <button
                                 className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
                                 onClick={() => router.push("/routes/editprofile")}
