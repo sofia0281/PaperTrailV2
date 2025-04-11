@@ -165,7 +165,7 @@ const EditProfile = () => {
       <h2 className="text-2xl font-bold text-gray-700 mb-4">Hola, {user_Name} </h2>
       <p className="text-xs text-gray-400 text-center mt-4">Los campos con (<span className="text-red-500">*</span>) son editables.</p>
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
           {/* Sección Izquierda */}
           <div className="space-y-4">
             <div>
@@ -196,7 +196,7 @@ const EditProfile = () => {
                 type="text"
                 name="cedula"
                 value={formData.cedula}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"               
                 readOnly
                 />
             </div>
@@ -221,7 +221,7 @@ const EditProfile = () => {
                 type="text"
                 name="lugarNacimiento"
                 value={formData.lugarNacimiento}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"
                 readOnly               />
             </div>
             <div>
@@ -231,7 +231,7 @@ const EditProfile = () => {
                 type="date"
                 name="nacimiento"
                 value={formData.nacimiento}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"
                 readOnly               />
             </div>
           </div>
@@ -255,7 +255,7 @@ const EditProfile = () => {
                 type="email"
                 name="email"
                 value={formData.email}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"
                 readOnly               />
             </div>
             <div>
@@ -265,7 +265,7 @@ const EditProfile = () => {
                 type="text"
                 name="usuario"
                 value={formData.usuario}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"
                 readOnly               />
             </div>
             <div>
@@ -402,7 +402,7 @@ const EditProfile = () => {
         </div> */}
 
         {/* Botones */}
-        <div className="flex justify-between w-full mt-6">
+        <div className="flex justify-end w-full gap-4 mt-6">
           {/* sacar este boton de aqui para poder cancelar la edición del usuario */}
           <button 
           type="button" 
