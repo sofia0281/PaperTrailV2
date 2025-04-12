@@ -163,7 +163,7 @@ const CreateBook = () => {
       </div>
 
       {/* Formulario */}
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 p-6">
+      <form onSubmit={handleSubmit} className="grid grid-cols-2 md:grid-cols-2 gap-6 mt-12 p-2">
         <div>
           <label className="block text-sm font-medium">ISSN</label>
           <input 
@@ -200,7 +200,7 @@ const CreateBook = () => {
         </div>
         <div>
           <label className="block text-sm font-medium">Estado</label>
-          <div className="flex gap-4 mt-2">
+          <div className="flex gap-1 mt-2">
             <label className="flex items-center">
               <input
                 required 
