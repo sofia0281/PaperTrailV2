@@ -205,8 +205,7 @@ const Register = () => {
       setErrorMessage("Por favor, ingresa un correo válido.");
       setTimeout(() => setErrorMessage(null), 3000);
       return;
-     }
-     
+    }
     // Validar la longitud de la contraseña
     if (formData.password.length < 8) {
       setErrorMessage("La contraseña debe tener al menos 8 caracteres.");
@@ -266,23 +265,66 @@ const Register = () => {
           "role":null,
           "provider":"null"
         };
-      const creado = await createUser(createUserData);
-      console.log('Usuario creado:', creado);
-      const creado2 = await createUsuario(createUserData);
-      console.log('Usuario creado:', creado2);
-      setSuccessMessage("Usuario creado exitosamente.");
-      setErrorMessage(null);
-      setTimeout(() => {
-        setSuccessMessage(null);
-        router.push("/");
-      }, 3000);
+
+        // const creado = await createUser(createUserData);
+        // console.log('Usuario creado:', creado);
+        const creado2 = await createUsuario(createUserData);
+        console.log('Usuario creado:', creado2);
+        
+        try {
+          const creadoUser = await createUser(createUserData);
+          console.log('Usuario creado en tabla user:', creadoUser);
+          
+          setSuccessMessage("Registro completado exitosamente. Pro favor, inicia sesión");
+          setErrorMessage(null);
+          setTimeout(() => {
+              setSuccessMessage(null);
+              router.push("/routes/login");
+          }, 3000);
+          
+      } catch (userError) {
+          console.error('Error al crear en tabla user:', userError);
+          
+          setSuccessMessage("Registro completado con observaciones. Por favor inicia sesión.");
+          setErrorMessage(null);
+          setTimeout(() => {
+              setSuccessMessage(null);
+              router.push("/routes/login");
+          }, 3000);
+      }
     } catch (error) {
-    //console.error('Error:', error.message);
-      setErrorMessage("Error al crear usuario.");
-      setSuccessMessage(null);
-      setTimeout(() => setErrorMessage(null), 3000);
+      // console.error('Error completo:', error);
+      const errorMessages = error.errors.map(errorItem => {
+        const field = errorItem.path[0];
+        if (field === "username")
+        {
+          return `Este nombre de usuario ya se encuentra registrado`;
+        }
+        else if (field === "email"){
+          return `Este correo electrónico ya se encuentra registrado`;
+        }
+        else if (field === "cedula"){
+          return `Esta cédula ya se encuentra registrada`;
+        }
+        return `Error en el  campo ${field}. Error al registrar usuario`;
+        
+      });
+      if (error.status === 400 ) {
+        const fullMessage = errorMessages.join('. ');
+        setErrorMessage(fullMessage);
+        setSuccessMessage(null);
+  	    setTimeout(() => {
+          setErrorMessage(null);
+          router.push("/routes/login");
+        }, 3000);
+      } else {
+        const fullMessage = errorMessages.join('. ');
+        setErrorMessage(fullMessage);
+        setSuccessMessage(null);
+        setTimeout(() => setErrorMessage(null), 3000);
+      }
     }
-  };
+};
   return (
     
     <div className="flex flex-col md:flex-row min-h-screen">

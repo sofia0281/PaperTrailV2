@@ -472,6 +472,7 @@ export interface ApiUsuarioUsuario extends Struct.CollectionTypeSchema {
     Direccion: Schema.Attribute.String & Schema.Attribute.Required;
     email: Schema.Attribute.Email &
       Schema.Attribute.Required &
+      Schema.Attribute.Unique &
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
@@ -986,6 +987,7 @@ export interface PluginUsersPermissionsUser
     Direccion: Schema.Attribute.String & Schema.Attribute.Required;
     email: Schema.Attribute.Email &
       Schema.Attribute.Required &
+      Schema.Attribute.Unique &
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;

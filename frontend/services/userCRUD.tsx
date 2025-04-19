@@ -132,14 +132,22 @@ export const createUser = async (userData) => {
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Error detallado de Strapi:', errorData);
-        throw new Error('Error al crear el usuario');
+        
+        // Lanzar un error con más información
+        throw {
+          status: response.status,
+          message: errorData.message,
+          errorData
+        };
       }
   
       const data = await response.json();
-      console.log('Usuario creado en Strapi:', data);
+      // console.log('Usuario creado en Strapi2:', data);
       return data;
     } catch (error) {
-      console.error('Error al enviar datos a Strapi:', error.message);
+      console.error('Error al enviar datos a Strapi2:', error.message);
       throw error;
     }
   };
+
+

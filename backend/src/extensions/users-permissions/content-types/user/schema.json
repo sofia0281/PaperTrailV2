@@ -15,14 +15,15 @@
     "username": {
       "type": "string",
       "minLength": 3,
-      "unique": true,
       "configurable": false,
+      "unique": true,
       "required": true
     },
     "email": {
       "type": "email",
       "minLength": 6,
       "configurable": false,
+      "unique": true,
       "required": true
     },
     "provider": {
