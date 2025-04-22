@@ -82,7 +82,7 @@ const Home = () => {
         <div className="text-center text-red-500 py-10">{error}</div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 px-6 py-6">
-          {books.map((book) => (
+          {books.slice(0,10).map((book) => (
             <CardBooks
               key={book.id}
               title={book.title}

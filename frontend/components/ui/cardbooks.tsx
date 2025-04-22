@@ -1,4 +1,5 @@
 "use client";
+import { MdAddShoppingCart } from "react-icons/md";
 
 interface BookProps {
   title: string;
@@ -39,11 +40,18 @@ const CardBooks = ({
         </p>
         <p className="text-xs text-gray-500">{condition}</p>
       </div>
+      <div className="Botones flex gap-2 mt-2">
+          {/* Botón ShoppingCart */}
+          <button className="cursor-pointer border border-orange-500 text-orange-500 text-xs px-2 py-1 rounded-md hover:bg-orange-500 hover:text-white transition-colors">
+            <MdAddShoppingCart/>
+          </button>
+          
+          {/* Botón Comprar ya */}
+          <button className="cursor-pointer bg-orange-500 text-white text-xs px-4 py-1 rounded-md hover:bg-orange-600 transition-colors w-full">
+            + Comprar ya
+          </button>
+        </div>
 
-      {/* Botón de compra */}
-      <button className="bg-orange-500 text-white text-xs px-2 py-1 mt-2 w-full rounded-md hover:bg-orange-600 transition-colors">
-        + Comprar ya
-      </button>
     </div>
   );
 };
