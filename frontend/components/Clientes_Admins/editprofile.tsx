@@ -23,6 +23,8 @@ const EditProfile = () => {
   const router = useRouter();
   const role = localStorage.getItem("role");
 
+
+  const [userId, setUserId] = useState<number | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -57,6 +59,7 @@ const EditProfile = () => {
     const loadUserData = async () => {
       const userData = await fetchUserData();
       if (userData) {
+        setUserId(userData.id);
         setFormData({
           nombre: userData.Nombre || "",
           apellido: userData.Apellido || "",
@@ -78,6 +81,67 @@ const EditProfile = () => {
 
     loadUserData();
   }, []);
+
+  const updatePassword = async (userId: number, newPassword: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_STRAPI_ADMIN_TOKEN}`
+        },
+        body: JSON.stringify({ password: newPassword }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        console.error("Error detallado:", data);
+        throw new Error(data.error?.message || "Error al actualizar contraseña");
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error completo:", error);
+      return false;
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (!userId) return;
+
+    // Validaciones
+    if (formData.passwordNueva && formData.passwordNueva.length < 8) {
+      setPasswordError("La nueva contraseña debe tener al menos 8 caracteres");
+      return;
+    }
+
+    if (formData.passwordNueva !== formData.passwordConfirmar) {
+      setPasswordError("Las contraseñas no coinciden");
+      return;
+    }
+
+    try {
+      const success = await updatePassword(userId, formData.passwordNueva);
+      if (success) {
+        setMessage("Contraseña actualizada correctamente");
+        setPasswordError(null);
+        // Limpiar campos
+        setFormData(prev => ({
+          ...prev,
+          passwordActual: "",
+          passwordNueva: "",
+          passwordConfirmar: ""
+        }));
+      } else {
+        setPasswordError("Error al actualizar la contraseña");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setPasswordError("Ocurrió un error al cambiar la contraseña");
+    }
+  };
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -117,7 +181,7 @@ const EditProfile = () => {
 
     setFormData((prevData) => ({
       ...prevData,
-      [name]: formattedValue,
+      [name]: value, formattedValue,
     }));
   };
 
@@ -141,6 +205,7 @@ const EditProfile = () => {
         TemaL_1: formData.preferencia1,
         TemaL_2: formData.preferencia2,
         Direccion: formData.direccion,
+        password: formData.passwordConfirmar,
       };
 
       const actualizado = await putUserData(updatedUserData);
@@ -368,6 +433,11 @@ const EditProfile = () => {
             </div>
           </div>
         </div>
+
+  
+
+
+  
 
         {/* Sección Cambio de Contraseña */}
         {<div className="mt-6 p-4 border rounded-md bg-gray-100">
