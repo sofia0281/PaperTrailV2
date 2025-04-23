@@ -370,7 +370,7 @@ const EditProfile = () => {
         </div>
 
         {/* Sección Cambio de Contraseña */}
-        {/* <div className="mt-6 p-4 border rounded-md bg-gray-100">
+        {<div className="mt-6 p-4 border rounded-md bg-gray-100">
           <h3 className="font-semibold">CAMBIO DE CONTRASEÑA</h3>
           <p className="text-xs text-gray-600 mb-2">
             Contraseña actual (déjalo en blanco para no cambiarla)
@@ -399,7 +399,7 @@ const EditProfile = () => {
             onChange={handleChange}
             className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
           />
-        </div> */}
+        </div> }
 
         {/* Botones */}
         <div className="flex justify-end w-full gap-4 mt-6">
