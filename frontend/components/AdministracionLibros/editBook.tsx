@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getBookByIdLibro, putBookData } from "@/services/bookCRUD";
 
-const EditBook = () => {
+const EditBook =  ({ bookID }: { bookID: string }) => {
   const router = useRouter();
 
   // Función para formatear el precio
@@ -12,6 +13,7 @@ const EditBook = () => {
     const intFormatted = Number(integer).toLocaleString("en-US");
     return decimal ? `${intFormatted}.${decimal}` : intFormatted;
   };
+
   // Función para limpiar el precio
   const cleanPrice = (value: string): string => {
     return value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, "$1");
@@ -19,13 +21,12 @@ const EditBook = () => {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
-    issn: "",
+    issn: "",  
     fechaPublicacion: "",
     titulo: "",
-    estado: "",
+    estado: "nuevo",
     autor: "",
-    precio: "",
-    resena: "",
+    precio:  "",
     editorial: "",
     numeroPaginas: "",
     genero: "",
@@ -54,14 +55,41 @@ const EditBook = () => {
   
     return numeros[7] === digitoControl;
   };
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Validar el ISSN
-    if (!validarISSN(formData.issn)) {
-      alert("El ISSN no es válido");
-      return;
-    }
-  }
+  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   // Validar el ISSN
+  //   if (!validarISSN(formData.issn)) {
+  //     alert("El ISSN no es válido");
+  //     return;
+  //   }
+  // }
+
+  const handleSubmit = async () => {
+      // setShowConfirm(false);
+      try {
+        const updatedBookData = {
+          "ISBN_ISSN": formData.issn,
+          "fecha_publicacion": formData.fechaPublicacion,
+          "title": formData.titulo,
+          "condition": formData.estado,
+          "author": formData.autor,
+          "price": formData.precio,
+          "editorial": formData.editorial,
+          "numero_paginas": formData.numeroPaginas,
+          "genero": formData.genero,
+          "idioma": formData.idioma ,
+          "cantidad": formData.cantidad,
+        }
+
+        await putAdminData(updatedBookData, adminID);
+        await putUsuarioAdminData(updatedUserData);
+        setMessage("Administrador editado correctamente");
+        setTimeout(() => setMessage(null), 3000);
+      } catch (error) {
+        console.error("Error:", error.message);
+        setMessage("Error al actualizar los datos");
+      }
+    };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
@@ -73,7 +101,6 @@ const EditBook = () => {
        name === "precio" ||
        name === "titulo" ||
        name === "autor" ||
-       name === "resena" ||
        name === "editorial" ||
        name === "genero" ||
        name === "idioma" ||
@@ -129,10 +156,10 @@ const EditBook = () => {
           formattedValue = value.slice(0,100)// Solo 255 caracteres
                                 .replace(/^\s+/, "")// Eliminar espacios al principio
         }
-        if(name === "resena") {
-          formattedValue = value.slice(0,255)// Solo 1000 caracteres
-                                .replace(/^\s+/, "");// Eliminar espacios al principio
-        }
+        // if(name === "resena") {
+        //   formattedValue = value.slice(0,255)// Solo 1000 caracteres
+        //                         .replace(/^\s+/, "");// Eliminar espacios al principio
+        // }
         if(name === "editorial") {
           formattedValue = value.slice(0,50)// Solo 255 caracteres
                                 .replace(/^\s+/, "");// Eliminar espacios al principio
@@ -152,6 +179,33 @@ const EditBook = () => {
       [name]: formattedValue,
     }));
   }
+
+
+    const loadBookData = async () => {
+        const bookData = await getBookByIdLibro(bookID);
+        console.log("Datos recibidos:", bookData);
+        if (bookData) {
+          setFormData({
+            issn: bookData.ISBN_ISSN ?? "",  
+            fechaPublicacion: bookData.fecha_publicacion?.split('T')[0] ?? "",
+            titulo: bookData.title ?? "",
+            estado: bookData.condition ?? "nuevo",
+            autor: bookData.author ?? "",
+            precio: bookData.price?.toString() ?? "",
+            editorial: bookData.editorial ?? "",
+            numeroPaginas: bookData.numero_paginas?.toString() ?? "",
+            genero: bookData.genero ?? "",
+            idioma: bookData.idioma ?? "",
+            cantidad: bookData.cantidad?.toString() ?? ""
+          });
+        }
+      };
+    // Asegúrate de que el useEffect tenga bookID como dependencia
+    useEffect(() => {
+      loadBookData();
+    }, [bookID]); 
+
+
   return (
     <div className="w-full max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       {/* Encabezado */}
@@ -206,25 +260,16 @@ const EditBook = () => {
         <div>
           <label className="block text-sm font-medium">Estado</label>
           <div className="flex gap-4 mt-2">
-            <label className="flex items-center">
-              <input
-                required 
-                type="radio" 
-                name="estado"
-                value="nuevo"
+          <select
+                required
+                name="preferencia1"
+                value={formData.estado}
                 onChange={handleChange}
-                checked={formData.estado === "nuevo"}
-                className="appearance-none w-4 h-4 border-2 border-orange-500 mr-1 rounded-full checked:bg-orange-500 checked:border-orange-500" /> Nuevo
-            </label>
-            <label className="flex items-center">
-              <input 
-                type="radio" 
-                name="estado" 
-                value="usado"
-                onChange={handleChange}
-                checked={formData.estado === "usado"}
-                className="appearance-none w-4 h-4 border-2 bg-white border-orange-500 mr-1 rounded-full checked:bg-orange-500 checked:border-orange-500" /> Usado
-            </label>
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+              >
+              <option value="Nuevo">Nuevo</option>
+              <option value="Usado"> Usado </option>
+            </select>
           </div>
         </div>
         <div>
@@ -247,7 +292,7 @@ const EditBook = () => {
           value={formData.precio}  
           className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Precio" />
         </div>
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium">Reseña</label>
           <input 
           required
@@ -256,7 +301,7 @@ const EditBook = () => {
           onChange={handleChange}
           value={formData.resena} 
           className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Reseña" />
-        </div>
+        </div> */}
         <div>
           <label className="block text-sm font-medium">Editorial</label>
           <input 

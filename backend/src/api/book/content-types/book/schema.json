@@ -54,12 +54,12 @@
     "idioma": {
       "type": "string"
     },
+    "cantidad": {
+      "type": "integer"
+    },
     "idLibro": {
       "type": "uid",
       "targetField": "ISBN_ISSN"
-    },
-    "cantidad": {
-      "type": "integer"
     }
   }
 }

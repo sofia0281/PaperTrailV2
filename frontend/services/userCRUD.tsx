@@ -13,8 +13,8 @@ export const loginUser = async (email, password) => {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            identifier: email, // Strapi espera "identifier" para el correo o nombre de usuario
-            password: password, // Contraseña en texto plano
+          identifier: email.trim(), // Añadido .trim() para limpieza
+          password: password.trim() // Añadido .trim() para limpieza
             }),
         });
 

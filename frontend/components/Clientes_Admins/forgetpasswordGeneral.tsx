@@ -3,45 +3,132 @@ import Image from "next/image";
 import { Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import emailjs from "@emailjs/browser";
-import { useRef, useState } from "react";
-import { getMaxListeners } from "events";
+import { useRef, useState, useEffect } from "react";
+
+// Componente Toast
+const Toast = ({ message, onClose }: { message: string; onClose: () => void }) => {
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            onClose();
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, [onClose]);
+
+    return (
+        <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in">
+            {message}
+        </div>
+    );
+};
+
+// Generador de contraseña aleatoria
+const generatePassword = (length = 15) => {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:',.<>?";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+        password += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    return password;
+};
 
 const EditPasswordGeneral = () => {
     const router = useRouter();
     const form = useRef<HTMLFormElement>(null);
     const [email, setEmail] = useState("");
+    const [toastMessage, setToastMessage] = useState("");
 
-    const sendEmail = (e: React.FormEvent) => {
+    // Verifica si el correo existe en Strapi
+    const checkEmailExists = async (email: string) => {
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users?filters[email][$eq]=${email}`
+            );
+            if (!response.ok) throw new Error("Error al verificar el correo");
+            const data = await response.json();
+            return data.length > 0 ? data[0] : null;
+        } catch (error) {
+            console.error("Error:", error);
+            return null;
+        }
+    };
+
+    
+    const updatePassword = async (userId: number, newPassword: string) => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    // Usa el token de administrador recién creado
+                    "Authorization": `Bearer ${process.env.NEXT_PUBLIC_STRAPI_ADMIN_TOKEN}`
+                },
+                body: JSON.stringify({ password: newPassword }),
+            });
+
+            const data = await response.json();
+            
+            if (!response.ok) {
+                console.error("Error detallado:", data);
+                throw new Error(data.error?.message || "Error al actualizar contraseña");
+            }
+
+            return true;
+        } catch (error) {
+            console.error("Error completo:", error);
+            return false;
+        }
+    };
+    const sendEmail = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!email) return alert("Por favor, ingresa un correo válido.");
+        if (!email) {
+            setToastMessage("Por favor, ingresa un correo válido.");
+            return;
+        }
 
+        const user = await checkEmailExists(email);
+
+        if (!user) {
+            setToastMessage("El correo no está registrado en nuestro sistema.");
+            return;
+        }
+
+        const newPassword = generatePassword();
+
+        const updated = await updatePassword(user.id, newPassword);
+
+        if (!updated) {
+            setToastMessage("Hubo un error actualizando la contraseña.");
+            return;
+        }
+
+        // Enviar nueva contraseña por email
         emailjs
-          .send(
-            "service_30fn5q3",          
-            "template_dzxw43h",         
-            {
-              name: "Usuario",
-              user_email: email,
-              message: "Has solicitado recuperar tu contraseña. Este mensaje confirma que tu solicitud fue registrada correctamente.",
-              time: new Date().toLocaleString(),
-            },
-            "d5YC1eFJ4pBINv06z"
-          )
-
-
+            .send(
+                "service_30fn5q3",
+                "template_dzxw43h",
+                {
+                    name: user.username || "Usuario",
+                    user_email: email,
+                    message: `Tu nueva contraseña es: ${newPassword}`,
+                    time: new Date().toLocaleString(),
+                },
+                "d5YC1eFJ4pBINv06z"
+            )
             .then(() => {
-                alert("Correo enviado correctamente.");
+                setToastMessage("Correo enviado con nueva contraseña.");
                 setEmail("");
             })
             .catch((error) => {
                 console.error("Error al enviar correo:", error);
-                alert("Error al enviar el correo. Inténtalo de nuevo.");
+                setToastMessage("Error al enviar el correo. Inténtalo de nuevo.");
             });
     };
 
     return (
         <div className="flex flex-col md:flex-row min-h-screen">
+            {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage("")} />}
+
             {/* Izquierda */}
             <div className="w-full md:w-4/5 bg-[#3C88A3] flex flex-col items-center justify-center p-6 md:p-10 text-white">
                 <Image src="/img/icono.png" alt="Logo" width={150} height={150} className="md:w-[180px] md:h-[180px]" />

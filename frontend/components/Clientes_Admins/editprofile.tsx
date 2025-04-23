@@ -146,7 +146,7 @@ const EditProfile = () => {
       const actualizado = await putUserData(updatedUserData);
       const actualizado2 = await putUsuarioData(updatedUserData)
       console.log("Usuario actualizado:", actualizado);
-
+      console.log("Usuario actualizado:", actualizado2);
       setMessage("Perfil editado correctamente");
       setTimeout(() => setMessage(null), 3000);
     } catch (error: any) {
