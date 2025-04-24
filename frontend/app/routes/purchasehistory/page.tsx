@@ -1,4 +1,4 @@
-import PurchaseHistory from "@/components/Clientes_Admins/purchasehistory";
+import PurchaseHistory from "@/components/compras/purchasehistory";
 
 
 export default function Page(){
