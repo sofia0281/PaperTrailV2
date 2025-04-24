@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { getBookByIdLibro, putBookData } from "@/services/bookCRUD";
+import withAuthADMIN from '../Auth/withAuthADMIN';
+
 
 const EditBook =  ({ bookID }: { bookID: string }) => {
   const router = useRouter();
@@ -55,17 +57,10 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
   
     return numeros[7] === digitoControl;
   };
-  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   // Validar el ISSN
-  //   if (!validarISSN(formData.issn)) {
-  //     alert("El ISSN no es válido");
-  //     return;
-  //   }
-  // }
 
-  const handleSubmit = async () => {
-      // setShowConfirm(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
       try {
         const updatedBookData = {
           "ISBN_ISSN": formData.issn,
@@ -80,16 +75,17 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
           "idioma": formData.idioma ,
           "cantidad": formData.cantidad,
         }
-
-        await putAdminData(updatedBookData, adminID);
-        await putUsuarioAdminData(updatedUserData);
-        setMessage("Administrador editado correctamente");
-        setTimeout(() => setMessage(null), 3000);
+        await putBookData(updatedBookData, bookID);
+       
+        // setMessage("Administrador editado correctamente");
+        // setTimeout(() => setMessage(null), 3000);
       } catch (error) {
         console.error("Error:", error.message);
-        setMessage("Error al actualizar los datos");
+        // setMessage("Error al actualizar los datos");
       }
     };
+
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
@@ -204,6 +200,7 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
     useEffect(() => {
       loadBookData();
     }, [bookID]); 
+
 
 
   return (
@@ -376,4 +373,4 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
   );
 };
 
-export default EditBook;
+export default withAuthADMIN(EditBook);

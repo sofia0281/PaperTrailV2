@@ -4,8 +4,7 @@
   "info": {
     "singularName": "pedido",
     "pluralName": "pedidos",
-    "displayName": "Pedido",
-    "description": ""
+    "displayName": "Pedido"
   },
   "options": {
     "draftAndPublish": true
@@ -25,3 +24,4 @@
     }
   }
 }
+

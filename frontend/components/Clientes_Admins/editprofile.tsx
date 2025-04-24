@@ -49,9 +49,7 @@ const EditProfile = () => {
     passwordConfirmar: "",
   });
 
-  const handleCancelar = () => {
-    router.push("/routes/loginHome");
-  };
+
 
   useEffect(() => {
     const loadUserData = async () => {

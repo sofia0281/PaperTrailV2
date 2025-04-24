@@ -119,9 +119,36 @@ const Login = () => {
         localStorage.setItem("role", JSON.stringify(userRole)); // Guardar el rol en localStorage
         setAuthRole(userRole);
 
-
-    
+        if (data.jwt && data.user) {
+          const userData = await fetchUserData();
+          const userRole = userData.role?.name;
+        
+          localStorage.setItem("authToken", data.jwt);
+          localStorage.setItem("user", JSON.stringify({ id: data.user.id, username: data.user.username }));
+          localStorage.setItem("role", JSON.stringify(userRole));
+        
+          setAuthToken(data.jwt);
+          setAuthRole(userRole);
+        
+          // Notificar al Navbar
+          window.dispatchEvent(new Event("userLoggedIn"));
+        
+          if (userRole === "Admin")
+          {
+            router.push("/routes/adminbooks");
+          }
+          else if(userRole === "Authenticated") 
+            {
+            router.push("/routes/loginHome");
+          } 
+          else if (userRole === "ROOT") {
+            router.push("/routes/gestionroot");
+          }
+        }
+        
+        
         // Luego redirige después de un pequeño retraso (100ms)
+        {/*}
         setTimeout(() => {
           if (userRole === "Admin") {
             router.push("/routes/loginHome");
@@ -131,6 +158,8 @@ const Login = () => {
             router.push("/routes/gestionroot");
           }
         }, 100);
+        */}
+
       } else {
         console.error("No se recibieron datos del usuario en la respuesta.");
         setMessage("Usuario no encontrado o credenciales incorrectas.");
@@ -143,12 +172,17 @@ const Login = () => {
     }
   };
 
-
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
       {/* Sección izquierda - Logo, Beneficios */}
       <div className="w-full md:w-3/5 bg-[#3C88A3] flex flex-col items-center justify-center p-6 md:p-10 text-white">
-        <Image src="/img/icono.png" alt="Logo" width={150} height={150} className="md:w-[180px] md:h-[180px]" />
+        <Image 
+          src="/img/icono.png" 
+          alt="Logo" 
+          width={150} 
+          height={150} 
+          className="md:w-[180px] md:h-[180px]" 
+        />
         <div className="border border-orange-400 p-4 md:p-6 rounded-md mt-6 text-center md:text-left">
           <h2 className="text-lg font-semibold">
             Beneficios de comprar en <span className="text-orange-400">PaperTrail.com</span>
@@ -185,11 +219,11 @@ const Login = () => {
                 placeholder="Tu correo"
                 value={email}
                 onChange={handleChange}
-                onBlur={handleBlur} // Validar al salir del campo
+                onBlur={handleBlur}
                 onInput={(e) => {
                   const target = e.target as HTMLInputElement;
                   target.value = target.value.replace(/\s+/g, "");
-                }} // Elimina espacios en tiempo real
+                }}
                 required
               />
             </div>
@@ -201,7 +235,7 @@ const Login = () => {
             <div className="flex items-center border border-gray-200 rounded-md p-2 mt-1 focus-within:ring-2 focus-within:ring-orange-500">
               <Lock size={18} className="text-gray-500 mr-2" />
               <input 
-                type={showPassword ? "text" : "password"} // Cambiar el tipo según la visibilidad
+                type={showPassword ? "text" : "password"}
                 className="flex-1 outline-none text-sm"
                 name="password"
                 placeholder="Tu contraseña"
@@ -209,21 +243,27 @@ const Login = () => {
                 onChange={handleChange}
                 required
               />
-                <button
-                  type="button"
-                  onClick={handleTogglePasswordVisibility}
-                  className="ml-2"
-                  >
-                  {showPassword ? (
-                    <EyeOff size={18} className="text-gray-500" />
-                  ) : (
-                    <Eye size={18} className="text-gray-500" />
-                  )}
-                </button>
+              <button
+                type="button"
+                onClick={handleTogglePasswordVisibility}
+                className="ml-2"
+              >
+                {showPassword ? (
+                  <EyeOff size={18} className="text-gray-500" />
+                ) : (
+                  <Eye size={18} className="text-gray-500" />
+                )}
+              </button>
             </div>
           </div>
 
-          {message && <p className="text-sm text-center" style={{ color: message.includes("exitoso") ? "green" : "red" }}>{message}</p>}
+          {message && (
+            <p className={`text-sm text-center ${
+              message.includes("éxito") ? "text-green-500" : "text-red-500"
+            }`}>
+              {message}
+            </p>
+          )}
 
           <button 
             type="submit"
@@ -241,9 +281,12 @@ const Login = () => {
 
           <p className="text-xs md:text-sm text-gray-600 text-center mt-4">
             ¿No tienes cuenta? 
-          <span className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline transition-colors duration-300" onClick={() => router.push("/routes/register")}>
-            REGÍSTRATE
-          </span>
+            <span 
+              className="text-blue-500 cursor-pointer hover:text-blue-700 hover:underline transition-colors duration-300 ml-1"
+              onClick={() => router.push("/routes/register")}
+            >
+              REGÍSTRATE
+            </span>
           </p>
         </form>
       </div>

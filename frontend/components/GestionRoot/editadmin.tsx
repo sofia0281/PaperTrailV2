@@ -87,7 +87,7 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
         // "password": formData.password 
       };
       await putAdminData(updatedUserData, adminID);
-      await putUsuarioAdminData(updatedUserData);
+      // await putUsuarioAdminData(updatedUserData);
       setMessage("Administrador editado correctamente");
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {

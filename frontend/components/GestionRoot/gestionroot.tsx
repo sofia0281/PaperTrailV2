@@ -6,7 +6,8 @@ import { getAdminsData, deleteAdmin } from '@/services/adminCRUD';
 import {deleteNameAdmin } from '@/services/usuarioAdminCRUD';
 import { motion } from "framer-motion";
 import { XCircle } from "lucide-react";
-import { NextDataPathnameNormalizer } from "next/dist/server/normalizers/request/next-data";
+
+
 
 interface Admin {
   id: number;
