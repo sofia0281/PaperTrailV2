@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Minus, Plus, Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 type Product = {
   id: number;
@@ -15,27 +15,10 @@ const initialProducts: Product[] = [
 ];
 
 const CardMoreInfoPurchase = ()=>{
+
+    const router = useRouter()
     const [products, setProducts] = useState<Product[]>(initialProducts);
 
-    const handleQuantity = (id: number, change: number) => {
-      setProducts((prev) =>
-        prev.map((product) =>
-          product.id === id
-            ? {
-                ...product,
-                quantity: Math.max(1, product.quantity + change),
-              }
-            : product
-        )
-      );
-    };
-  
-    const handleRemove = (id: number) => {
-      setProducts((prev) => prev.filter((product) => product.id !== id));
-    };
-  
-    const total = products.reduce((sum, p) => sum + p.price * p.quantity, 0);
-  
     return(
         <div className="space-y-4">
         {products.map((product) => (
@@ -62,6 +45,13 @@ const CardMoreInfoPurchase = ()=>{
             </div>
           </div>
         ))}
+      <button className="cursor-pointer bg-orange-500 hover:bg-orange-600 text-white p-2 mt-2 rounded-lg font-medium"
+      onClick={()=>{
+        router.push('/routes/purchasehistory')
+      }
+      }>
+        Regresar
+      </button>
       </div>
     )
     

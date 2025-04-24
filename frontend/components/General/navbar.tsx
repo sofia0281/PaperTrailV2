@@ -3,6 +3,7 @@ import { ShoppingCart, User, Search, Settings, Shield, LogOut } from "lucide-rea
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
+import CartSidebar from "../compras/CartSideBar";
 
 type UserType = {
     nombre: string;
@@ -14,6 +15,10 @@ const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
+
+    //Carrito de compras
+    const [cartOpen, setCartOpen] = useState(false)
+    const toggleCart = () => setCartOpen(!cartOpen)
 
     const [role, setRole] = useState<string | null>(null);
     const [userName, setUserName] = useState<string | null>(null);
@@ -58,7 +63,7 @@ const Navbar = () => {
 };
     return (
     <div className="flex items-center justify-between w-full bg-[#3C88A3] p-3">
-    {/* Logo e ícono */}
+    {/*-----------------------------Logo e ícono -------------------------*/}
     <div className="flex items-center cursor-pointer transition-transform duration-300 transform hover:scale-105" onClick={() => router.push("/")}>
         <Image
             src="/img/icono.png"
@@ -72,7 +77,7 @@ const Navbar = () => {
         </h1>
     </div>
 
-    {/* Barra de búsqueda */}
+    {/*------------------------Barra de búsqueda-------------------------- */}
     <div className="relative flex-grow mx-4 max-w-lg">
         <input
             type="text"
@@ -84,12 +89,15 @@ const Navbar = () => {
         </button>
     </div> 
 
-    {/* Íconos de usuario y carrito/ Root*/}
+    {/*--------------------------- Carrito de compras----------------------- */}
+    <CartSidebar isOpen={cartOpen} toggleCart={toggleCart} />
+    
+    {/*------------------Íconos de usuario y carrito/ Root----------------*/}
     <div className="flex items-center space-x-4 text-white">
         
         {role === "ROOT" ? (
             <>
-            {/* Íconos de usuario y carrito ROOT*/}
+            {/* Íconos de ROOT y carrito ROOT*/}
             {/* <span className="font-bold uppercase">ROOT</span>
                 <Shield
                     strokeWidth={1}
@@ -108,7 +116,7 @@ const Navbar = () => {
                     strokeWidth={1}
                 /> 
                 </div> 
-                {/* Menú desplegable */}
+                {/*------------------Menú desplegable---------------------*/}
                 {menuOpen && (
                             <div className="absolute right-0 mt-35 w-52 bg-[#5FAEC9] text-white shadow-lg rounded-lg overflow-hidden z-50">
                                 {/* <button
@@ -140,13 +148,16 @@ const Navbar = () => {
         ) : (role === "Admin") ? (
             <>
 
-            {/* Ícono de usuario con menú desplegable */}
+            {/* Ícono de ADMIN con menú desplegable */}
             <div className="relative flex items-center" ref={menuRef}>
                 <span className="transition-transform duration-300 transform hover:scale-105">Hola, {userName}</span>
                 <div
                     title="Administración de libros"
                     className="transition-transform duration-300 transform hover:scale-110 cursor-pointer ml-1"
-                    onClick={() => router.push("/routes/adminbooks") }>
+                    onClick={() => {
+                        router.push("/routes/adminbooks");
+                        setMenuOpen(false)
+                    } }>
                 <Settings
                     strokeWidth={1}
                 /> 
@@ -161,12 +172,15 @@ const Navbar = () => {
                 </div>  
                      
 
-                {/* Menú desplegable */}
+                {/*--------------------Menú desplegable------------------*/}
                 {menuOpen && (
                         <div className="absolute right-0 mt-35 w-52 bg-[#5FAEC9] text-white shadow-lg rounded-lg overflow-hidden z-50">
                             <button
                                 className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
-                                onClick={() => router.push("/routes/editprofile")}
+                                onClick={() => {
+                                    router.push("/routes/editprofile");
+                                    setMenuOpen(false)
+                                }}
                             >
                                 Editar Perfil
                             </button>
@@ -196,15 +210,18 @@ const Navbar = () => {
             {/* Íconos de usuario y carrito LOGUEADO*/}
             <span className="transition-transform duration-300 transform hover:scale-105" >Hola, {userName}</span>
             <div
-                    title="Perfil"
-                    className="transition-transform duration-300 transform hover:scale-110 cursor-pointer ml-1"
-                    onClick={() => router.push("/routes/cart")}>
+                    title="Carrito"
+                    className="transition-transform duration-300 transform hover:scale-110 cursor-pointer ml-1">
+
+                
                 <ShoppingCart
                     strokeWidth={1}
-                /> 
+                    onClick={toggleCart}
+                />
+                
                 </div> 
 
-            {/* Ícono de usuario con menú desplegable */}
+            {/*-----------Ícono de usuario con menú desplegable ---------*/}
             <div className="relative" ref={menuRef}>
                 <div
                         title="Perfil"
@@ -214,12 +231,15 @@ const Navbar = () => {
                         strokeWidth={1}
                     /> 
                 </div> 
-                {/* Menú desplegable */}
+                {/*------------------Menú desplegable---------------------*/}
                 {menuOpen && (
-                        <div className="absolute right-0 mt-8 w-52 bg-[#5FAEC9] text-white shadow-lg rounded-lg overflow-hidden z-50">
+                        <div className="absolute right-0 mt-4 w-52 bg-[#5FAEC9] text-white shadow-lg rounded-lg overflow-hidden z-50">
                             <button
                                 className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
-                                onClick={() => router.push("/routes/editprofile")}
+                                onClick={() => {
+                                    router.push("/routes/editprofile");
+                                    setMenuOpen(false)
+                                }}
                             >
                                 Editar Perfil
                             </button>
@@ -229,6 +249,17 @@ const Navbar = () => {
                             >
                                 Opciones
                             </button> */}
+
+                            <button
+                                className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
+                                onClick={() => {
+                                 router.push("/routes/purchasehistory");
+                                 setMenuOpen(false)
+                                }}
+                            >
+                                Historial de compras
+                            </button>
+
                             <button
                                 className="w-full px-4 py-2 text-left hover:bg-red-100 text-red-500 flex items-center justify-between cursor-pointer"
                                 onClick={() => {

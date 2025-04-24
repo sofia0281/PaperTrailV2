@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { MdAddShoppingCart } from "react-icons/md";
 
 interface BookProps {
@@ -9,6 +10,7 @@ interface BookProps {
   imageUrl?: string;
 }
 
+
 const CardBooks = ({ 
   title, 
   price, 
@@ -16,10 +18,14 @@ const CardBooks = ({
   condition = "Usado/Nuevo", 
   imageUrl 
 }: BookProps) => {
+  const router = useRouter()
+
   return (
-    <div className="border rounded-md p-3 shadow-sm hover:scale-105 transition-transform cursor-pointer">
+    <div className="border rounded-md p-3 shadow-sm hover:scale-105 transition-transform cursor-pointer"
+    >
       {/* Contenedor de imagen */}
-      <div className="bg-gray-200 h-40 rounded-md flex items-center justify-center overflow-hidden">
+      <div className="bg-gray-200 h-40 rounded-md flex items-center justify-center overflow-hidden"
+      onClick={() => router.push("/routes/books")}>
         {imageUrl ? (
           <img 
             src={imageUrl.includes('http') ? imageUrl : `http://localhost:1337${imageUrl}`}
@@ -47,7 +53,8 @@ const CardBooks = ({
           </button>
           
           {/* Botón Comprar ya */}
-          <button className="cursor-pointer bg-orange-500 text-white text-xs px-4 py-1 rounded-md hover:bg-orange-600 transition-colors w-full">
+          <button className="cursor-pointer bg-orange-500 text-white text-xs px-4 py-1 rounded-md hover:bg-orange-600 transition-colors w-full"
+          onClick={() => router.push("/routes/previewshoppingcart")}>
             + Comprar ya
           </button>
         </div>

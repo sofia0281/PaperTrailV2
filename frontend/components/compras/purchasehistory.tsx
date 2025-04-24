@@ -1,6 +1,10 @@
+"use client"
 import { UserCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const PurchaseHistory = () => {
+
+  const router = useRouter()
   const purchases = [
     { id: "#0001", 
         date: "28/02/2025", 
@@ -12,16 +16,16 @@ const PurchaseHistory = () => {
         status: "Completado", 
         total: 130000 },
   ];
-
+  
   return (
     <div className="w-full max-w-4xl mx-auto p-6">
       {/* Encabezado */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 text-center md:text-left">
         <div className="flex items-center gap-2">
           <UserCircle size={28} />
-          <span className="text-lg font-semibold">Hola!, usuario</span>
+          <span className="text-3xl font-semibold">Hola!, <span className="text-orange-500">[Nombre] </span></span>
         </div>
-        <h1 className="text-xl font-bold mt-2 md:mt-0">Historial de compras</h1>
+        <h1 className="text-3xl font-bold mt-2 md:mt-0">Historial de compras</h1>
       </div>
       
       {/* Tabla */}
@@ -45,6 +49,12 @@ const PurchaseHistory = () => {
                 <td className="py-2 px-4">${purchase.total.toLocaleString()}</td>
                 <td className="py-2 px-4">
                   <button className="bg-gray-700 text-white px-3 py-1 rounded-md hover:bg-gray-800 cursor-pointer"
+
+
+                  onClick={() => {
+                    router.push('/routes/moreinfopurchase');
+                     }
+                  }
                   >
                     Ver más
                   </button>

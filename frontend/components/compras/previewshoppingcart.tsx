@@ -6,7 +6,7 @@ const PreviewShoppingCart = () => {
     <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row gap-10">
       {/* Div 1: Productos */}
       <div className="flex-1">
-        <h2 className="text-2xl font-bold mb-6">Detalles del pedido</h2>
+        <h2 className="text-3xl font-bold mb-6">Hola!, <span className="text-orange-500"> [Nombre] </span> Este es tu carrito</h2>
         <CardPreviewShoppingCart/>
       </div>
 
@@ -23,7 +23,6 @@ const PreviewShoppingCart = () => {
             </button>
         </div>
      </div>
-
     </div>
   );
 };

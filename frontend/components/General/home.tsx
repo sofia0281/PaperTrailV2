@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import ButtonSuscribete from "@/components/ui/buttonsuscribete";
 import CardBooks from "@/components/ui/cardbooks";
-import CartSideBar from '@/components/compras/CartSideBar'
+
 interface StrapiBook {
   id: number;
   attributes: {
@@ -74,8 +74,6 @@ const Home = () => {
           ✨ Novedades
         </button>
       </div>
-      <CartSideBar/>
-
       {/* Lista de libros dinámica */}
       {loading ? (
         <div className="text-center py-10">Cargando libros...</div>

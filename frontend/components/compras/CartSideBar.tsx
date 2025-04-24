@@ -4,20 +4,17 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import CardSideBarShoppingCart from '../ui/cardsidebarshoppingcart'
+import { useRouter } from 'next/navigation'
 
-const CartSidebar = () => {
-  const [isOpen, setIsOpen] = useState(false)
+type CartSidebarProps = {
+  isOpen: boolean
+  toggleCart: () => void
+}
 
-  const toggleCart = () => setIsOpen(!isOpen)
+const CartSidebar = ({ isOpen, toggleCart }: CartSidebarProps) => {
+  const router = useRouter();
   return (
     <>
-      {/* Botón para abrir */}
-      <button
-        className="fixed top-4 right-4 z-50 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg"
-        onClick={toggleCart}
-      >
-        Mi carrito
-      </button>
 
       {/* Fondo oscuro */}
       <AnimatePresence>
@@ -36,7 +33,7 @@ const CartSidebar = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed right-0 top-0 h-full w-full sm:w-[400px] bg-sky-800 text-white z-50 flex flex-col"
+            className="fixed right-0 top-0 h-full w-full sm:w-[350px]  bg-[#3C88A3] text-white z-50 flex flex-col"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
@@ -63,10 +60,17 @@ const CartSidebar = () => {
             </div>
 
               <div className="flex gap-2 p-6">
-                <button className="w-1/2 text-white hover:scale-105 transition duration-300 ease-in-out cursor-pointer">
+                <button className="w-1/2 text-white hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                onClick={toggleCart}>
                   ← Continuar comprando
                 </button>
-                <button className="w-1/2 bg-orange-600 text-white rounded hover:scale-110 transition duration-200 ease-in-out cursor-pointer">
+                <button className="w-1/2 bg-orange-600 text-white rounded hover:scale-110 transition duration-200 ease-in-out cursor-pointer"
+                onClick={()=> {
+                  router.push("/routes/previewshoppingcart")
+                  setTimeout(() => {
+                    toggleCart()
+                  }, 500);
+                }}>
                   Continuar con la compra →
                 </button>
               </div>

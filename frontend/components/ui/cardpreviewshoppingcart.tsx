@@ -1,6 +1,8 @@
 "use client"
 import { useState } from 'react';
 import { Minus, Plus, Trash2 } from 'lucide-react';
+import { button } from 'framer-motion/client';
+import { useRouter } from 'next/navigation';
 
 type Product = {
   id: number;
@@ -16,6 +18,7 @@ const initialProducts: Product[] = [
 ];
 
 const CardPreviewShoppingCart = ()=>{
+  const router = useRouter()
     const [products, setProducts] = useState<Product[]>(initialProducts);
 
     const handleQuantity = (id: number, change: number) => {
@@ -74,6 +77,10 @@ const CardPreviewShoppingCart = ()=>{
             </div>
           </div>
         ))}
+      <button className="cursor-pointer bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-medium mt-4 p-2"
+      onClick={()=>{router.push("/")} }>
+          -Continuar comprando
+      </button>
       </div>
     )
     
