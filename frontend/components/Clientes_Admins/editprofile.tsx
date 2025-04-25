@@ -504,7 +504,10 @@ const EditProfile = () => {
 {/*-------------------------Cambio de seccion----------------------*/}
   </>) : SeccionMenu === "Password" ? (
     <>
-    <EditPassword/>
+    <EditPassword 
+      userId={userId} 
+      userEmail={formData.email} // O de donde tengas el email del usuario
+    />
     </>
   ): null
   }
