@@ -7,6 +7,8 @@ import { createUser} from "@/services/userCRUD";
 import {createUsuario} from "@/services/usuarioCRUD";
 import { motion } from "framer-motion";
 import { AutocompleteLocation } from "@/components/ui/register/AutocompleteLocation"; // Importación directa desde la misma carpeta
+import emailjs from "@emailjs/browser";
+
 // Importación directa desde la misma carpeta
 
 
@@ -176,6 +178,30 @@ const Register = () => {
     }
   };
 
+
+  
+  const sendEmail = async (name: string, email: string) => {
+    if (!email || !name) return;
+  
+    try {
+      await emailjs.send(
+        "service_30fn5q3",
+        "template_kr9sxml", // Asegúrate que esta plantilla sea la de bienvenida
+        {
+          name,
+          user_email: email,
+          time: new Date().toLocaleString(), // Por si tu template lo usa
+        },
+        "d5YC1eFJ4pBINv06z"
+      );
+  
+      console.log("Correo de bienvenida enviado correctamente ✅");
+    } catch (error) {
+      console.error("Error al enviar el correo de bienvenida ❌:", error);
+    }
+  };
+  //export default sendWelcomeEmail;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -270,7 +296,12 @@ const Register = () => {
       console.log('Usuario creado:', creado);
       const creado2 = await createUsuario(createUserData);
       console.log('Usuario creado:', creado2);
+
+
+      
+
       setSuccessMessage("Usuario creado exitosamente.");
+      await sendEmail(formData.nombre, formData.email);
       setErrorMessage(null);
       setTimeout(() => {
         setSuccessMessage(null);
@@ -283,6 +314,14 @@ const Register = () => {
       setTimeout(() => setErrorMessage(null), 3000);
     }
   };
+
+
+
+
+  
+
+
+
   return (
     
     <div className="flex flex-col md:flex-row min-h-screen">
