@@ -501,6 +501,7 @@ const EditProfile = () => {
           <XCircle size={20} className="cursor-pointer hover:text-gray-200" onClick={() => setMessage(null)} />
         </motion.div>
       )}
+{/*-------------------------Cambio de seccion----------------------*/}
   </>) : SeccionMenu === "Password" ? (
     <>
     <EditPassword/>
