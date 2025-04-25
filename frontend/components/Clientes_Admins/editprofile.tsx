@@ -9,6 +9,8 @@ import { motion } from "framer-motion";
 import { prefetchDNS } from "react-dom";
 import { PrefetchRSCPathnameNormalizer } from "next/dist/server/normalizers/request/prefetch-rsc";
 import { PassThrough } from "stream";
+import MenuLateralEditProfile from "../ui/menulateraleditprofile";
+import EditPassword from "./editpassword";
 
 const EditProfile = () => {
   const maxLengths: Record<string, number> = {
@@ -23,6 +25,7 @@ const EditProfile = () => {
   const router = useRouter();
   const role = localStorage.getItem("role");
 
+  const[SeccionMenu, setSeccionMenu] = useState("Principal")
 
   const [userId, setUserId] = useState<number | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -226,11 +229,35 @@ const EditProfile = () => {
   const user_Name = user?.username;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md">
+    <div className="flex justify-center gap-2 p-4">
+
+
+{/*--------------------Menu lateral de edición de perfil-------------------- */}
+      <div className="items-center max-w-xl p-6 bg-white shadow-md rounded-md">
+       
+        <div className="text-gray-400 border-b border-gray pb-1 hover:border-black hover:text-black">
+                  <p className="cursor-pointer "
+                  onClick={()=>{
+                      router.push('/routes/editprofile')
+                      setSeccionMenu("Principal")
+                  }}>Editar perfil </p>
+          </div>
+          <div className="mt-4 text-gray-400 border-b border-gray pb-1 hover:border-black hover:text-black">
+                  <p className="cursor-pointer"
+                  onClick={()=>{
+                    setSeccionMenu("Password")
+                  }}>Cambiar contraseña </p>
+          </div>
+      </div>
+{/*--------------------Menu lateral de edición de perfil-------------------- */}
+
+    <div className="max-w-6xl p-6 bg-white shadow-md rounded-md">
       <h2 className="text-2xl font-bold text-gray-700 mb-4">Hola, {user_Name} </h2>
+      {SeccionMenu === "Principal" ? (
+      <>
       <p className="text-xs text-gray-400 text-center mt-4">Los campos con (<span className="text-red-500">*</span>) son editables.</p>
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-6 ">
           {/* Sección Izquierda */}
           <div className="space-y-4">
             <div>
@@ -434,43 +461,6 @@ const EditProfile = () => {
           </div>
         </div>
 
-  
-
-
-  
-
-        {/* Sección Cambio de Contraseña */}
-        {<div className="mt-6 p-4 border rounded-md bg-gray-100">
-          <h3 className="font-semibold">CAMBIO DE CONTRASEÑA</h3>
-          <p className="text-xs text-gray-600 mb-2">
-            Contraseña actual (déjalo en blanco para no cambiarla)
-          </p>
-          <input
-            type="password"
-            name="passwordActual"
-            onChange={handleChange}
-            className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-          />
-          <p className="text-xs text-gray-600 mt-2">
-            Nueva contraseña (déjalo en blanco para no cambiarla)
-          </p>
-          <input
-            type="password"
-            name="passwordNueva"
-            onChange={handleChange}
-            className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-          />
-          <p className="text-xs text-gray-600 mt-2">
-            Confirmar nueva contraseña (déjalo en blanco para no cambiarla)
-          </p>
-          <input
-            type="password"
-            name="passwordConfirmar"
-            onChange={handleChange}
-            className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-          />
-        </div> }
-
         {/* Botones */}
         <div className="flex justify-end w-full gap-4 mt-6">
           {/* sacar este boton de aqui para poder cancelar la edición del usuario */}
@@ -511,8 +501,17 @@ const EditProfile = () => {
           <XCircle size={20} className="cursor-pointer hover:text-gray-200" onClick={() => setMessage(null)} />
         </motion.div>
       )}
+  </>) : SeccionMenu === "Password" ? (
+    <>
+    <EditPassword/>
+    </>
+  ): null
+  }
+    
     </div>
-  );
+  </div>
+)
+  ;
 };
 
 export default withAuth(EditProfile);
