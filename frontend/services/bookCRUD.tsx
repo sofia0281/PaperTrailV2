@@ -1,3 +1,41 @@
+export const createBook = async (bookData) => {
+    try {
+  
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: bookData
+        }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error detallado de Strapi al crear libro:', errorData);
+        throw {
+          status: errorData.error.status,
+          message: errorData.error.message,
+          errors: errorData.error.details.errors,
+          errorData
+        };
+      }
+  
+      const data = await response.json();
+      console.log('Libro creado en Book:', data);
+      return data;
+    } catch (error) {
+      console.error('Error al enviar datos a Strapi:', error.message);
+      throw error;
+    }
+  };
+
+
+
+
+
+
 // getAllBooksData trae la información de cada libro de la tabla
 export const getAllBooksData = async () => {
     try {
@@ -44,7 +82,41 @@ export const getAllBooksData = async () => {
     }
 };
 
+export const getAllLibrosData = async () => {
+  try {
+      const token = localStorage.getItem('authToken');
+      const booksResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books`,
+          {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${process.env.NEXT_PUBLIC_STRAPI_ADMIN_TOKEN}`,
+              }
+          });
 
+      if (!booksResponse.ok) {
+          const errorData = await booksResponse.json();
+          console.error('Error trayendo informacion de los libros:', errorData);
+          throw new Error(errorData.message || 'Failed to fetch books');
+      }
+      const responseData = await booksResponse.json();
+      console.log('Respuesta completa de la API:', responseData);
+
+      // Extraer el array de libros de la respuesta de Strapi v4
+      const booksArray = responseData.data || responseData;
+      console.log(booksArray)
+      // Verificar si es un array antes de mapear
+      if (!Array.isArray(booksArray)) {
+          console.error('La respuesta no es un array:', booksArray);
+          return [];
+      }
+      return booksArray;
+  } catch (error) {
+      console.error('Error in getbooksData:', error);
+      throw new Error(typeof error === 'string' ? error : 'Error al obtener libros');
+  }
+};
 
 // trae la información del libro con la UID que en este caso es el idLibro
 export const getBookByIdLibro = async (idLibro: string) => {
@@ -155,13 +227,17 @@ export const putBookData = async (bookDataForm, idLibro) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Error detallado:', errorData);
-      throw new Error('Error al actualizar libro');
+      console.error('Error detallado de Strapi al editar libro:', errorData);
+      throw {
+        status: errorData.error.status,
+        message: errorData.error.message,
+        errors: errorData.error.details.errors,
+        errorData
+      };
     }
-
-    const updatedUser = await response.json();
-    console.log('Libro actualizado:', updatedUser);
-    return updatedUser;
+    const updatedBook = await response.json();
+    console.log('Libro actualizado:', updatedBook);
+    return updatedBook;
 
   } catch (error) {
     console.error('Error en putBookData:', error.message);

@@ -55,7 +55,6 @@ export const putUserData = async (userDataForm) => {
         const userString = localStorage.getItem('user'); // Obtener el objeto user como cadena JSON
         const user = JSON.parse(userString); // Parsear la cadena JSON a un objeto
         const userId = user.id; // Acceder al campo id
-
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`, {
             method: 'PUT',
             headers: {

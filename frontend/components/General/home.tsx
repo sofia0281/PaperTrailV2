@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import ButtonSuscribete from "@/components/ui/buttonsuscribete";
 import CardBooks from "@/components/ui/cardbooks";
-
+import { getAllLibrosData } from "@/services/bookCRUD";
 interface StrapiBook {
   id: number;
   attributes: {
@@ -27,6 +27,23 @@ const Home = () => {
   const [books, setBooks] = useState<StrapiBook[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // useEffect(() => {
+  //       const fetchBooks = async () => {
+  //         try {
+  //           const data = await getAllLibrosData();
+  //           console.log(data)
+  //           setBooks(data);
+  //         } catch (err) {
+  //           setError(err instanceof Error ? err.message : 'Error desconocido');
+  //         } finally {
+  //           setLoading(false);
+  //         }
+  //       };
+    
+  //       fetchBooks();
+  //   }, []);
+
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -83,7 +100,7 @@ const Home = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 px-6 py-6">
           {books.slice(0,10).map((book) => (
             <CardBooks
-              key={book.id}
+              key={book.idLibro}
               title={book.title}
               price={book.price}
               author={book.author}

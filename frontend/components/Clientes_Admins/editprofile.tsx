@@ -9,6 +9,8 @@ import { motion } from "framer-motion";
 import { prefetchDNS } from "react-dom";
 import { PrefetchRSCPathnameNormalizer } from "next/dist/server/normalizers/request/prefetch-rsc";
 import { PassThrough } from "stream";
+import MenuLateralEditProfile from "@/components/ui/menulateraleditprofile";
+import EditPassword from "@/components/Clientes_Admins/editpassword";
 
 const EditProfile = () => {
   const maxLengths: Record<string, number> = {
@@ -23,6 +25,9 @@ const EditProfile = () => {
   const router = useRouter();
   const role = localStorage.getItem("role");
 
+  const[SeccionMenu, setSeccionMenu] = useState("Principal")
+
+  const [userId, setUserId] = useState<number | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -49,12 +54,15 @@ const EditProfile = () => {
     passwordConfirmar: "",
   });
 
-
+  const handleCancelar = () => {
+    router.push("/");
+  };
 
   useEffect(() => {
     const loadUserData = async () => {
       const userData = await fetchUserData();
       if (userData) {
+        setUserId(userData.id);
         setFormData({
           nombre: userData.Nombre || "",
           apellido: userData.Apellido || "",
@@ -76,6 +84,67 @@ const EditProfile = () => {
 
     loadUserData();
   }, []);
+
+  const updatePassword = async (userId: number, newPassword: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_STRAPI_ADMIN_TOKEN}`
+        },
+        body: JSON.stringify({ password: newPassword }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        console.error("Error detallado:", data);
+        throw new Error(data.error?.message || "Error al actualizar contraseña");
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error completo:", error);
+      return false;
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (!userId) return;
+
+    // Validaciones
+    if (formData.passwordNueva && formData.passwordNueva.length < 8) {
+      setPasswordError("La nueva contraseña debe tener al menos 8 caracteres");
+      return;
+    }
+
+    if (formData.passwordNueva !== formData.passwordConfirmar) {
+      setPasswordError("Las contraseñas no coinciden");
+      return;
+    }
+
+    try {
+      const success = await updatePassword(userId, formData.passwordNueva);
+      if (success) {
+        setMessage("Contraseña actualizada correctamente");
+        setPasswordError(null);
+        // Limpiar campos
+        setFormData(prev => ({
+          ...prev,
+          passwordActual: "",
+          passwordNueva: "",
+          passwordConfirmar: ""
+        }));
+      } else {
+        setPasswordError("Error al actualizar la contraseña");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setPasswordError("Ocurrió un error al cambiar la contraseña");
+    }
+  };
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -115,7 +184,7 @@ const EditProfile = () => {
 
     setFormData((prevData) => ({
       ...prevData,
-      [name]: formattedValue,
+      [name]: value, formattedValue,
     }));
   };
 
@@ -139,12 +208,13 @@ const EditProfile = () => {
         TemaL_1: formData.preferencia1,
         TemaL_2: formData.preferencia2,
         Direccion: formData.direccion,
+        // password: formData.passwordConfirmar,
       };
 
       const actualizado = await putUserData(updatedUserData);
       const actualizado2 = await putUsuarioData(updatedUserData)
       console.log("Usuario actualizado:", actualizado);
-      console.log("Usuario actualizado:", actualizado2);
+
       setMessage("Perfil editado correctamente");
       setTimeout(() => setMessage(null), 3000);
     } catch (error: any) {
@@ -159,11 +229,35 @@ const EditProfile = () => {
   const user_Name = user?.username;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md">
+    <div className="flex justify-center gap-2 p-4">
+
+
+{/*--------------------Menu lateral de edición de perfil-------------------- */}
+      <div className="items-center max-w-xl p-6 bg-white shadow-md rounded-md">
+       
+        <div className="text-gray-400 border-b border-gray pb-1 hover:border-black hover:text-black">
+                  <p className="cursor-pointer "
+                  onClick={()=>{
+                      router.push('/routes/editprofile')
+                      setSeccionMenu("Principal")
+                  }}>Editar perfil </p>
+          </div>
+          <div className="mt-4 text-gray-400 border-b border-gray pb-1 hover:border-black hover:text-black">
+                  <p className="cursor-pointer"
+                  onClick={()=>{
+                    setSeccionMenu("Password")
+                  }}>Cambiar contraseña </p>
+          </div>
+      </div>
+{/*--------------------Menu lateral de edición de perfil-------------------- */}
+
+    <div className="max-w-6xl p-6 bg-white shadow-md rounded-md">
       <h2 className="text-2xl font-bold text-gray-700 mb-4">Hola, {user_Name} </h2>
+      {SeccionMenu === "Principal" ? (
+      <>
       <p className="text-xs text-gray-400 text-center mt-4">Los campos con (<span className="text-red-500">*</span>) son editables.</p>
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-6 ">
           {/* Sección Izquierda */}
           <div className="space-y-4">
             <div>
@@ -194,7 +288,7 @@ const EditProfile = () => {
                 type="text"
                 name="cedula"
                 value={formData.cedula}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"               
                 readOnly
                 />
             </div>
@@ -219,7 +313,7 @@ const EditProfile = () => {
                 type="text"
                 name="lugarNacimiento"
                 value={formData.lugarNacimiento}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"
                 readOnly               />
             </div>
             <div>
@@ -229,7 +323,7 @@ const EditProfile = () => {
                 type="date"
                 name="nacimiento"
                 value={formData.nacimiento}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"
                 readOnly               />
             </div>
           </div>
@@ -253,7 +347,7 @@ const EditProfile = () => {
                 type="email"
                 name="email"
                 value={formData.email}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"
                 readOnly               />
             </div>
             <div>
@@ -263,7 +357,7 @@ const EditProfile = () => {
                 type="text"
                 name="usuario"
                 value={formData.usuario}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"
                 readOnly               />
             </div>
             <div>
@@ -367,45 +461,13 @@ const EditProfile = () => {
           </div>
         </div>
 
-        {/* Sección Cambio de Contraseña */}
-        {/* <div className="mt-6 p-4 border rounded-md bg-gray-100">
-          <h3 className="font-semibold">CAMBIO DE CONTRASEÑA</h3>
-          <p className="text-xs text-gray-600 mb-2">
-            Contraseña actual (déjalo en blanco para no cambiarla)
-          </p>
-          <input
-            type="password"
-            name="passwordActual"
-            onChange={handleChange}
-            className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-          />
-          <p className="text-xs text-gray-600 mt-2">
-            Nueva contraseña (déjalo en blanco para no cambiarla)
-          </p>
-          <input
-            type="password"
-            name="passwordNueva"
-            onChange={handleChange}
-            className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-          />
-          <p className="text-xs text-gray-600 mt-2">
-            Confirmar nueva contraseña (déjalo en blanco para no cambiarla)
-          </p>
-          <input
-            type="password"
-            name="passwordConfirmar"
-            onChange={handleChange}
-            className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-          />
-        </div> */}
-
         {/* Botones */}
-        <div className="flex justify-between w-full mt-6">
+        <div className="flex justify-end w-full gap-4 mt-6">
           {/* sacar este boton de aqui para poder cancelar la edición del usuario */}
           <button 
           type="button" 
           className="bg-blue-500 text-white px-4 py-2 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer"
-          onClick={() => router.push("/routes/loginHome")}>
+          onClick={() => router.push("/")}>
             CANCELAR
           </button>
           <button type="submit" className="bg-orange-500 text-white px-4 py-2 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer">
@@ -439,8 +501,21 @@ const EditProfile = () => {
           <XCircle size={20} className="cursor-pointer hover:text-gray-200" onClick={() => setMessage(null)} />
         </motion.div>
       )}
+{/*-------------------------Cambio de seccion----------------------*/}
+  </>) : SeccionMenu === "Password" ? (
+    <>
+    <EditPassword 
+      userId={userId} 
+      userEmail={formData.email} // O de donde tengas el email del usuario
+    />
+    </>
+  ): null
+  }
+    
     </div>
-  );
+  </div>
+)
+  ;
 };
 
 export default withAuth(EditProfile);

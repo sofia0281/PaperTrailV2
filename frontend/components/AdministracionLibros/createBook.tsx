@@ -1,11 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import {XCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { createBook } from "@/services/bookCRUD";
+import { motion } from "framer-motion";
 
 const CreateBook = () => {
   const router = useRouter();
-
+  {/*Estados para la ventana emergente */}
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   // Función para formatear el precio
   const formatPrice = (value: string): string => {
     const [integer, decimal = ""] = value.split(".");
@@ -17,15 +22,13 @@ const CreateBook = () => {
     return value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, "$1");
   };
 
-  const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
-    issn: "",
+    issn: "",  
     fechaPublicacion: "",
     titulo: "",
-    estado: "",
+    estado: "nuevo",
     autor: "",
-    precio: "",
-    resena: "",
+    precio:  "",
     editorial: "",
     numeroPaginas: "",
     genero: "",
@@ -54,14 +57,62 @@ const CreateBook = () => {
   
     return numeros[7] === digitoControl;
   };
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Validar el ISSN
-    if (!validarISSN(formData.issn)) {
-      alert("El ISSN no es válido");
-      return;
+    // if (!validarISSN(formData.issn)) {
+    //   alert("El ISSN no es válido");
+    //   return;
+    // }
+    try {
+            const newBookData = {
+              "ISBN_ISSN": formData.issn,
+              "fecha_publicacion": formData.fechaPublicacion,
+              "title": formData.titulo,
+              "condition": formData.estado,
+              "author": formData.autor,
+              "price": formData.precio,
+              "editorial": formData.editorial,
+              "numero_paginas": formData.numeroPaginas,
+              "genero": formData.genero,
+              "idioma": formData.idioma ,
+              "cantidad": formData.cantidad,
+              "idLibro": formData.issn
+            }
+            await createBook(newBookData);
+            //setMessage("Administrador editado correctamente");
+            // setTimeout(() => setMessage(null), 3000);
+      } catch (error) {
+    // console.error('Error completo:', error);
+    const errorMessages = error.errors.map(errorItem => {
+      const field = errorItem.path[0];
+      if (field === "ISBN_ISSN")
+      {
+        return `Este ISSN ya se encuentra registrado`;
+      }
+      // else {
+      //   return `Error en el  campo ${field}. Error al crear Libro`;
+      
+      // }
+      
+    });
+    if (error.status === 400 ) {
+      const fullMessage = errorMessages.join('. ');
+      setErrorMessage(fullMessage);
+      setSuccessMessage(null);
+      setTimeout(() => {
+        setErrorMessage(null);
+        router.push("/routes/createbook");
+      }, 3000);
+    } else {
+      const fullMessage = errorMessages.join('. ');
+      setErrorMessage(fullMessage);
+      setSuccessMessage(null);
+      setTimeout(() => setErrorMessage(null), 3000);
     }
-  }
+          }
+    };
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
@@ -73,9 +124,9 @@ const CreateBook = () => {
        name === "precio" ||
        name === "titulo" ||
        name === "autor" ||
-       name === "resena" ||
+      //  name === "resena" ||
        name === "editorial" ||
-       name === "genero" ||
+      //  name === "genero" ||
        name === "idioma" ||
        name === "estado") {
 
@@ -129,18 +180,18 @@ const CreateBook = () => {
           formattedValue = value.slice(0,100)// Solo 255 caracteres
                                 .replace(/^\s+/, "")// Eliminar espacios al principio
         }
-        if(name === "resena") {
-          formattedValue = value.slice(0,255)// Solo 1000 caracteres
-                                .replace(/^\s+/, "");// Eliminar espacios al principio
-        }
+        // if(name === "resena") {
+        //   formattedValue = value.slice(0,255)// Solo 1000 caracteres
+        //                         .replace(/^\s+/, "");// Eliminar espacios al principio
+        // }
         if(name === "editorial") {
           formattedValue = value.slice(0,50)// Solo 255 caracteres
                                 .replace(/^\s+/, "");// Eliminar espacios al principio
         }
-        if(name === "genero") {
-          formattedValue = value.slice(0,50)// Solo 50 caracteres
-                                .replace(/^\s+/, "");// Eliminar espacios al principio
-        }
+        // if(name === "genero") {
+        //   formattedValue = value.slice(0,50)// Solo 50 caracteres
+        //                         .replace(/^\s+/, "");// Eliminar espacios al principio
+        // }
         if(name === "idioma") {
           formattedValue = value.slice(0,50)// Solo 50 caracteres
                                 .replace(/^\s+/, "")// Eliminar espacios al principio
@@ -166,7 +217,26 @@ const CreateBook = () => {
             />
         </div>
       </div>
-
+      {(successMessage || errorMessage) && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
+            successMessage ? "bg-orange-500" : "bg-black"
+          }`}
+        >
+          <span>{successMessage || errorMessage}</span>
+          <XCircle
+            size={22}
+            className="cursor-pointer hover:text-gray-200"
+            onClick={() => {
+              setSuccessMessage(null);
+              setErrorMessage(null);
+            }}
+          />
+        </motion.div>
+      )} 
       {/* Formulario */}
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 p-6">
         <div>
@@ -211,18 +281,18 @@ const CreateBook = () => {
                 required 
                 type="radio" 
                 name="estado"
-                value="nuevo"
+                value="Nuevo"
                 onChange={handleChange}
-                checked={formData.estado === "nuevo"}
+                checked={formData.estado === "Nuevo"}
                 className="appearance-none w-4 h-4 border-2 border-orange-500 mr-1 rounded-full checked:bg-orange-500 checked:border-orange-500" /> Nuevo
             </label>
             <label className="flex items-center">
               <input 
                 type="radio" 
                 name="estado" 
-                value="usado"
+                value="Usado"
                 onChange={handleChange}
-                checked={formData.estado === "usado"}
+                checked={formData.estado === "Usado"}
                 className="appearance-none w-4 h-4 border-2 bg-white border-orange-500 mr-1 rounded-full checked:bg-orange-500 checked:border-orange-500" /> Usado
             </label>
           </div>
@@ -247,7 +317,7 @@ const CreateBook = () => {
           value={formData.precio}  
           className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Precio" />
         </div>
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium">Reseña</label>
           <input 
           required
@@ -256,7 +326,7 @@ const CreateBook = () => {
           onChange={handleChange}
           value={formData.resena} 
           className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Reseña" />
-        </div>
+        </div> */}
         <div>
           <label className="block text-sm font-medium">Editorial</label>
           <input 
@@ -280,13 +350,48 @@ const CreateBook = () => {
         </div>
         <div>
           <label className="block text-sm font-medium">Género</label>
-          <input 
-          required
-          type="text" 
-          name="genero"
-          onChange={handleChange}
-          value={formData.genero}  
-          className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Género" />
+          <select
+                required
+                name="genero"
+                onChange={handleChange}
+                value={formData.genero}  
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+              >
+                <option value="Ficción">Ficción</option>
+                <option value="No ficción">No ficción</option>
+                <option value="Novela">Novela</option>
+                <option value="Cuentos">Cuentos</option>
+                <option value="Poesía">Poesía</option>
+                <option value="Biografías y autobiografías">Biografías y autobiografías</option>
+                <option value="Ensayos">Ensayos</option>
+                <option value="Historia">Historia</option>
+                <option value="Ciencia">Ciencia</option>
+                <option value="Psicología y desarrollo personal">Psicología y desarrollo personal</option>
+                <option value="Filosofía">Filosofía</option>
+                <option value="Negocios y economía">Negocios y economía</option>
+                <option value="Autoayuda y motivación">Autoayuda y motivación</option>
+                <option value="Salud y bienestar">Salud y bienestar</option>
+                <option value="Religión y espiritualidad">Religión y espiritualidad</option>
+                <option value="Educación y pedagogía">Educación y pedagogía</option>
+                <option value="Tecnología e informática">Tecnología e informática</option>
+                <option value="Viajes y turismo">Viajes y turismo</option>
+                <option value="Gastronomía y cocina">Gastronomía y cocina</option>
+                <option value="Arte y fotografía">Arte y fotografía</option>
+                <option value="Literatura infantil">Literatura infantil</option>
+                <option value="Literatura juvenil">Literatura juvenil</option>
+                <option value="Misterio y suspense">Misterio y suspense</option>
+                <option value="Novela policíaca">Novela policíaca</option>
+                <option value="Fantasía épica">Fantasía épica</option>
+                <option value="Distopía">Distopía</option>
+                <option value="Romance contemporáneo">Romance contemporáneo</option>
+                <option value="Romance histórico">Romance histórico</option>
+                <option value="Horror y terror">Horror y terror</option>
+                <option value="Género gótico">Género gótico</option>
+                <option value="Novela histórica">Novela histórica</option>
+                <option value="Filosofía oriental">Filosofía oriental</option>
+                <option value="Mitología y folclore">Mitología y folclore</option>
+                <option value="Cómics y novelas gráficas">Cómics y novelas gráficas</option>
+              </select>
         </div>
         <div>
           <label className="block text-sm font-medium">Idioma</label>
