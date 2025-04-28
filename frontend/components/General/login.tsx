@@ -90,7 +90,7 @@ const Login = () => {
     try {
       // Iniciar sesión
       const data = await loginUser(email, password);
-      console.log("Respuesta del servidor:", data);
+      
 
       if (data.jwt && data.user) {
 
@@ -129,6 +129,8 @@ const Login = () => {
         
           setAuthToken(data.jwt);
           setAuthRole(userRole);
+
+          console.log(userRole)
         
           // Notificar al Navbar
           window.dispatchEvent(new Event("userLoggedIn"));
@@ -139,6 +141,7 @@ const Login = () => {
           }
           else if(userRole === "Authenticated") 
             {
+            //router.push("/routes/adminbooks");
             router.push("/");
           } 
           else if (userRole === "ROOT") {
