@@ -477,7 +477,9 @@ const EditProfile = () => {
       </form>
       {/* Modal de confirmación */}
       {showConfirm && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-80 text-center border z-50">
+        <>
+        <div className="fixed inset-0 bg-black/50 z-40"></div>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-80 text-center border z-50 ">
           <p className="text-lg font-semibold">¿Deseas continuar con los cambios?</p>
           <div className="mt-4 flex justify-center space-x-4">
             <button className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm" onClick={() => setShowConfirm(false)}>
@@ -488,6 +490,7 @@ const EditProfile = () => {
             </button>
           </div>
         </div>
+        </>
       )}
       {/* Notificación emergente */}
       {message && (
