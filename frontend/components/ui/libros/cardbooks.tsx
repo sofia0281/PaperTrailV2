@@ -27,13 +27,14 @@ const CardBooks = ({
   condition, 
   imageUrl 
 }: BookProps) => {
+
+  // Estado para animación botones
+  const [added, setAdded] = useState(false);
+
   const router = useRouter()
   
   const { addToCart } = useAuth();
   const { cart } = useAuth();
-  // MENSAJE PARA JANCA: 
-  // ya esta implementado el mensaje cuando se añade un producto al carrito falta  que se muestre la burbujita en el carrito
-  //  USA {cart.length} para poner asi en una burbujita al lado del icono de carrito la cantidad de productos que hay en el carrito
   const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
@@ -56,9 +57,20 @@ const CardBooks = ({
       return;
     }
     addToCart({ idLibro, title, price }); // Añade el libro al carrito
-    const Mensaje = "Tu libro se añadió exitosamente al carrito "
-    setSuccessMessage(Mensaje);
-    setTimeout(() => setSuccessMessage(null), 2000);
+    if(!added){
+      const Mensaje = "Tu libro se añadió exitosamente al carrito "
+      setSuccessMessage(Mensaje);
+      setTimeout(() => setSuccessMessage(null), 2000);
+  
+      setAdded(added); // Cambia el estado para la animación
+    }else{
+      const Mensaje = "Libro eliminado exitosamente "
+      setSuccessMessage(Mensaje);
+      setTimeout(() => setSuccessMessage(null), 2000);
+    }
+
+    setAdded(!added); // Cambia el estado para la animación
+
   };
 
   const handleAddToCartAndRedirect = () => {
@@ -70,15 +82,14 @@ const CardBooks = ({
     router.push("/routes/previewshoppingcart"); // Luego redirige
   };
   return (
-    <div className="border rounded-md p-3 shadow-sm hover:scale-105 transition-transform cursor-pointer"
-    >
-      {(successMessage) && (
+    <>
+          {(successMessage) && (
         <motion.div
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -50 }}
           className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
-            successMessage ? "bg-orange-500" : "bg-black"
+            added ? "bg-orange-500" : "bg-red-500"
           }`}
         >
           <span>{successMessage}</span>
@@ -91,6 +102,9 @@ const CardBooks = ({
           />
         </motion.div>
       )} 
+    
+    <div className="border rounded-md p-3 shadow-sm hover:scale-105 transition-transform cursor-pointer"
+    >
       {/* Contenedor de imagen */}
       <div className="bg-gray-200 h-40 rounded-md flex items-center justify-center overflow-hidden"
       onClick={() => router.push(`/routes/books/${idLibro}`)}>
@@ -117,7 +131,10 @@ const CardBooks = ({
       <div className="Botones flex gap-2 mt-2">
 
                 {/* Botón ShoppingCart */}
-                <button className="cursor-pointer border border-orange-500 text-orange-500 text-xs px-2 py-1 rounded-md hover:bg-orange-500 hover:text-white transition-colors"
+                <button className={`cursor-pointer border text-xs px-2 py-1 rounded-md transition-transform transition-colors duration-150 
+                active:scale-95
+                ${added ? 'bg-orange-500 text-white border-orange-500' 
+                  : 'border-orange-500 text-orange-500 hover:bg-orange-400 hover:text-white'}`}
                     onClick={handleAddToCart}>
                   <MdAddShoppingCart/>
                 </button>
@@ -132,6 +149,7 @@ const CardBooks = ({
         </div>
 
     </div>
+    </>
   );
 };
 

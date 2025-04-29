@@ -4,12 +4,16 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import CartSidebar from "../compras/ShoppingCart/CartSideBar";
+import { useAuth } from "@/context/AuthContext";
 
 type UserType = {
     nombre: string;
 } | null;
 
 const Navbar = () => {
+
+    const { cart } = useAuth(); // accede al contenido del carrito
+
     {/* Estado de menú plegable */}
     const [user, setUser] = useState<UserType>(null);
     const [menuOpen, setMenuOpen] = useState(false);
@@ -219,6 +223,11 @@ const Navbar = () => {
                     strokeWidth={1}
                     onClick={toggleCart}
                 />
+                {cart.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cart.length}
+                </span>
+                )}
                 
                 </div> 
 
