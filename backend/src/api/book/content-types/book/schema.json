@@ -4,11 +4,11 @@
   "info": {
     "singularName": "book",
     "pluralName": "books",
-    "displayName": "BOOK",
-    "description": ""
+    "displayName": "Book"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": true,
+    "populateCreatorFields": true
   },
   "attributes": {
     "title": {
@@ -54,12 +54,12 @@
     "idioma": {
       "type": "string"
     },
+    "cantidad": {
+      "type": "integer"
+    },
     "idLibro": {
       "type": "uid",
       "targetField": "ISBN_ISSN"
-    },
-    "cantidad": {
-      "type": "integer"
     }
   }
 }

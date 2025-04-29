@@ -1,4 +1,4 @@
-import PreviewShoppingCart  from "@/components/compras/previewshoppingcart";
+import PreviewShoppingCart  from "@/components/compras/ShoppingCart/previewshoppingcart";
 
 
 export default function Page(){

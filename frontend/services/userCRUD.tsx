@@ -1,17 +1,22 @@
-export const loginUser = async (email: string, password: string) => {
-  const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/local`;
-  
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        identifier: email.trim(), // Añadido .trim() para limpieza
-        password: password.trim() // Añadido .trim() para limpieza
-      }),
-    });
+export const loginUser = async (email, password) => {
+
+    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/local`;
+    console.log("URL de autenticación:", url);
+    try {
+        console.log("Enviando solicitud de inicio de sesión a Strapi...");
+        console.log("Email:", email);
+        console.log("Contraseña:", password);
+
+        const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          identifier: email.trim(), // Añadido .trim() para limpieza
+          password: password.trim() // Añadido .trim() para limpieza
+            }),
+        });
 
     const data = await response.json();
     
@@ -52,28 +57,20 @@ export const fetchUserData = async () => {
     throw error;
   }
 };
-
-// Función para actualizar usuario (mejora en manejo de errores)
-export const putUserData = async (userDataForm: any) => {
-  try {
-    const token = localStorage.getItem('authToken');
-    const userString = localStorage.getItem('user');
-    
-    if (!token || !userString) {
-      throw new Error('No se encontraron datos de autenticación');
-    }
-
-    const user = JSON.parse(userString);
-    const userId = user.id;
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(userDataForm),
-    });
+export const putUserData = async (userDataForm) => {
+    try {
+        const token = localStorage.getItem('authToken');
+        const userString = localStorage.getItem('user'); // Obtener el objeto user como cadena JSON
+        const user = JSON.parse(userString); // Parsear la cadena JSON a un objeto
+        const userId = user.id; // Acceder al campo id
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(userDataForm), // Enviar todos los campos
+        });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -89,56 +86,72 @@ export const putUserData = async (userDataForm: any) => {
 
 // Función para obtener ID de rol (sin cambios)
 const obtenerIdRol = async () => {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users-permissions/roles`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Error al obtener roles');
+    try {
+      console.log('Obteniendo ID del rol "Authenticated"...');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users-permissions/roles`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error detallado de Strapi:', errorData);
+        throw new Error('Error al obtener los roles');
+      }
+  
+      const data = await response.json();
+      const rolAuthenticated = data.roles.find((rol) => rol.name === 'Authenticated');
+  
+      if (!rolAuthenticated) {
+        throw new Error('No se encontró el rol "Authenticated"');
+      }
+  
+      console.log('ID del rol "Authenticated":', rolAuthenticated.id);
+      return rolAuthenticated.id;
+    } catch (error) {
+      console.error('Error al obtener el ID del rol:', error.message);
+      throw error;
     }
-
-    const data = await response.json();
-    const rolAuthenticated = data.roles.find((rol: any) => rol.name === 'Authenticated');
-
-    if (!rolAuthenticated) {
-      throw new Error('Rol no encontrado');
-    }
-
-    return rolAuthenticated.id;
-  } catch (error) {
-    console.error('Error al obtener rol:', error instanceof Error ? error.message : String(error));
-    throw error;
-  }
-};
-
-// Función para crear usuario (mejora en validación)
-export const createUser = async (userData: any) => {
-  try {
-    const roleId = await obtenerIdRol();
-    
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+  };
+  
+  // Función para crear un usuario en Strapi
+export const createUser = async (userData) => {
+    try {
+      const roleId = await obtenerIdRol(); // Obtén el ID del rol "Authenticated"
+      const datosUsuario = {
         ...userData,
-        role: roleId,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || 'Error al crear usuario');
+        role: roleId, // Asigna el ID del rol
+      };
+  
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(datosUsuario),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error detallado de Strapi:', errorData);
+        
+        // Lanzar un error con más información
+        throw {
+          status: response.status,
+          message: errorData.message,
+          errorData
+        };
+      }
+  
+      const data = await response.json();
+      // console.log('Usuario creado en Strapi2:', data);
+      return data;
+    } catch (error) {
+      console.error('Error al enviar datos a Strapi2:', error.message);
+      throw error;
     }
+  };
 
-    return await response.json();
-  } catch (error) {
-    console.error('Error al crear usuario:', error instanceof Error ? error.message : String(error));
-    throw error;
-  }
-};
+

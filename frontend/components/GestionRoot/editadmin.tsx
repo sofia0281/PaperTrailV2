@@ -87,7 +87,7 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
         // "password": formData.password 
       };
       await putAdminData(updatedUserData, adminID);
-      await putUsuarioAdminData(updatedUserData);
+      // await putUsuarioAdminData(updatedUserData);
       setMessage("Administrador editado correctamente");
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {
@@ -116,9 +116,7 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
     };
     loadAdminData();
   }, []);
-    const handleCancelar = () => {
-      router.push('/loginHome');  // Redirecciona a la página "About"
-    };
+  
   return (
     <div className="flex w-full max-w-5xl mx-auto p-6 justify-center">
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6">

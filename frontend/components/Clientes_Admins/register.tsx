@@ -8,8 +8,8 @@ import {createUsuario} from "@/services/usuarioCRUD";
 import { motion } from "framer-motion";
 import { AutocompleteLocation } from "@/components/ui/register/AutocompleteLocation"; // Importación directa desde la misma carpeta
 import emailjs from "@emailjs/browser";
-
 // Importación directa desde la misma carpeta
+
 
 
 const Register = () => {
@@ -178,8 +178,6 @@ const Register = () => {
     }
   };
 
-
-  
   const sendEmail = async (name: string, email: string) => {
     if (!email || !name) return;
   
@@ -200,7 +198,6 @@ const Register = () => {
       console.error("Error al enviar el correo de bienvenida ❌:", error);
     }
   };
-  //export default sendWelcomeEmail;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -231,8 +228,7 @@ const Register = () => {
       setErrorMessage("Por favor, ingresa un correo válido.");
       setTimeout(() => setErrorMessage(null), 3000);
       return;
-     }
-     
+    }
     // Validar la longitud de la contraseña
     if (formData.password.length < 8) {
       setErrorMessage("La contraseña debe tener al menos 8 caracteres.");
@@ -292,36 +288,65 @@ const Register = () => {
           "role":null,
           "provider":"null"
         };
-      const creado = await createUser(createUserData);
-      console.log('Usuario creado:', creado);
-      const creado2 = await createUsuario(createUserData);
-      console.log('Usuario creado:', creado2);
 
-
-      
-
-      setSuccessMessage("Usuario creado exitosamente.");
-      await sendEmail(formData.nombre, formData.email);
-      setErrorMessage(null);
-      setTimeout(() => {
-        setSuccessMessage(null);
-        router.push("/");
-      }, 3000);
+        const creado2 = await createUsuario(createUserData);
+        console.log('Usuario creado:', creado2);
+        
+        try {
+          const creadoUser = await createUser(createUserData);
+          console.log('Usuario creado en tabla user:', creadoUser);
+          
+          setSuccessMessage("Registro completado exitosamente. Por favor, inicia sesión");
+          await sendEmail(formData.nombre, formData.email);
+          setErrorMessage(null);
+          setTimeout(() => {
+              setSuccessMessage(null);
+              router.push("/routes/login");
+          }, 3000);
+          
+      } catch (userError) {
+          console.error('Error al crear en tabla user:', userError);
+          
+          setSuccessMessage("Registro completado con observaciones. Por favor inicia sesión.");
+          setErrorMessage(null);
+          setTimeout(() => {
+              setSuccessMessage(null);
+              router.push("/routes/login");
+          }, 3000);
+      }
     } catch (error) {
-    //console.error('Error:', error.message);
-      setErrorMessage("Error al crear usuario.");
-      setSuccessMessage(null);
-      setTimeout(() => setErrorMessage(null), 3000);
+      // console.error('Error completo:', error);
+      const errorMessages = error.errors.map(errorItem => {
+        const field = errorItem.path[0];
+        if (field === "username")
+        {
+          return `Este nombre de usuario ya se encuentra registrado`;
+        }
+        else if (field === "email"){
+          return `Este correo electrónico ya se encuentra registrado`;
+        }
+        else if (field === "cedula"){
+          return `Esta cédula ya se encuentra registrada`;
+        }
+        return `Error en el  campo ${field}. Error al registrar usuario`;
+        
+      });
+      if (error.status === 400 ) {
+        const fullMessage = errorMessages.join('. ');
+        setErrorMessage(fullMessage);
+        setSuccessMessage(null);
+  	    setTimeout(() => {
+          setErrorMessage(null);
+          router.push("/routes/login");
+        }, 3000);
+      } else {
+        const fullMessage = errorMessages.join('. ');
+        setErrorMessage(fullMessage);
+        setSuccessMessage(null);
+        setTimeout(() => setErrorMessage(null), 3000);
+      }
     }
-  };
-
-
-
-
-  
-
-
-
+};
   return (
     
     <div className="flex flex-col md:flex-row min-h-screen">
@@ -589,11 +614,40 @@ const Register = () => {
                 onChange={handleChange}
                 className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
               >
-                <option value="">Selecciona un tema</option>
-                <option value="ficcion">Ficción</option>
-                <option value="no-ficcion">No Ficción</option>
-                <option value="fantasia">Fantasía</option>
-                <option value="ciencia">Ciencia</option>
+                <option value="Ficción">Ficción</option>
+                <option value="No ficción">No ficción</option>
+                <option value="Novela">Novela</option>
+                <option value="Cuentos">Cuentos</option>
+                <option value="Poesía">Poesía</option>
+                <option value="Biografías y autobiografías">Biografías y autobiografías</option>
+                <option value="Ensayos">Ensayos</option>
+                <option value="Historia">Historia</option>
+                <option value="Ciencia">Ciencia</option>
+                <option value="Psicología y desarrollo personal">Psicología y desarrollo personal</option>
+                <option value="Filosofía">Filosofía</option>
+                <option value="Negocios y economía">Negocios y economía</option>
+                <option value="Autoayuda y motivación">Autoayuda y motivación</option>
+                <option value="Salud y bienestar">Salud y bienestar</option>
+                <option value="Religión y espiritualidad">Religión y espiritualidad</option>
+                <option value="Educación y pedagogía">Educación y pedagogía</option>
+                <option value="Tecnología e informática">Tecnología e informática</option>
+                <option value="Viajes y turismo">Viajes y turismo</option>
+                <option value="Gastronomía y cocina">Gastronomía y cocina</option>
+                <option value="Arte y fotografía">Arte y fotografía</option>
+                <option value="Literatura infantil">Literatura infantil</option>
+                <option value="Literatura juvenil">Literatura juvenil</option>
+                <option value="Misterio y suspense">Misterio y suspense</option>
+                <option value="Novela policíaca">Novela policíaca</option>
+                <option value="Fantasía épica">Fantasía épica</option>
+                <option value="Distopía">Distopía</option>
+                <option value="Romance contemporáneo">Romance contemporáneo</option>
+                <option value="Romance histórico">Romance histórico</option>
+                <option value="Horror y terror">Horror y terror</option>
+                <option value="Género gótico">Género gótico</option>
+                <option value="Novela histórica">Novela histórica</option>
+                <option value="Filosofía oriental">Filosofía oriental</option>
+                <option value="Mitología y folclore">Mitología y folclore</option>
+                <option value="Cómics y novelas gráficas">Cómics y novelas gráficas</option>
               </select>
             </div>
           </div>

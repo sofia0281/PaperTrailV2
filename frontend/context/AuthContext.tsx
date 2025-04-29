@@ -8,21 +8,21 @@ export const AuthProvider = ({ children }) => {
     const [authUser, setAuthUser] = useState(null);
     const [authToken, setAuthToken] = useState(null);
     const [authRole, setAuthRole] = useState(null);
-    const [loading, setLoading] = useState(true); 
+    const [loading, setLoading] = useState(true);
+    const [cart, setCart] = useState([]); // Estado para el carrito
 
+    // Cargar datos del localStorage al iniciar
     useEffect(() => {
         const storedToken = localStorage.getItem('authToken');
         const storedUser = localStorage.getItem('user');
         const storedRole = localStorage.getItem('role');
+        const storedCart = localStorage.getItem('cart'); // Obtener carrito guardado
 
-        if (storedToken) {
-            setAuthToken(storedToken);
-        }
-
+        if (storedToken) setAuthToken(storedToken);
+        
         if (storedUser) {
             try {
-                const parsedUser = JSON.parse(storedUser);
-                setAuthUser(parsedUser);
+                setAuthUser(JSON.parse(storedUser));
             } catch (error) {
                 console.error("Error parsing user data:", error);
                 setAuthUser(null);
@@ -31,30 +31,114 @@ export const AuthProvider = ({ children }) => {
 
         if (storedRole) {
             try {
-                const parsedRole = JSON.parse(storedRole);
-                setAuthRole(parsedRole);
+                setAuthRole(JSON.parse(storedRole));
             } catch (error) {
                 console.error("Error parsing role data:", error);
                 setAuthRole(null);
             }
         }
 
-        setLoading(false); // Marcar como cargado
+        if (storedCart) {
+            try {
+                setCart(JSON.parse(storedCart)); // Inicializar carrito
+            } catch (error) {
+                console.error("Error parsing cart data:", error);
+                setCart([]);
+            }
+        }
+
+        setLoading(false);
     }, []);
 
+    // Guardar carrito en localStorage cuando cambie
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }, [cart]);
+
+    // Función para añadir items al carrito
+    const addToCart = (book) => {
+        const { idLibro, title, price } = book;
+        setCart(prevCart => {
+            const existingItem = prevCart.find(item => item.idLibro === idLibro);
+            
+            if (existingItem) {
+                // Actualizar cantidad y calcular precio total
+                return prevCart.map(item =>
+                    item.idLibro === idLibro
+                        ? { 
+                            ...item, 
+                            quantity: item.quantity + 1,
+                            totalPrice: (item.quantity + 1) * price // Precio total actualizado
+                        }
+                        : item
+                );
+            } else {
+                // Añadir nuevo item con precio total inicial
+                return [...prevCart, { 
+                    idLibro, 
+                    title, 
+                    unitPrice: price, // Guardamos precio unitario como referencia
+                    quantity: 1,
+                    totalPrice: price // Precio total = unitPrice * quantity
+                }];
+            }
+        });
+    };
+
+    // Función para eliminar items del carrito
+    const removeFromCart = (idLibro) => {
+        setCart(prevCart => prevCart.filter(item => item.idLibro !== idLibro));
+    };
+
+    // Función para actualizar cantidad manualmente
+    const updateQuantity = (idLibro, newQuantity) => {
+        if (newQuantity < 1) {
+            removeFromCart(idLibro);
+            return;
+        }
+
+        setCart(prevCart =>
+            prevCart.map(item =>
+                item.idLibro === idLibro
+                    ? { 
+                        ...item, 
+                        quantity: newQuantity,
+                        totalPrice: newQuantity * item.unitPrice // Recalculamos precio total
+                    }
+                    : item
+            )
+        );
+    };
+
+    // Función para limpiar el carrito
+    const clearCart = () => {
+        setCart([]);
+    };
+
     if (loading) {
-        return (
-            <div>
-                <p>Loading...</p>
-            </div>
-        ) 
+        return <div>Cargando...</div>;
     }
 
     return (
-        <AuthContext.Provider value={{ authUser, authToken, authRole, loading, setAuthUser, setAuthToken, setAuthRole }}>
-          {children}
+        <AuthContext.Provider
+            value={{
+                authUser,
+                authToken,
+                authRole,
+                loading,
+                cart, // Añadir carrito al contexto
+                setAuthUser,
+                setAuthToken,
+                setAuthRole,
+                addToCart,
+                removeFromCart,
+                updateQuantity,
+                clearCart
+            }}
+        >
+            {children}
         </AuthContext.Provider>
-      );
+    );
 };
 
 export const useAuth = () => useContext(AuthContext);

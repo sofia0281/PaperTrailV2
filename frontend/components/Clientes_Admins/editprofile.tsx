@@ -9,8 +9,8 @@ import { motion } from "framer-motion";
 import { prefetchDNS } from "react-dom";
 import { PrefetchRSCPathnameNormalizer } from "next/dist/server/normalizers/request/prefetch-rsc";
 import { PassThrough } from "stream";
-import MenuLateralEditProfile from "../ui/menulateraleditprofile";
-import EditPassword from "./editpassword";
+import MenuLateralEditProfile from "@/components/ui/menulateraleditprofile";
+import EditPassword from "@/components/Clientes_Admins/editpassword";
 
 const EditProfile = () => {
   const maxLengths: Record<string, number> = {
@@ -55,7 +55,7 @@ const EditProfile = () => {
   });
 
   const handleCancelar = () => {
-    router.push("/routes/loginHome");
+    router.push("/");
   };
 
   useEffect(() => {
@@ -208,7 +208,7 @@ const EditProfile = () => {
         TemaL_1: formData.preferencia1,
         TemaL_2: formData.preferencia2,
         Direccion: formData.direccion,
-        password: formData.passwordConfirmar,
+        // password: formData.passwordConfirmar,
       };
 
       const actualizado = await putUserData(updatedUserData);
@@ -467,7 +467,7 @@ const EditProfile = () => {
           <button 
           type="button" 
           className="bg-blue-500 text-white px-4 py-2 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer"
-          onClick={() => router.push("/routes/loginHome")}>
+          onClick={() => router.push("/")}>
             CANCELAR
           </button>
           <button type="submit" className="bg-orange-500 text-white px-4 py-2 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer">

@@ -90,7 +90,7 @@ const Login = () => {
     try {
       // Iniciar sesión
       const data = await loginUser(email, password);
-      console.log("Respuesta del servidor:", data);
+      console.log(data)
 
       if (data.jwt && data.user) {
 
@@ -129,6 +129,8 @@ const Login = () => {
         
           setAuthToken(data.jwt);
           setAuthRole(userRole);
+
+          console.log(userRole)
         
           // Notificar al Navbar
           window.dispatchEvent(new Event("userLoggedIn"));
@@ -139,7 +141,8 @@ const Login = () => {
           }
           else if(userRole === "Authenticated") 
             {
-            router.push("/routes/loginHome");
+            //router.push("/routes/adminbooks");
+            router.push("/");
           } 
           else if (userRole === "ROOT") {
             router.push("/routes/gestionroot");
@@ -147,18 +150,6 @@ const Login = () => {
         }
         
         
-        // Luego redirige después de un pequeño retraso (100ms)
-        {/*}
-        setTimeout(() => {
-          if (userRole === "Admin") {
-            router.push("/routes/loginHome");
-          } else if (userRole === "Authenticated") {
-            router.push("/routes/loginHome");
-          } else if (userRole === "ROOT") {
-            router.push("/routes/gestionroot");
-          }
-        }, 100);
-        */}
 
       } else {
         console.error("No se recibieron datos del usuario en la respuesta.");

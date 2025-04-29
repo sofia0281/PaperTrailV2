@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "item_pedidos",
+  "info": {
+    "singularName": "item-pedido",
+    "pluralName": "item-pedidos",
+    "displayName": "ItemPedido",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "PrecioItem": {
+      "type": "integer"
+    },
+    "Cantidad": {
+      "type": "integer"
+    },
+    "IdItem": {
+      "type": "string"
+    },
+    "IdPedido": {
+      "type": "string"
+    }
+  }
+}
