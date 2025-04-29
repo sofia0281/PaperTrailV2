@@ -4,11 +4,11 @@
   "info": {
     "singularName": "pedido",
     "pluralName": "pedidos",
-    "displayName": "Pedido"
+    "displayName": "Pedido",
+    "description": ""
   },
   "options": {
-    "draftAndPublish": true,
-    "populateCreatorFields": true
+    "draftAndPublish": true
   },
   "attributes": {
     "usuario": {
@@ -17,12 +17,8 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "pedidos"
     },
-    "producto": {
-      "type": "string"
-    },
-    "cantidad": {
+    "Total": {
       "type": "integer"
     }
   }
 }
-

@@ -3,7 +3,7 @@ import { ShoppingCart, User, Search, Settings, Shield, LogOut } from "lucide-rea
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import CartSidebar from "../compras/CartSideBar";
+import CartSidebar from "../compras/ShoppingCart/CartSideBar";
 
 type UserType = {
     nombre: string;

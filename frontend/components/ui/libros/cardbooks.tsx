@@ -1,11 +1,14 @@
 "use client";
+// Crea un card por cada libro de la base de datos
 import { useRouter} from "next/navigation";
 import { useState, useEffect } from "react";
 import { MdAddShoppingCart } from "react-icons/md";
 import {XCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/context/AuthContext"; 
 
 interface BookProps {
+  idLibro:string,
   title: string;
   price: number;
   author?: string;
@@ -17,14 +20,22 @@ interface BookProps {
 
 
 const CardBooks = ({ 
+  idLibro,
   title, 
   price, 
-  author = "Autor desconocido", 
-  condition = "Usado/Nuevo", 
+  author, 
+  condition, 
   imageUrl 
 }: BookProps) => {
   const router = useRouter()
+  
+  const { addToCart } = useAuth();
+  const { cart } = useAuth();
+  // MENSAJE PARA JANCA: 
+  // ya esta implementado el mensaje cuando se añade un producto al carrito falta  que se muestre la burbujita en el carrito
+  //  USA {cart.length} para poner asi en una burbujita al lado del icono de carrito la cantidad de productos que hay en el carrito
   const [role, setRole] = useState<string | null>(null);
+
   useEffect(() => {
     const storedRole = localStorage.getItem('role');
     setRole(storedRole?.replace(/"/g, '') || null);
@@ -33,13 +44,31 @@ const CardBooks = ({
 
 
   
-  const hanleMessage = () =>{
+  const handleMessage = () =>{
     const Mensaje = "Registrate o Inicia Sesión como cliente "
     setSuccessMessage(Mensaje);
     setTimeout(() => setSuccessMessage(null), 3000);
   }
-  
+  // Función para añadir al carrito
+  const handleAddToCart = () => {
+    if (role !== "Authenticated") {
+      handleMessage(); // Muestra mensaje si no está autenticado
+      return;
+    }
+    addToCart({ idLibro, title, price }); // Añade el libro al carrito
+    const Mensaje = "Tu libro se añadió exitosamente al carrito "
+    setSuccessMessage(Mensaje);
+    setTimeout(() => setSuccessMessage(null), 2000);
+  };
 
+  const handleAddToCartAndRedirect = () => {
+    if (role !== "Authenticated") {
+      handleMessage(); // Muestra mensaje si no está autenticado
+      return;
+    }
+    handleAddToCart(); // Primero añade al carrito
+    router.push("/routes/previewshoppingcart"); // Luego redirige
+  };
   return (
     <div className="border rounded-md p-3 shadow-sm hover:scale-105 transition-transform cursor-pointer"
     >
@@ -64,7 +93,7 @@ const CardBooks = ({
       )} 
       {/* Contenedor de imagen */}
       <div className="bg-gray-200 h-40 rounded-md flex items-center justify-center overflow-hidden"
-      onClick={() => router.push("/routes/books")}>
+      onClick={() => router.push(`/routes/books/${idLibro}`)}>
         {imageUrl ? (
           <img 
             src={imageUrl.includes('http') ? imageUrl : `http://localhost:1337${imageUrl}`}
@@ -86,36 +115,19 @@ const CardBooks = ({
         <p className="text-xs text-gray-500">{condition}</p>
       </div>
       <div className="Botones flex gap-2 mt-2">
-          {role === "Authenticated" ? (
-            <>
-                {/* Botón ShoppingCart */}
-                <button className="cursor-pointer border border-orange-500 text-orange-500 text-xs px-2 py-1 rounded-md hover:bg-orange-500 hover:text-white transition-colors">
-                  <MdAddShoppingCart/>
-                </button>
-          
-                {/* Botón Comprar ya */}
-              <button className="cursor-pointer bg-orange-500 text-white text-xs px-4 py-1 rounded-md hover:bg-orange-600 transition-colors w-full"
-              onClick={() => router.push("/routes/previewshoppingcart")}>
-                + Comprar ya
-              </button>
-            
-            </>
-          ):(
-            <>
+
                 {/* Botón ShoppingCart */}
                 <button className="cursor-pointer border border-orange-500 text-orange-500 text-xs px-2 py-1 rounded-md hover:bg-orange-500 hover:text-white transition-colors"
-                  onClick={ () => hanleMessage()}>
+                    onClick={handleAddToCart}>
                   <MdAddShoppingCart/>
                 </button>
           
                 {/* Botón Comprar ya */}
               <button className="cursor-pointer bg-orange-500 text-white text-xs px-4 py-1 rounded-md hover:bg-orange-600 transition-colors w-full"
-              onClick={() => hanleMessage()}>
+              onClick={handleAddToCartAndRedirect}>
                 + Comprar ya
               </button>
-            </>
-          )
-        }
+
 
         </div>
 

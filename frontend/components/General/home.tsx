@@ -2,10 +2,13 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import ButtonSuscribete from "@/components/ui/buttonsuscribete";
-import CardBooks from "@/components/ui/cardbooks";
-import { getAllLibrosData } from "@/services/bookCRUD";
+import ButtonSuscribete from "@/components/ui/botonSuscribirse/buttonsuscribete";
+import CardBooks from "@/components/ui/libros/cardbooks";
+import { useAuth } from '@/context/AuthContext';
+
+
 interface StrapiBook {
+  idLibro:string,
   id: number;
   attributes: {
     title: string;
@@ -101,6 +104,7 @@ const Home = () => {
           {books.slice(0,10).map((book) => (
             <CardBooks
               key={book.idLibro}
+              idLibro={book.idLibro}
               title={book.title}
               price={book.price}
               author={book.author}

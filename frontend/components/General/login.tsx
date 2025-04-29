@@ -90,7 +90,7 @@ const Login = () => {
     try {
       // Iniciar sesión
       const data = await loginUser(email, password);
-      
+      console.log(data)
 
       if (data.jwt && data.user) {
 

@@ -410,6 +410,7 @@ export interface ApiBookBook extends Struct.CollectionTypeSchema {
 export interface ApiItemPedidoItemPedido extends Struct.CollectionTypeSchema {
   collectionName: 'item_pedidos';
   info: {
+    description: '';
     displayName: 'ItemPedido';
     pluralName: 'item-pedidos';
     singularName: 'item-pedido';
@@ -422,12 +423,15 @@ export interface ApiItemPedidoItemPedido extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    IdItem: Schema.Attribute.String;
+    IdPedido: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::item-pedido.item-pedido'
     > &
       Schema.Attribute.Private;
+    PrecioItem: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -438,28 +442,29 @@ export interface ApiItemPedidoItemPedido extends Struct.CollectionTypeSchema {
 export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
   collectionName: 'pedidos';
   info: {
+    description: '';
     displayName: 'Pedido';
     pluralName: 'pedidos';
     singularName: 'pedido';
   };
   options: {
     draftAndPublish: true;
-    populateCreatorFields: true;
   };
   attributes: {
-    cantidad: Schema.Attribute.Integer;
     createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::pedido.pedido'
     > &
       Schema.Attribute.Private;
-    producto: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    Total: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
     usuario: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
