@@ -6,8 +6,12 @@ import { getBookByIdLibro, putBookData } from "@/services/bookCRUD";
 import withAuthADMIN from '../Auth/withAuthADMIN';
 import {XCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import ImageUpload from "../ui/ImageUpload";
 
 const EditBook =  ({ bookID }: { bookID: string }) => {
+
+  const [image, setImage] = useState<string | null>(null);
+
   const router = useRouter();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -238,13 +242,19 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
       {/* Encabezado */}
       <div className="bg-orange-600 text-white p-9 rounded-t-lg relative">
         <h1 className="text-2xl font-bold">EDITAR LIBRO</h1>
-        <div className="absolute top-10 right-5 transform translate-x-0 bg-gray-200 p-2 rounded-md shadow-md mb-10
-                        sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:right-auto">
-            <img 
-            src="https://media.istockphoto.com/id/1023006620/es/vector/pila-de-libros-ilustraci%C3%B3n-vectorial-plana-simple-libros-de-tapa-dura-con-cubiertas-de.jpg?s=612x612&w=0&k=20&c=VaCciK2-WVgwpDtFEU6cTY1XEQ0B5wp1T-4sgqu1XlA=" 
-            alt="Imagen de ejemplo"
-            className="w-full max-w-[100px] h-auto mx-auto"
+        <div className="absolute top-5 right-5 transform translate-x-0 bg-gray-200 p-2 rounded-md shadow-md mb-10
+                sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:right-auto w-40">
+          {image ? (
+            <img
+              src={image}
+              alt="Imagen del libro"
+              className="w-[120px] h-[120px] object-contain mx-auto"
+
             />
+          ) : (
+            <p className="text-sm text-center text-gray-500">No se ha subido ninguna imagen aún.</p>
+          )}
+            <ImageUpload onImageUpload = {setImage} imageUrl={image}/>
         </div>
       </div>
       {(successMessage || errorMessage) && (
@@ -268,7 +278,7 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
         </motion.div>
       )} 
       {/* Formulario */}
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16 p-6">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-18 p-6">
         <div>
           <label className="block text-sm font-medium">ISSN</label>
           <input 
