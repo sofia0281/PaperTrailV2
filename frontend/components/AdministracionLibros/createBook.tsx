@@ -6,6 +6,10 @@ import { useState, useEffect } from "react";
 import { createBook } from "@/services/bookCRUD";
 import { motion } from "framer-motion";
 
+import { AutocompleteLanguage } from "@/components/ui/createBook/Autocompleteidioma";
+import { AutocompleteEditorial } from "@/components/ui/createBook/Autocompleteeditorial";
+
+
 const CreateBook = () => {
   const router = useRouter();
   {/*Estados para la ventana emergente */}
@@ -327,15 +331,15 @@ const CreateBook = () => {
           value={formData.resena} 
           className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Reseña" />
         </div> */}
+        {/* Editorial */}
         <div>
           <label className="block text-sm font-medium">Editorial</label>
-          <input 
-          required
-          type="text" 
-          name="editorial"
-          onChange={handleChange}
-          value={formData.editorial}  
-          className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Editorial" />
+          <AutocompleteEditorial
+            value={formData.editorial}
+            onChange={(value) => setFormData({ ...formData, editorial: value })}
+            placeholder="Editorial"
+            required
+          />
         </div>
         <div>
           <label className="block text-sm font-medium">Número de Páginas</label>
@@ -393,15 +397,15 @@ const CreateBook = () => {
                 <option value="Cómics y novelas gráficas">Cómics y novelas gráficas</option>
               </select>
         </div>
+        {/* Idioma */}
         <div>
           <label className="block text-sm font-medium">Idioma</label>
-          <input 
-          required
-          type="text" 
-          name="idioma"
-          onChange={handleChange}
-          value={formData.idioma}  
-          className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Idioma" />
+          <AutocompleteLanguage
+            value={formData.idioma}
+            onChange={(value) => setFormData({ ...formData, idioma: value })}
+            placeholder="Idioma"
+            required
+          />
         </div>
         <div>
           <label className="block text-sm font-medium">Cantidad</label>

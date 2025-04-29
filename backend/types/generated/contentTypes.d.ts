@@ -407,6 +407,34 @@ export interface ApiBookBook extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiItemPedidoItemPedido extends Struct.CollectionTypeSchema {
+  collectionName: 'item_pedidos';
+  info: {
+    displayName: 'ItemPedido';
+    pluralName: 'item-pedidos';
+    singularName: 'item-pedido';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Cantidad: Schema.Attribute.Integer;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::item-pedido.item-pedido'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
   collectionName: 'pedidos';
   info: {
@@ -416,12 +444,12 @@ export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
   };
   options: {
     draftAndPublish: true;
+    populateCreatorFields: true;
   };
   attributes: {
     cantidad: Schema.Attribute.Integer;
     createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -431,8 +459,7 @@ export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
     producto: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
     usuario: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
@@ -1063,6 +1090,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::book.book': ApiBookBook;
+      'api::item-pedido.item-pedido': ApiItemPedidoItemPedido;
       'api::pedido.pedido': ApiPedidoPedido;
       'api::product.product': ApiProductProduct;
       'api::usuario.usuario': ApiUsuarioUsuario;
