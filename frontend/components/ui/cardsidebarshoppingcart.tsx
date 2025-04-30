@@ -1,55 +1,147 @@
 "use client";
-import { Minus, Plus, X } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+// Crea un card por cada libro de la base de datos
+import { useRouter} from "next/navigation";
+import { useState, useEffect } from "react";
+import { MdAddShoppingCart } from "react-icons/md";
+import {XCircle } from "lucide-react";
+import { motion } from "framer-motion";
+import { useAuth } from "@/context/AuthContext"; 
 
-const CardSideBarShoppingCart = ({ item }) => {
-  const { updateQuantity, removeFromCart } = useAuth();
+interface BookProps {
+  idLibro:string,
+  title: string;
+  price: number;
+  author?: string;
+  condition?: string;
+  imageUrl?: string;
+}
 
+
+
+
+const CardBooks = ({ 
+  idLibro,
+  title, 
+  price, 
+  author, 
+  condition, 
+  imageUrl 
+}: BookProps) => {
+
+  
+  const router = useRouter()
+  
+  const { addToCart,addedItems = [] } = useAuth();
+  const { cart } = useAuth();
+  const [role, setRole] = useState<string | null>(null);
+
+  // Estado para animación botones
+  const added = addedItems.includes(idLibro); // Verifica si el libro ya está en el carrito
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem('role');
+    setRole(storedRole?.replace(/"/g, '') || null);
+  }, []);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+
+  
+  const handleMessage = () =>{
+    const Mensaje = "Registrate o Inicia Sesión como cliente "
+    setSuccessMessage(Mensaje);
+    setTimeout(() => setSuccessMessage(null), 3000);
+  }
+  // Función para añadir al carrito
+  const handleAddToCart = () => {
+    if (role !== "Authenticated") {
+      handleMessage(); // Muestra mensaje si no está autenticado
+      return;
+    }
+    addToCart({ idLibro, title, price }); // Añade el libro al carrito
+      const Mensaje = "Tu libro se añadió exitosamente al carrito "
+      setSuccessMessage(Mensaje);
+      setTimeout(() => setSuccessMessage(null), 2000);
+
+  };
+
+  const handleAddToCartAndRedirect = () => {
+    if (role !== "Authenticated") {
+      handleMessage(); // Muestra mensaje si no está autenticado
+      return;
+    }
+    handleAddToCart(); // Primero añade al carrito
+    router.push("/routes/previewshoppingcart"); // Luego redirige
+  };
   return (
-    <div className="flex items-center gap-3 border-b pb-4">
-      {/* Imagen del libro */}
-      <div className="w-16 h-16 bg-white rounded overflow-hidden">
-        {item.imageUrl && (
-          <img
-            src={item.imageUrl.includes('http') ? item.imageUrl : `http://localhost:1337${item.imageUrl}`}
-            alt={item.title}
+    <>
+          {(successMessage) && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
+            added ? "bg-orange-500" : "bg-red-500"
+          }`}
+        >
+          <span>{successMessage}</span>
+          <XCircle
+            size={22}
+            className="cursor-pointer hover:text-gray-200"
+            onClick={() => {
+              setSuccessMessage(null);
+            }}
+          />
+        </motion.div>
+      )} 
+    
+    <div className="border rounded-md p-3 shadow-sm hover:scale-105 transition-transform cursor-pointer"
+    >
+      {/* Contenedor de imagen */}
+      <div className="bg-gray-200 h-40 rounded-md flex items-center justify-center overflow-hidden"
+      onClick={() => router.push(`/routes/books/${idLibro}`)}>
+        {imageUrl ? (
+          <img 
+            src={imageUrl.includes('http') ? imageUrl : `http://localhost:1337${imageUrl}`}
+            alt={`Portada de ${title}`}
             className="w-full h-full object-cover"
           />
+        ) : (
+          <p className="text-gray-400">[ Portada no disponible ]</p>
         )}
       </div>
 
       {/* Detalles del libro */}
-      <div className="flex-1">
-        <p className="font-medium">{item.title}</p>
-        <p className="text-sm">${item.totalPrice.toLocaleString('es-CO')}</p>
+      <div className="mt-2">
+        <h3 className="text-sm font-medium truncate">{title}</h3>
+        <p className="text-xs text-gray-600">{author}</p>
+        <p className="text-sm font-semibold text-gray-800 mt-1">
+          ${price.toLocaleString('es-CO')}
+        </p>
+        <p className="text-xs text-gray-500">{condition}</p>
       </div>
+      <div className="Botones flex gap-2 mt-2">
 
-      {/* Contador de cantidad */}
-      <div className="flex items-center border rounded-full px-2 py-1 space-x-2">
-        <button
-          onClick={() => updateQuantity(item.idLibro, item.quantity - 1)}
-          className="cursor-pointer hover:text-orange-500 transition duration-200 ease-in-out"
-        >
-          <Minus size={16} />
-        </button>
-        <span>{item.quantity}</span>
-        <button
-          onClick={() => updateQuantity(item.idLibro, item.quantity + 1)}
-          className="cursor-pointer hover:text-orange-500 hover:scale-140 transition duration-200 ease-in-out"
-        >
-          <Plus size={16} />
-        </button>
-      </div>
+                {/* Botón ShoppingCart */}
+                <button className={`cursor-pointer border text-xs px-2 py-1 rounded-md transition-transform transition-colors duration-150 
+                active:scale-95
+                ${added ? 'bg-orange-500 text-white border-orange-500' 
+                  : 'border-orange-500 text-orange-500 hover:bg-orange-400 hover:text-white'}`}
+                    onClick={handleAddToCart}>
+                  <MdAddShoppingCart/>
+                </button>
+          
+                {/* Botón Comprar ya */}
+              <button className="cursor-pointer bg-orange-500 text-white text-xs px-4 py-1 rounded-md hover:bg-orange-600 transition-colors w-full"
+              onClick={handleAddToCartAndRedirect}>
+                + Comprar ya
+              </button>
 
-      {/* Botón para eliminar */}
-      <button
-        onClick={() => removeFromCart(item.idLibro)}
-        className="text-red-500 hover:text-red-700 ml-2"
-      >
-        <X size={16} />
-      </button>
+
+        </div>
+
     </div>
+    </>
   );
 };
 
-export default CardSideBarShoppingCart;
+export default CardBooks;

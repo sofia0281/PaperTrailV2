@@ -6,8 +6,15 @@ import { getBookByIdLibro, putBookData } from "@/services/bookCRUD";
 import withAuthADMIN from '../Auth/withAuthADMIN';
 import {XCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import ImageUpload from "../ui/ImageUpload";
 
 const EditBook =  ({ bookID }: { bookID: string }) => {
+
+  const [image, setImage] = useState<string | null>(null);
+
+  //ventana modal de confirmación
+  const [showConfirm, setShowConfirm] = useState(false);
+
   const router = useRouter();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -60,9 +67,14 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
     return numeros[7] === digitoControl;
   };
 
+  const ConfirmSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowConfirm(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setShowConfirm(false);
       try {
         const updatedBookData = {
           "ISBN_ISSN": formData.issn,
@@ -238,13 +250,19 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
       {/* Encabezado */}
       <div className="bg-orange-600 text-white p-9 rounded-t-lg relative">
         <h1 className="text-2xl font-bold">EDITAR LIBRO</h1>
-        <div className="absolute top-10 right-5 transform translate-x-0 bg-gray-200 p-2 rounded-md shadow-md mb-10
-                        sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:right-auto">
-            <img 
-            src="https://media.istockphoto.com/id/1023006620/es/vector/pila-de-libros-ilustraci%C3%B3n-vectorial-plana-simple-libros-de-tapa-dura-con-cubiertas-de.jpg?s=612x612&w=0&k=20&c=VaCciK2-WVgwpDtFEU6cTY1XEQ0B5wp1T-4sgqu1XlA=" 
-            alt="Imagen de ejemplo"
-            className="w-full max-w-[100px] h-auto mx-auto"
+        <div className="absolute top-5 right-5 transform translate-x-0 bg-gray-200 p-2 rounded-md shadow-md mb-10
+                sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:right-auto w-40">
+          {image ? (
+            <img
+              src={image}
+              alt="Imagen del libro"
+              className="w-[120px] h-[120px] object-contain mx-auto"
+
             />
+          ) : (
+            <p className="text-sm text-center text-gray-500">No se ha subido ninguna imagen aún.</p>
+          )}
+            <ImageUpload onImageUpload = {setImage} imageUrl={image}/>
         </div>
       </div>
       {(successMessage || errorMessage) && (
@@ -267,8 +285,29 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
           />
         </motion.div>
       )} 
+
+    {/* ------------------------Ventana modal de confirmación ----------------------------*/}
+            {showConfirm && (
+        <>
+        <div className="fixed inset-0 bg-black/50 z-40"></div>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-80 text-center border z-50 ">
+          <p className="text-lg font-semibold">¿Deseas continuar con los cambios?</p>
+          <div className="mt-4 flex justify-center space-x-4">
+            <button className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm cursor-pointer hover:bg-gray-400 transition-transform transition-colors duration-150 
+                active:scale-95" onClick={() => setShowConfirm(false)}>
+              Cancelar
+            </button>
+            <button className="bg-orange-500 text-white px-4 py-2 rounded-md text-sm cursor-pointer hover:bg-orange-600 transition-transform transition-colors duration-150 
+                active:scale-95" onClick={handleSubmit}>
+              Sí, editar
+            </button>
+          </div>
+        </div>
+        </>
+      )}
+
       {/* Formulario */}
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16 p-6">
+      <form onSubmit={ConfirmSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-18 p-6">
         <div>
           <label className="block text-sm font-medium">ISSN</label>
           <input 
@@ -428,7 +467,7 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
           <label className="block text-sm font-medium">Cantidad</label>
           <input 
           required
-          type="number" 
+          type="text" 
           name="cantidad"
           onChange={handleChange}
           value={formData.cantidad}  
