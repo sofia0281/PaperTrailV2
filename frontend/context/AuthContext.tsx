@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
     const [authRole, setAuthRole] = useState(null);
     const [loading, setLoading] = useState(true);
     const [cart, setCart] = useState([]); // Estado para el carrito
+    const [addedItems, setAddedItems] = useState<string[]>([]); // array de idLibro añadidos
 
     // Cargar datos del localStorage al iniciar
     useEffect(() => {
@@ -83,11 +84,14 @@ export const AuthProvider = ({ children }) => {
                 }];
             }
         });
+        setAddedItems(prev => [...new Set([...prev, idLibro])]); // agrega si no está duplicado
     };
 
     // Función para eliminar items del carrito
     const removeFromCart = (idLibro) => {
         setCart(prevCart => prevCart.filter(item => item.idLibro !== idLibro));
+        setAddedItems(prev => prev.filter(id => id !== idLibro)); // quitarlo de la lista
+
     };
 
     // Función para actualizar cantidad manualmente
@@ -127,13 +131,15 @@ export const AuthProvider = ({ children }) => {
                 authRole,
                 loading,
                 cart, // Añadir carrito al contexto
+                addedItems, 
                 setAuthUser,
                 setAuthToken,
                 setAuthRole,
                 addToCart,
                 removeFromCart,
                 updateQuantity,
-                clearCart
+                clearCart,
+                
             }}
         >
             {children}

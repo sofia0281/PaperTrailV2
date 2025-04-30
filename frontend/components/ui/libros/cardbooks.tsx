@@ -28,14 +28,15 @@ const CardBooks = ({
   imageUrl 
 }: BookProps) => {
 
-  // Estado para animación botones
-  const [added, setAdded] = useState(false);
-
+  
   const router = useRouter()
   
-  const { addToCart } = useAuth();
+  const { addToCart,addedItems = [] } = useAuth();
   const { cart } = useAuth();
   const [role, setRole] = useState<string | null>(null);
+
+  // Estado para animación botones
+  const added = addedItems.includes(idLibro); // Verifica si el libro ya está en el carrito
 
   useEffect(() => {
     const storedRole = localStorage.getItem('role');
@@ -57,19 +58,9 @@ const CardBooks = ({
       return;
     }
     addToCart({ idLibro, title, price }); // Añade el libro al carrito
-    if(!added){
       const Mensaje = "Tu libro se añadió exitosamente al carrito "
       setSuccessMessage(Mensaje);
       setTimeout(() => setSuccessMessage(null), 2000);
-  
-      setAdded(added); // Cambia el estado para la animación
-    }else{
-      const Mensaje = "Libro eliminado exitosamente "
-      setSuccessMessage(Mensaje);
-      setTimeout(() => setSuccessMessage(null), 2000);
-    }
-
-    setAdded(!added); // Cambia el estado para la animación
 
   };
 

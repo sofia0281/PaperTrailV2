@@ -44,7 +44,7 @@ const CardSideBarShoppingCart = ({ item }) => {
       {/* Botón para eliminar */}
       <button
         onClick={() => removeFromCart(item.idLibro)}
-        className="text-red-500 hover:text-red-700 ml-2"
+        className="text-red-500 hover:text-red-700 ml-2 cursor-pointer"
       >
         <X size={16} />
       </button>
