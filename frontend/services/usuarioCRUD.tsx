@@ -123,8 +123,13 @@ export const putUsuarioData = async (userDataForm) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Error detallado2:', errorData);
-      throw new Error('Error al actualizar usuario2');
+      console.error('Error detallado de Strapi2:', errorData);
+      throw {
+        status: errorData.error.status,
+        message: errorData.error.message,
+        errors: errorData.error.details.errors,
+        errorData
+      };
     }
 
     const updatedUser = await response.json();

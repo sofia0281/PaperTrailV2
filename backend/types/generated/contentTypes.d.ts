@@ -433,6 +433,8 @@ export interface ApiItemPedidoItemPedido extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     PrecioItem: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
+    Title: Schema.Attribute.String;
+    totalPrice: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

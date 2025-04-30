@@ -9,6 +9,15 @@ interface EditPasswordProps {
 }
 
 const EditPassword = ({ userId, userEmail }: EditPasswordProps) => {
+
+  const maxLengths: Record<string, number> = {
+
+    passwordActual: 20,
+    passwordNueva: 20,
+    passwordConfirmar: 20
+  };
+
+
   const router = useRouter();
   
   // Estados para mostrar/ocultar contraseñas
@@ -104,6 +113,10 @@ const EditPassword = ({ userId, userEmail }: EditPasswordProps) => {
       } else {
         setPasswordError(null);
       }
+    }
+    // Limitar longitud de los inputs
+    if (maxLengths[name]) {
+      formattedValue = formattedValue.slice(0, maxLengths[name]);
     }
 
     setFormData(prev => ({
@@ -288,7 +301,16 @@ const EditPassword = ({ userId, userEmail }: EditPasswordProps) => {
           <button 
             type="button" 
             className="bg-blue-500 text-white px-4 py-1 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer"
-            onClick={() => router.push("/routes/editprofile")}
+            onClick={() => {
+              router.push("/routes/editprofile");
+              setPasswordError(null);
+              setFormData({
+                passwordActual: "",
+                passwordNueva: "",
+                passwordConfirmar: ""
+              });
+            }}
+            
             disabled={isLoading}
           >
             CANCELAR

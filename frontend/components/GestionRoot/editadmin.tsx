@@ -15,6 +15,9 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
   {/*Estados para las ventanas de confirmación */}
   const [showConfirm, setShowConfirm] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -91,8 +94,36 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
       setMessage("Administrador editado correctamente");
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {
-      console.error("Error:", error.message);
-      setMessage("Error al actualizar los datos");
+      // console.error('Error completo:', error);
+      const errorMessages = error.errors.map(errorItem => {
+        const field = errorItem.path[0];
+        if (field === "username")
+        {
+          return `Este nombre de usuario ya se encuentra registrado`;
+        }
+        else if (field === "Email"){
+          return `Este correo electrónico ya se encuentra registrado`;
+        }
+        else if (field === "cedula"){
+          return `Esta cédula ya se encuentra registrada`;
+        }
+        return `Error en el  campo ${field}. Error al registrar usuario`;
+        
+      });
+      if (error.status === 400 ) {
+        const fullMessage = errorMessages.join('. ');
+        setErrorMessage(fullMessage);
+        setSuccessMessage(null);
+  	    setTimeout(() => {
+          setErrorMessage(null);
+          // router.push("/routes/login");
+        }, 3000);
+      } else {
+        const fullMessage = errorMessages.join('. ');
+        setErrorMessage(fullMessage);
+        setSuccessMessage(null);
+        setTimeout(() => setErrorMessage(null), 3000);
+      }
     }
   };
 
@@ -119,6 +150,26 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
   
   return (
     <div className="flex w-full max-w-5xl mx-auto p-6 justify-center">
+      {(successMessage || errorMessage) && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
+            successMessage ? "bg-orange-500" : "bg-black"
+          }`}
+        >
+          <span>{successMessage || errorMessage}</span>
+          <XCircle
+            size={22}
+            className="cursor-pointer hover:text-gray-200"
+            onClick={() => {
+              setSuccessMessage(null);
+              setErrorMessage(null);
+            }}
+          />
+        </motion.div>
+            )} 
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
         {/* Sección Izquierda */}
         <div className="flex flex-col items-center">

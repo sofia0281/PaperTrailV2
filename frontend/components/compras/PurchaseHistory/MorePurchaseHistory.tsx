@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useRouter } from "next/navigation";
 import { useSearchParams } from 'next/navigation';
 import { getItemsByPedido } from '@/services/pedidosCRUD';
 import CardMoreInfoPurchase from '@/components/ui/cardmoreinfopurchase';
@@ -7,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 
 const MorePurchaseHistory = () => {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { authUser } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +25,7 @@ const MorePurchaseHistory = () => {
       try {
         setLoading(true);
         const response = await getItemsByPedido(pedidoId);
+        console.log("items:")
         console.log(response)
         // Calcular el total sumando todos los items
         const calculatedTotal = response.data.reduce((sum, item) => {
@@ -72,7 +75,7 @@ const MorePurchaseHistory = () => {
           <div className="space-y-4">
             {items.map((item) => (
               <CardMoreInfoPurchase 
-                key={item.id}
+                key={item.IdItem}
                 item={item}
               />
             ))}
@@ -90,6 +93,10 @@ const MorePurchaseHistory = () => {
         <div className="mt-auto">
           <button className="cursor-pointer bg-red-700 hover:bg-red-800 text-white w-full py-2 rounded-lg font-medium">
             Solicitar Devolución
+          </button>
+          <button className="cursor-pointer bg-orange-500 hover:bg-orange-600 text-white p-2 mt-2 rounded-lg font-medium"
+          onClick={()=>{router.push('/routes/purchasehistory')}}>
+            Regresar
           </button>
         </div>
       </div>

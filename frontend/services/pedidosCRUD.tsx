@@ -38,6 +38,8 @@ export const createItemPedido = async (itemData: {
   Cantidad: number;
   IdItem: string;
   IdPedido: string;
+  Title:string;
+  totalPrice:number;
 }) => {
   try {
     const token = localStorage.getItem('authToken'); // Token del usuario
@@ -49,6 +51,9 @@ export const createItemPedido = async (itemData: {
         Cantidad: itemData.Cantidad,
         IdItem: itemData.IdItem.toString(), // Asegurar que sea string
         IdPedido: itemData.IdPedido.toString(), // Asegurar que sea string
+        Title:itemData.Title.toString(),
+        totalPrice: Math.round(itemData.totalPrice)
+
       }
     };
 

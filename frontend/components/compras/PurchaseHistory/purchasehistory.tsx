@@ -19,8 +19,9 @@ const PurchaseHistory = () => {
       try {
         setLoading(true);
         const response = await getPedidosByUser(authUser.id);
+        console.log ("pedidos del cliente: ",response)
         const formattedPurchases = response.data.map(pedido => ({
-          id: `#${pedido.idPedido.padStart(4, '0')}`,
+          idPedido: `#${pedido.idPedido.padStart(4, '0')}`,
           date: new Date(pedido.createdAt).toLocaleDateString('es-CO', {
             day: '2-digit',
             month: '2-digit',
@@ -30,7 +31,7 @@ const PurchaseHistory = () => {
           total: pedido.TotalPrecio,
           originalData: pedido
         }));
-        
+        console.log("formattedPurchase", formattedPurchases)
         setPurchases(formattedPurchases);
       } catch (error) {
         console.error("Error fetching purchases:", error);
@@ -88,8 +89,8 @@ const PurchaseHistory = () => {
             </thead>
             <tbody>
               {purchases.map((purchase) => (
-                <tr key={purchase.id} className="border-t">
-                  <td className="py-2 px-4">{purchase.id}</td>
+                <tr key={purchase.idPedido} className="border-t">
+                  <td className="py-2 px-4">{purchase.idPedido}</td>
                   <td className="py-2 px-4">{purchase.date}</td>
                   <td className="py-2 px-4">{purchase.status}</td>
                   <td className="py-2 px-4">${purchase.total}</td>

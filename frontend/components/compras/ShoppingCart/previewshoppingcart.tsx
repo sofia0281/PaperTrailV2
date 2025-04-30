@@ -27,8 +27,9 @@ const PreviewShoppingCart = () => {
 
     try {
       const response = await getPedidosByUser(authUser.id);
-      console.log(response.data.length)
+      // console.log(response.data.length)
       const numCompra =  response.data.length + 1 
+      console.log("este es el idPedido de este pedido: ", numCompra)
       // 1. Crear el pedido principal
       const pedidoResponse = await createPedido({
         usuario: authUser.id,
@@ -37,7 +38,7 @@ const PreviewShoppingCart = () => {
         idPedido: numCompra.toString()
       });
 
-      // console.log(pedidoResponse); 
+      console.log(pedidoResponse); 
       // console.log(pedidoResponse.data.id)
       // 2. Crear los items del pedido
       await Promise.all(
@@ -48,6 +49,8 @@ const PreviewShoppingCart = () => {
             Cantidad: item.quantity,
             IdItem: item.idLibro,      // ID del libro
             IdPedido: pedidoResponse.data.id,        // ID del pedido padre
+            Title: item.title,
+            totalPrice : item.totalPrice,
           })
         )
       );

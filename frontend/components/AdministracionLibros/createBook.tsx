@@ -85,6 +85,9 @@ const CreateBook = () => {
     //   alert("El ISSN no es válido");
     //   return;
     // }
+    const precioNumerico = parseFloat(
+      formData.precio.replace(/,/g, '') // Elimina las comas
+    );
     try {
             const newBookData = {
               "ISBN_ISSN": formData.issn,
@@ -92,7 +95,7 @@ const CreateBook = () => {
               "title": formData.titulo,
               "condition": formData.estado,
               "author": formData.autor,
-              "price": formData.precio,
+              "price": precioNumerico,
               "editorial": formData.editorial,
               "numero_paginas": formData.numeroPaginas,
               "genero": formData.genero,
@@ -101,8 +104,8 @@ const CreateBook = () => {
               "idLibro": formData.issn
             }
             await createBook(newBookData);
-            //setMessage("Administrador editado correctamente");
-            // setTimeout(() => setMessage(null), 3000);
+            setSuccessMessage("Libro creado correctamente");
+            setTimeout(() => setSuccessMessage(null), 3000);
       } catch (error) {
     // console.error('Error completo:', error);
     const errorMessages = error.errors.map(errorItem => {
@@ -123,7 +126,7 @@ const CreateBook = () => {
       setSuccessMessage(null);
       setTimeout(() => {
         setErrorMessage(null);
-        router.push("/routes/createbook");
+        // router.push("/routes/createbook");
       }, 3000);
     } else {
       const fullMessage = errorMessages.join('. ');
@@ -181,12 +184,22 @@ const CreateBook = () => {
                                 .replace(/^\s+/, ""); // Eliminar espacios al principio
         }
         if (name === "precio") {
-
           const rawValue = cleanPrice(value);
+          // Guarda el valor formateado para mostrar al usuario
           const formattedPrice = formatPrice(rawValue);
           formattedValue = formattedPrice;
+          
+          // Valida que sea un número válido
+          const numericValue = parseFloat(rawValue.replace(/,/g, ''));
+          if (isNaN(numericValue)) {
+            setErrorMessage("El precio debe ser un número válido");
+            setTimeout(() => setErrorMessage(null), 3000)
+            return;
+          }
+          
           if (rawValue.replace(".", "").length > 12) return;
         }
+
         if(name === "cantidad") {
           // Para el campo cantidad, solo permitir números y limitar a 5 dígitos
           formattedValue = value.replace(/\D/g, "").slice(0, 5) // Solo números, máximo 5 dígitos
@@ -237,7 +250,7 @@ const CreateBook = () => {
           ) : (
             <p className="text-sm text-center text-gray-500">No se ha subido ninguna imagen aún.</p>
           )}
-            <ImageUpload onImageUpload = {setImage} imageUrl={image}/>
+            {/* <ImageUpload onImageUpload = {setImage} imageUrl={image}/> */}
         </div>
       </div>
       {(successMessage || errorMessage) && (
