@@ -16,6 +16,9 @@ const EditPassword = ({ userId, userEmail }: EditPasswordProps) => {
   const [showPasswordNueva, setShowPasswordNueva] = useState(false);
   const [showPasswordConfirmar, setShowPasswordConfirmar] = useState(false);
   
+  //Ventana modal de confirmación
+  const [showConfirm, setShowConfirm] = useState(false);
+
   // Estados para manejo de errores y mensajes
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -109,8 +112,15 @@ const EditPassword = ({ userId, userEmail }: EditPasswordProps) => {
     }));
   };
 
+  const ConfirmSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowConfirm(true);
+  };
+
+
   // Manejar envío del formulario
   const handleSubmit = async (e: React.FormEvent) => {
+    setShowConfirm(false);
     e.preventDefault();
     setIsLoading(true);
     setPasswordError(null);
@@ -174,7 +184,28 @@ const EditPassword = ({ userId, userEmail }: EditPasswordProps) => {
   return (
     <>
       {/* Sección Cambio de Contraseña */}
-      <form onSubmit={handleSubmit}>
+
+{/* ------------------------------Ventana modal de confirmación -------------------------------*/}
+      {showConfirm && (
+        <>
+        <div className="fixed inset-0 bg-black/50 z-40"></div>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-80 text-center border z-50 ">
+          <p className="text-lg font-semibold">¿Deseas continuar con los cambios?</p>
+          <div className="mt-4 flex justify-center space-x-4">
+            <button className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm cursor-pointer hover:bg-gray-400 transition-transform transition-colors duration-150 
+                active:scale-95" onClick={() => setShowConfirm(false)}>
+              Cancelar
+            </button>
+            <button className="bg-orange-500 text-white px-4 py-2 rounded-md text-sm cursor-pointer hover:bg-orange-600 transition-transform transition-colors duration-150 
+                active:scale-95" onClick={handleSubmit}>
+              Sí, editar
+            </button>
+          </div>
+        </div>
+        </>
+      )}
+
+      <form onSubmit={ConfirmSubmit}>
         <div className="mt-6 p-4 border rounded-md bg-gray-100">
           <h3 className="font-semibold">CAMBIO DE CONTRASEÑA</h3>
           
