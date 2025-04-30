@@ -154,37 +154,25 @@ const EditProfile = () => {
     if (
       name === "nombre" ||
       name === "apellido" ||
-      name === "direccion" ||
-      name === "passwordActual" ||
-      name === "passwordNueva" ||
-      name === "passwordConfirmar"
+      name === "direccion" 
     ) {
-      if (name === "passwordNueva" || name === "passwordConfirmar" || name === "passwordActual") {
-        formattedValue = value.trim();
-      } else {
-        formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, "").replace(/^\s+/, "");
+      if(name === "direccion"){
+        // Para el campo dirección, eliminar caracteres no deseados y los espacios al principio
+        formattedValue = value.replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s.,#-]/g, "") // Solo letras, números, espacios y caracteres permitidos
+                               .replace(/^\s+/, ""); // Eliminar espacios al principio
+      }else{
+        // Para los otros campos, eliminar caracteres no deseados y los espacios al principio
+        formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, "") // Solo letras y espacios
+                               .replace(/^\s+/, ""); // Eliminar espacios al principio
       }
-
-      if (name === "passwordNueva" || name === "passwordConfirmar") {
-        const newPassword = name === "passwordNueva" ? formattedValue : formData.passwordNueva;
-        const confirmPassword =
-          name === "passwordConfirmar" ? formattedValue : formData.passwordConfirmar;
-
-        if (newPassword && confirmPassword && newPassword !== confirmPassword) {
-          setPasswordError("Las contraseñas no coinciden");
-        } else {
-          setPasswordError(null);
-        }
-      }
-
-      if (maxLengths[name]) {
-        formattedValue = formattedValue.slice(0, maxLengths[name]);
-      }
+    }
+    if (maxLengths[name]) {
+      formattedValue = formattedValue.slice(0, maxLengths[name]);
     }
 
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value, formattedValue,
+      [name]: formattedValue,
     }));
   };
 
