@@ -113,7 +113,7 @@ export const getBookByIdLibro = async (idLibro: string) => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_STRAPI_ADMIN_TOKEN}`,
         }
       }
     );

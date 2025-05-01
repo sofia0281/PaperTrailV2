@@ -121,9 +121,12 @@ export const AuthProvider = ({ children }) => {
 
     // Función para actualizar cantidad manualmente
     const updateQuantity = (idLibro, newQuantity) => {
+        if (newQuantity >= 20){
+            return false;
+        }
         if (newQuantity < 1) {
             removeFromCart(idLibro);
-            return;
+            return true;
         }
 
         setCart(prevCart =>
