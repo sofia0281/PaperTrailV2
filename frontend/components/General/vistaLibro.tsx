@@ -28,8 +28,20 @@ const Books = ({ idLibro }: { idLibro: string }) => {
   });
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
-  const { addToCart, authRole } = useAuth();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { addToCart, authRole , updateQuantity} = useAuth();
 
+
+  const handleupdateQuantity =  () => {
+   const comprobacion = updateQuantity(idLibro, count);
+   if (comprobacion === false)
+   {
+    setErrorMessage("Limite de unidades permitidas");
+    setTimeout(() => setErrorMessage(null), 3000);
+
+   }
+
+  }
     useEffect(() => {
       const storedRole = localStorage.getItem('role');
       setRole(storedRole?.replace(/"/g, '') || null);
@@ -40,6 +52,10 @@ const Books = ({ idLibro }: { idLibro: string }) => {
     setTimeout(() => setSuccessMessage(null), 3000);
   }
   const handleAddToCart = () => {
+    if (role !== "Authenticated") {
+      handleMessage(); // Muestra mensaje si no está autenticado
+      return;
+    }
     try {
         addToCart({
             idLibro,
@@ -98,20 +114,22 @@ const Books = ({ idLibro }: { idLibro: string }) => {
 
   return (
     <>
-              {(successMessage) && (
+          {(successMessage || errorMessage) && (
         <motion.div
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -50 }}
-          className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm  bg-orange-500 : bg-red-500
+          className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
+            successMessage ? "bg-orange-500" : "bg-black"
           }`}
         >
-          <span>{successMessage}</span>
+          <span>{successMessage || errorMessage}</span>
           <XCircle
             size={22}
             className="cursor-pointer hover:text-gray-200"
             onClick={() => {
               setSuccessMessage(null);
+              setErrorMessage(null);
             }}
           />
         </motion.div>
@@ -178,7 +196,7 @@ const Books = ({ idLibro }: { idLibro: string }) => {
 
           <div className="flex items-center space-x-4 mb-6">
             <button
-              onClick={handleAddToCart}
+              onClick = {() =>handleAddToCart()}
               className="cursor-pointer bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition"
             >
               Agregar al Carrito
@@ -192,7 +210,7 @@ const Books = ({ idLibro }: { idLibro: string }) => {
               </button>
               <span>{count}</span>
               <button
-                onClick={handleAdd}
+                onClick = {() =>handleupdateQuantity()}
                 className="cursor-pointer p-1 border rounded-full hover:bg-orange-200"
               >
                 <Plus size={16} />

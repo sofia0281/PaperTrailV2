@@ -1,11 +1,48 @@
 "use client";
 import { Minus, Plus, X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useState, useEffect } from "react";
+import {XCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 const CardSideBarShoppingCart = ({ item }) => {
   const { updateQuantity, removeFromCart } = useAuth();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const handleupdateQuantity =  () => {
+   const comprobacion = updateQuantity(item.idLibro, item.quantity + 1);
+   if (comprobacion === false)
+   {
+    setErrorMessage("Limite de unidades permitidas");
+    setTimeout(() => setErrorMessage(null), 3000);
+
+   }
+
+  }
 
   return (
+    <>
+          {(successMessage || errorMessage) && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
+            successMessage ? "bg-orange-500" : "bg-black"
+          }`}
+        >
+          <span>{successMessage || errorMessage}</span>
+          <XCircle
+            size={22}
+            className="cursor-pointer hover:text-gray-200"
+            onClick={() => {
+              setSuccessMessage(null);
+              setErrorMessage(null);
+            }}
+          />
+        </motion.div>
+      )} 
+    
     <div className="flex items-center gap-3 border-b pb-4">
       {/* Imagen del libro */}
       <div className="w-16 h-16 bg-white rounded overflow-hidden">
@@ -34,7 +71,7 @@ const CardSideBarShoppingCart = ({ item }) => {
         </button>
         <span>{item.quantity}</span>
         <button
-          onClick={() => updateQuantity(item.idLibro, item.quantity + 1)}
+          onClick={() => handleupdateQuantity()}
           className="cursor-pointer hover:text-orange-500 hover:scale-140 transition duration-200 ease-in-out"
         >
           <Plus size={16} />
@@ -49,6 +86,7 @@ const CardSideBarShoppingCart = ({ item }) => {
         <X size={16} />
       </button>
     </div>
+    </>
   );
 };
 

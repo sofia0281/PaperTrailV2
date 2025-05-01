@@ -295,6 +295,27 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
 
 
   return (
+    <>
+          {(successMessage || errorMessage) && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
+            successMessage ? "bg-orange-500" : "bg-black"
+          }`}
+        >
+          <span>{successMessage || errorMessage}</span>
+          <XCircle
+            size={22}
+            className="cursor-pointer hover:text-gray-200"
+            onClick={() => {
+              setSuccessMessage(null);
+              setErrorMessage(null);
+            }}
+          />
+        </motion.div>
+      )} 
     <div className="w-full max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       {/* Encabezado */}
       <div className="bg-orange-600 text-white p-9 rounded-t-lg relative">
@@ -331,26 +352,7 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
             )}
         </div>
       </div>
-      {(successMessage || errorMessage) && (
-        <motion.div
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -50 }}
-          className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
-            successMessage ? "bg-orange-500" : "bg-black"
-          }`}
-        >
-          <span>{successMessage || errorMessage}</span>
-          <XCircle
-            size={22}
-            className="cursor-pointer hover:text-gray-200"
-            onClick={() => {
-              setSuccessMessage(null);
-              setErrorMessage(null);
-            }}
-          />
-        </motion.div>
-      )} 
+
 
     {/* ------------------------Ventana modal de confirmación ----------------------------*/}
             {showConfirm && (
@@ -578,6 +580,7 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
         </div>
       </form>
     </div>
+    </>
   );
 };
 
