@@ -1,39 +1,86 @@
 export const createBook = async (bookData) => {
-    try {
-  
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          data: bookData
-        }),
-      });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error detallado de Strapi al crear libro:', errorData);
-        throw {
-          status: errorData.error.status,
-          message: errorData.error.message,
-          errors: errorData.error.details.errors,
-          errorData
-        };
-      }
-  
-      const data = await response.json();
-      console.log('Libro creado en Book:', data);
-      return data;
-    } catch (error) {
-      console.error('Error al enviar datos a Strapi:', error.message);
-      throw error;
+  try {
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        data: bookData
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error detallado de Strapi al crear libro:', errorData);
+      throw {
+        status: errorData.error.status,
+        message: errorData.error.message,
+        errors: errorData.error.details.errors,
+        errorData
+      };
     }
-  };
+
+    const data = await response.json();
+    console.log('Libro creado en Book:', data);
+    return data;
+  } catch (error) {
+    console.error('Error al enviar datos a Strapi:', error.message);
+    throw error;
+  }
+};
 
 
+export const createBookWithImage = async (bookData, imageFile) => {
+  try {
+    // 1. Crear el libro (solo datos)
+    const bookResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data: bookData }),
+    });
 
+    if (!bookResponse.ok) {
+      const errorData = await bookResponse.json();
+      console.error('Error al crear libro:', errorData);
+      throw new Error('Error al crear el libro');
+    }
 
+    const bookDataResponse = await bookResponse.json();
+    const bookId = bookDataResponse.data.id;
+    console.log('Libro creado con ID:', bookId);
+
+    // 2. Subir la imagen y asociarla al libro
+    const formData = new FormData();
+    formData.append('files', imageFile); // El archivo real
+    formData.append('ref', 'api::book.book'); // Nombre del modelo
+    formData.append('refId', bookId); // ID del libro
+    formData.append('field', 'cover'); // Nombre del campo media en el modelo
+
+    const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!uploadResponse.ok) {
+      const uploadError = await uploadResponse.json();
+      console.error('Error al subir imagen:', uploadError);
+      throw new Error('Error al subir la imagen');
+    }
+
+    const uploadResult = await uploadResponse.json();
+    console.log('Imagen subida:', uploadResult);
+
+    return { book: bookDataResponse, image: uploadResult };
+
+  } catch (error) {
+    console.error('Error en createBookWithImage:', error);
+    throw error;
+  }
+};
 
 
 // getAllBooksData trae la información de cada libro de la tabla

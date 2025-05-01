@@ -4,7 +4,9 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { getBookByIdLibro, putBookData } from "@/services/bookCRUD";
 import withAuthADMIN from '../Auth/withAuthADMIN';
-import {XCircle } from "lucide-react";
+import {XCircle } from "lucide-react";Home
+Content Manager
+
 import { motion } from "framer-motion";
 import { AutocompleteLanguage } from "@/components/ui/createBook/Autocompleteidioma";
 import { AutocompleteEditorial } from "@/components/ui/createBook/Autocompleteeditorial";
@@ -319,12 +321,12 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
                 <div className="w-[120px] h-[120px] bg-gray-100 flex items-center justify-center mx-auto">
                   <span className="text-gray-500 text-xs text-center">No hay imagen</span>
                 </div>
-                {/* <ImageUpload 
+                {<ImageUpload 
                   onImageUpload={setImage} 
                   imageUrl={null}
                   endpoint="/api/upload"
                   bookId={bookID}
-                /> */}
+                />}
               </>
             )}
         </div>
