@@ -3,10 +3,15 @@ import { useState, useEffect } from "react";
 import { getBookByIdLibro } from "@/services/bookCRUD";
 import { Minus, Plus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import {XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
 
 const Books = ({ idLibro }: { idLibro: string }) => {
   const [count, setCount] = useState(1);
+  const [image, setImage] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     issn: "",
     fechaPublicacion: "",
@@ -23,7 +28,52 @@ const Books = ({ idLibro }: { idLibro: string }) => {
   });
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
-  const { addToCart, authRole } = useAuth();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { addToCart, authRole , updateQuantity} = useAuth();
+
+
+  const handleupdateQuantity =  () => {
+   const comprobacion = updateQuantity(idLibro, count);
+   if (comprobacion === false)
+   {
+    setErrorMessage("Limite de unidades permitidas");
+    setTimeout(() => setErrorMessage(null), 3000);
+
+   }
+
+  }
+    useEffect(() => {
+      const storedRole = localStorage.getItem('role');
+      setRole(storedRole?.replace(/"/g, '') || null);
+    }, []);
+  const handleMessage = () =>{
+    const Mensaje = "Registrate o Inicia Sesión como cliente "
+    setSuccessMessage(Mensaje);
+    setTimeout(() => setSuccessMessage(null), 3000);
+  }
+  const handleAddToCart = () => {
+    if (role !== "Authenticated") {
+      handleMessage(); // Muestra mensaje si no está autenticado
+      return;
+    }
+    try {
+        addToCart({
+            idLibro,
+            title: formData.titulo,
+            price: parseFloat(formData.precio),
+            quantity: count,
+            imageUrl: image
+        });
+        setSuccessMessage(`Tu  libro se ha añadido exitosamente al carrito `);
+    } catch (error) {
+      setSuccessMessage(error.message);
+    } finally {
+        setTimeout(() => {
+            setSuccessMessage(null);
+            // setErrorMessage(null);
+        }, 3000);
+    }
+};
 
   const loadBookData = async () => {
     const bookData = await getBookByIdLibro(idLibro);
@@ -42,6 +92,15 @@ const Books = ({ idLibro }: { idLibro: string }) => {
         cantidad: bookData.cantidad?.toString() ?? "",
         // coverUrl: bookData.cover?.url ?? "", // Asignar URL de la imagen
       });
+      // Cargar la imagen si existe
+      if (bookData.cover.url) {
+        const imageUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}${bookData.cover.url}`;
+        setImage(imageUrl);
+        console.log("URL de la imagen cargada:", imageUrl);
+      } else {
+        console.log("No se encontró imagen para este libro");
+        setImage(null);
+      }
     }
   };
 
@@ -52,26 +111,29 @@ const Books = ({ idLibro }: { idLibro: string }) => {
   const handleAdd = () => setCount(count + 1);
   const handleSubtract = () => count > 1 && setCount(count - 1);
 
-  const handleAddToCart = () => {
-    if (authRole !== "Authenticated") {
-      setShowError(true);
-      setTimeout(() => setShowError(false), 3000);
-      return;
-    }
-
-    addToCart({
-      idLibro,
-      title: formData.titulo,
-      price: parseFloat(formData.precio),
-      quantity: count,
-      // imageUrl: formData.coverUrl,
-    });
-
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
-  };
 
   return (
+    <>
+          {(successMessage || errorMessage) && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
+            successMessage ? "bg-orange-500" : "bg-black"
+          }`}
+        >
+          <span>{successMessage || errorMessage}</span>
+          <XCircle
+            size={22}
+            className="cursor-pointer hover:text-gray-200"
+            onClick={() => {
+              setSuccessMessage(null);
+              setErrorMessage(null);
+            }}
+          />
+        </motion.div>
+      )} 
     <div className="max-w-4xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white shadow-xl rounded-2xl relative">
       {/* Mensajes de feedback */}
       <AnimatePresence>
@@ -99,19 +161,23 @@ const Books = ({ idLibro }: { idLibro: string }) => {
 
       {/* Imagen del libro */}
       <div className="w-full aspect-[3/4] bg-gray-100 rounded-xl overflow-hidden">
-        {formData.coverUrl ? (
-          <img
-            src={
-              formData.coverUrl.includes("http")
-                ? formData.coverUrl
-                : `http://localhost:1337${formData.coverUrl}`
-            }
-            alt={formData.titulo}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="text-gray-400">Imagen no disponible</span>
-        )}
+      {image ? (
+              <>
+                <img
+                  src={image}
+                  alt={formData.titulo}
+                  className="w-full h-full object-cover"
+                  onError={() => setImage(null)} // Si falla la carga de la imagen
+                />
+              </>
+            ) : (
+              <>
+                <div className="w-[120px] h-[120px] bg-gray-100 flex items-center justify-center mx-auto">
+                  <span className="text-gray-500 text-xs text-center">No hay imagen</span>
+                </div>
+
+              </>
+            )}
       </div>
 
       {/* Detalles del libro */}
@@ -130,7 +196,7 @@ const Books = ({ idLibro }: { idLibro: string }) => {
 
           <div className="flex items-center space-x-4 mb-6">
             <button
-              onClick={handleAddToCart}
+              onClick = {() =>handleAddToCart()}
               className="cursor-pointer bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition"
             >
               Agregar al Carrito
@@ -144,7 +210,7 @@ const Books = ({ idLibro }: { idLibro: string }) => {
               </button>
               <span>{count}</span>
               <button
-                onClick={handleAdd}
+                onClick = {() =>handleupdateQuantity()}
                 className="cursor-pointer p-1 border rounded-full hover:bg-orange-200"
               >
                 <Plus size={16} />
@@ -194,6 +260,7 @@ const Books = ({ idLibro }: { idLibro: string }) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

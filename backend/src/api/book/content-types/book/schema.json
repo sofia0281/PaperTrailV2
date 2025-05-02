@@ -4,11 +4,11 @@
   "info": {
     "singularName": "book",
     "pluralName": "books",
-    "displayName": "Book"
+    "displayName": "Book",
+    "description": ""
   },
   "options": {
-    "draftAndPublish": true,
-    "populateCreatorFields": true
+    "draftAndPublish": true
   },
   "attributes": {
     "title": {
@@ -16,17 +16,6 @@
     },
     "price": {
       "type": "integer"
-    },
-    "cover": {
-      "type": "media",
-      "multiple": false,
-      "required": false,
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
-      ]
     },
     "author": {
       "type": "string"
@@ -60,6 +49,14 @@
     "idLibro": {
       "type": "uid",
       "targetField": "ISBN_ISSN"
+    },
+    "cover": {
+      "allowedTypes": [
+        "images",
+        "files"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }

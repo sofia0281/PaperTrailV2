@@ -24,6 +24,8 @@ const EditProfile = () => {
 
   const router = useRouter();
   const role = localStorage.getItem("role");
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const[SeccionMenu, setSeccionMenu] = useState("Principal")
 
@@ -200,16 +202,58 @@ const EditProfile = () => {
         // password: formData.passwordConfirmar,
       };
 
-      const actualizado = await putUserData(updatedUserData);
       const actualizado2 = await putUsuarioData(updatedUserData)
-      console.log("Usuario actualizado:", actualizado);
-
-      setMessage("Perfil editado correctamente");
-      setTimeout(() => setMessage(null), 3000);
+      try {
+                
+                const actualizado = await putUserData(updatedUserData);
+                console.log('Usuario actualizado en tabla user:', creadoUser);
+                setSuccessMessage("Usuario editado exitosamente.");
+                setErrorMessage(null);
+                setTimeout(() => {
+                    setSuccessMessage(null);
+                    // router.push("/routes/login");
+                }, 3000);
+      } catch (userError) {
+        console.error('Error al EDITAR en tabla user:', userError);
+        
+        setSuccessMessage("Update completado con observaciones");
+        setErrorMessage(null);
+        setTimeout(() => {
+            setSuccessMessage(null);
+            // router.push("/routes/login");
+        }, 3000);
+      }
     } catch (error: any) {
       console.error("Error:", error.message);
-      setMessage("Error al actualizar los datos");
-      setTimeout(() => setMessage(null), 3000);
+      const errorMessages = error.errors.map(errorItem => {
+        const field = errorItem.path[0];
+        if (field === "username")
+        {
+          return `Este nombre de usuario ya se encuentra registrado`;
+        }
+        else if (field === "email"){
+          return `Este correo electrónico ya se encuentra registrado`;
+        }
+        else if (field === "cedula"){
+          return `Esta cédula ya se encuentra registrada`;
+        }
+        return `Error en el  campo ${field}. Error al registrar usuario`;
+        
+      });
+      if (error.status === 400 ) {
+        const fullMessage = errorMessages.join('. ');
+        setErrorMessage(fullMessage);
+        setSuccessMessage(null);
+  	    setTimeout(() => {
+          setErrorMessage(null);
+          router.push("/routes/login");
+        }, 3000);
+      } else {
+        const fullMessage = errorMessages.join('. ');
+        setErrorMessage(fullMessage);
+        setSuccessMessage(null);
+        setTimeout(() => setErrorMessage(null), 3000);
+      }
     }
   };
 
@@ -223,7 +267,27 @@ const EditProfile = () => {
 
 {/*--------------------Menu lateral de edición de perfil-------------------- */}
       <div className="items-center max-w-xl p-6 bg-white shadow-md rounded-md">
-       
+        {/* Notificación emergente */}
+      {(successMessage || errorMessage) && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
+            successMessage ? "bg-orange-500" : "bg-black"
+          }`}
+        >
+          <span>{successMessage || errorMessage}</span>
+          <XCircle
+            size={22}
+            className="cursor-pointer hover:text-gray-200"
+            onClick={() => {
+              setSuccessMessage(null);
+              setErrorMessage(null);
+            }}
+          />
+        </motion.div>
+      )} 
         <div className="text-gray-400 border-b border-gray pb-1 hover:border-black hover:text-black">
                   <p className="cursor-pointer "
                   onClick={()=>{

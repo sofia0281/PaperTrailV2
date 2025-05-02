@@ -17,8 +17,14 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "pedidos"
     },
-    "Total": {
+    "TotalPrecio": {
       "type": "integer"
+    },
+    "TotalProductos": {
+      "type": "integer"
+    },
+    "idPedido": {
+      "type": "uid"
     }
   }
 }

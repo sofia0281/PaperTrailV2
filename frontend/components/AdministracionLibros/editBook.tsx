@@ -4,8 +4,12 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { getBookByIdLibro, putBookData } from "@/services/bookCRUD";
 import withAuthADMIN from '../Auth/withAuthADMIN';
-import {XCircle } from "lucide-react";
+import {XCircle } from "lucide-react";Home
+Content Manager
+
 import { motion } from "framer-motion";
+import { AutocompleteLanguage } from "@/components/ui/createBook/Autocompleteidioma";
+import { AutocompleteEditorial } from "@/components/ui/createBook/Autocompleteeditorial";
 import ImageUpload from "../ui/ImageUpload";
 
 const EditBook =  ({ bookID }: { bookID: string }) => {
@@ -76,13 +80,16 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
     e.preventDefault();
     setShowConfirm(false);
       try {
+        const precioNumerico = parseFloat(
+          formData.precio.replace(/,/g, '') // Elimina las comas
+        );
         const updatedBookData = {
           "ISBN_ISSN": formData.issn,
           "fecha_publicacion": formData.fechaPublicacion,
           "title": formData.titulo,
           "condition": formData.estado,
           "author": formData.autor,
-          "price": formData.precio,
+          "price": precioNumerico,
           "editorial": formData.editorial,
           "numero_paginas": formData.numeroPaginas,
           "genero": formData.genero,
@@ -91,9 +98,8 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
           "idLibro": formData.issn
         }
         await putBookData(updatedBookData, bookID);
-       
-        // setMessage("Administrador editado correctamente");
-        // setTimeout(() => setMessage(null), 3000);
+        setSuccessMessage("Libro editado correctamente");
+        setTimeout(() => setSuccessMessage(null), 3000);
       } catch (error) {
     // console.error('Error completo:', error);
         const errorMessages = error.errors.map(errorItem => {
@@ -175,10 +181,19 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
                                 .replace(/^\s+/, ""); // Eliminar espacios al principio
         }
         if (name === "precio") {
-
           const rawValue = cleanPrice(value);
+          // Guarda el valor formateado para mostrar al usuario
           const formattedPrice = formatPrice(rawValue);
           formattedValue = formattedPrice;
+          
+          // Valida que sea un número válido
+          const numericValue = parseFloat(rawValue.replace(/,/g, ''));
+          if (isNaN(numericValue)) {
+            setErrorMessage("El precio debe ser un número válido");
+            setTimeout(() => setErrorMessage(null), 3000)
+            return;
+          }
+          
           if (rawValue.replace(".", "").length > 12) return;
         }
         if(name === "cantidad") {
@@ -219,53 +234,69 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
   }
 
 
-    const loadBookData = async () => {
-        const bookData = await getBookByIdLibro(bookID);
-        console.log("Datos recibidos:", bookData);
-        if (bookData) {
-          setFormData({
-            issn: bookData.ISBN_ISSN ?? "",  
-            fechaPublicacion: bookData.fecha_publicacion?.split('T')[0] ?? "",
-            titulo: bookData.title ?? "",
-            estado: bookData.condition ?? "nuevo",
-            autor: bookData.author ?? "",
-            precio: bookData.price?.toString() ?? "",
-            editorial: bookData.editorial ?? "",
-            numeroPaginas: bookData.numero_paginas?.toString() ?? "",
-            genero: bookData.genero ?? "",
-            idioma: bookData.idioma ?? "",
-            cantidad: bookData.cantidad?.toString() ?? ""
-          });
+  const loadBookData = async () => {
+    try {
+      const bookData = await getBookByIdLibro(bookID);
+      console.log("Datos completos del libro:", bookData);
+      
+      if (bookData) {
+        setFormData({
+          issn: bookData.ISBN_ISSN ?? "",  
+          fechaPublicacion: bookData.fecha_publicacion?.split('T')[0] ?? "",
+          titulo: bookData.title ?? "",
+          estado: bookData.condition ?? "nuevo",
+          autor: bookData.author ?? "",
+          precio: bookData.price?.toString() ?? "",
+          editorial: bookData.editorial ?? "",
+          numeroPaginas: bookData.numero_paginas?.toString() ?? "",
+          genero: bookData.genero ?? "",
+          idioma: bookData.idioma ?? "",
+          cantidad: bookData.cantidad?.toString() ?? ""
+        });
+  
+        // Cargar la imagen si existe
+        if (bookData.cover.url) {
+          const imageUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}${bookData.cover.url}`;
+          setImage(imageUrl);
+          console.log("URL de la imagen cargada:", imageUrl);
+        } else {
+          console.log("No se encontró imagen para este libro");
+          setImage(null);
         }
-      };
-    // Asegúrate de que el useEffect tenga bookID como dependencia
-    useEffect(() => {
-      loadBookData();
-    }, [bookID]); 
+      }
+    } catch (error) {
+      console.error("Error al cargar datos del libro:", error);
+      setErrorMessage("Error al cargar los datos del libro");
+    }
+  };
 
+  useEffect(() => {
+    // Variable para controlar si el componente está montado
+    let isMounted = true;
+  
+    const loadData = async () => {
+      try {
+        await loadBookData();
+      } catch (error) {
+        if (isMounted) {
+          console.error("Error al cargar los datos del libro, no hay imagen:", error);
+          // setErrorMessage("Error al cargar los datos del libro");
+        }
+      }
+    };
+  
+    loadData();
+  
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [bookID]);
 
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      {/* Encabezado */}
-      <div className="bg-orange-600 text-white p-9 rounded-t-lg relative">
-        <h1 className="text-2xl font-bold">EDITAR LIBRO</h1>
-        <div className="absolute top-5 right-5 transform translate-x-0 bg-gray-200 p-2 rounded-md shadow-md mb-10
-                sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:right-auto w-40">
-          {image ? (
-            <img
-              src={image}
-              alt="Imagen del libro"
-              className="w-[120px] h-[120px] object-contain mx-auto"
-
-            />
-          ) : (
-            <p className="text-sm text-center text-gray-500">No se ha subido ninguna imagen aún.</p>
-          )}
-            <ImageUpload onImageUpload = {setImage} imageUrl={image}/>
-        </div>
-      </div>
-      {(successMessage || errorMessage) && (
+    <>
+          {(successMessage || errorMessage) && (
         <motion.div
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -285,6 +316,43 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
           />
         </motion.div>
       )} 
+    <div className="w-full max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+      {/* Encabezado */}
+      <div className="bg-orange-600 text-white p-9 rounded-t-lg relative">
+        <h1 className="text-2xl font-bold">EDITAR LIBRO</h1>
+        <div className="absolute top-5 right-5 transform translate-x-0 bg-gray-200 p-2 rounded-md shadow-md mb-10
+    sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:right-auto w-40">
+            {image ? (
+              <>
+                <img
+                  src={image}
+                  alt="Imagen del libro"
+                  className="w-[120px] h-[120px] object-contain mx-auto"
+                  onError={() => setImage(null)} // Si falla la carga de la imagen
+                />
+                {/* <ImageUpload 
+                  onImageUpload={setImage} 
+                  imageUrl={image}
+                  endpoint="/api/upload"
+                  bookId={bookID}
+                /> */}
+              </>
+            ) : (
+              <>
+                <div className="w-[120px] h-[120px] bg-gray-100 flex items-center justify-center mx-auto">
+                  <span className="text-gray-500 text-xs text-center">No hay imagen</span>
+                </div>
+                {<ImageUpload 
+                  onImageUpload={setImage} 
+                  imageUrl={null}
+                  endpoint="/api/upload"
+                  bookId={bookID}
+                />}
+              </>
+            )}
+        </div>
+      </div>
+
 
     {/* ------------------------Ventana modal de confirmación ----------------------------*/}
             {showConfirm && (
@@ -387,7 +455,7 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
           value={formData.resena} 
           className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Reseña" />
         </div> */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium">Editorial</label>
           <input 
           required
@@ -396,6 +464,15 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
           onChange={handleChange}
           value={formData.editorial}  
           className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Editorial" />
+        </div> */}
+        <div>
+          <label className="block text-sm font-medium">Editorial</label>
+          <AutocompleteEditorial
+            value={formData.editorial}
+            onChange={(value) => setFormData({ ...formData, editorial: value })}
+            placeholder="Editorial"
+            required
+          />
         </div>
         <div>
           <label className="block text-sm font-medium">Número de Páginas</label>
@@ -453,7 +530,7 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
                 <option value="Cómics y novelas gráficas">Cómics y novelas gráficas</option>
               </select>
         </div>
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium">Idioma</label>
           <input 
           required
@@ -462,6 +539,16 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
           onChange={handleChange}
           value={formData.idioma}  
           className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Idioma" />
+        </div> */}
+        {/* Idioma */}
+        <div>
+          <label className="block text-sm font-medium">Idioma</label>
+          <AutocompleteLanguage
+            value={formData.idioma}
+            onChange={(value) => setFormData({ ...formData, idioma: value })}
+            placeholder="Idioma"
+            required
+          />
         </div>
         <div>
           <label className="block text-sm font-medium">Cantidad</label>
@@ -493,6 +580,7 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
         </div>
       </form>
     </div>
+    </>
   );
 };
 

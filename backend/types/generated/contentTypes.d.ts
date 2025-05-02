@@ -372,21 +372,22 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
 export interface ApiBookBook extends Struct.CollectionTypeSchema {
   collectionName: 'books';
   info: {
+    description: '';
     displayName: 'Book';
     pluralName: 'books';
     singularName: 'book';
   };
   options: {
     draftAndPublish: true;
-    populateCreatorFields: true;
   };
   attributes: {
     author: Schema.Attribute.String;
     cantidad: Schema.Attribute.Integer;
     condition: Schema.Attribute.String;
-    cover: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    cover: Schema.Attribute.Media<'images' | 'files'>;
     createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
     editorial: Schema.Attribute.String;
     fecha_publicacion: Schema.Attribute.Date;
     genero: Schema.Attribute.String;
@@ -403,7 +404,8 @@ export interface ApiBookBook extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -433,6 +435,8 @@ export interface ApiItemPedidoItemPedido extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     PrecioItem: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
+    Title: Schema.Attribute.String;
+    totalPrice: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -454,6 +458,7 @@ export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    idPedido: Schema.Attribute.UID;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -461,7 +466,8 @@ export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    Total: Schema.Attribute.Integer;
+    TotalPrecio: Schema.Attribute.Integer;
+    TotalProductos: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

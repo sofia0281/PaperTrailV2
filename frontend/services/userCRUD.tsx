@@ -135,12 +135,11 @@ export const createUser = async (userData) => {
   
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Error detallado de Strapi:', errorData);
-        
-        // Lanzar un error con más información
+        console.error('Error detallado de Strapi2:', errorData);
         throw {
-          status: response.status,
-          message: errorData.message,
+          status: errorData.error.status,
+          message: errorData.error.message,
+          errors: errorData.error.details.errors,
           errorData
         };
       }

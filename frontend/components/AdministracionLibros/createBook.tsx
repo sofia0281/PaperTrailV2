@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import {XCircle } from "lucide-react";
 import { useState, useEffect } from "react";
-import { createBook } from "@/services/bookCRUD";
+import { createBook, createBookWithImage } from "@/services/bookCRUD";
 import { motion } from "framer-motion";
 
 import { AutocompleteLanguage } from "@/components/ui/createBook/Autocompleteidioma";
@@ -17,7 +17,8 @@ const CreateBook = () => {
   const [showConfirm, setShowConfirm] = useState(false);
 
   // Estado para la imagen
-  const [image, setImage] = useState<string | null>(null);
+const [imageFile, setImageFile] = useState<File | null>(null); // Archivo real
+const [imagePreview, setImagePreview] = useState<string | null>(null); // Vista previa
   
   const router = useRouter();
 
@@ -78,61 +79,63 @@ const CreateBook = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    setShowConfirm(false)
+    setShowConfirm(false);
     e.preventDefault();
-    // Validar el ISSN
-    // if (!validarISSN(formData.issn)) {
-    //   alert("El ISSN no es válido");
-    //   return;
-    // }
+    
+    const precioNumerico = parseFloat(formData.precio.replace(/,/g, ''));
+  
     try {
-            const newBookData = {
-              "ISBN_ISSN": formData.issn,
-              "fecha_publicacion": formData.fechaPublicacion,
-              "title": formData.titulo,
-              "condition": formData.estado,
-              "author": formData.autor,
-              "price": formData.precio,
-              "editorial": formData.editorial,
-              "numero_paginas": formData.numeroPaginas,
-              "genero": formData.genero,
-              "idioma": formData.idioma ,
-              "cantidad": formData.cantidad,
-              "idLibro": formData.issn
-            }
-            await createBook(newBookData);
-            //setMessage("Administrador editado correctamente");
-            // setTimeout(() => setMessage(null), 3000);
-      } catch (error) {
-    // console.error('Error completo:', error);
-    const errorMessages = error.errors.map(errorItem => {
-      const field = errorItem.path[0];
-      if (field === "ISBN_ISSN")
-      {
-        return `Este ISSN ya se encuentra registrado`;
+      const newBookData = {
+        ISBN_ISSN: formData.issn,
+        fecha_publicacion: formData.fechaPublicacion,
+        title: formData.titulo,
+        condition: formData.estado,
+        author: formData.autor,
+        price: precioNumerico,
+        editorial: formData.editorial,
+        numero_paginas: formData.numeroPaginas,
+        genero: formData.genero,
+        idioma: formData.idioma,
+        cantidad: formData.cantidad,
+        idLibro: formData.issn
+      };
+
+      
+
+      
+      // Verificar que la imagen existe antes de enviar
+      if (!imageFile) {
+        throw new Error("Debes seleccionar una imagen para el libro");
       }
-      // else {
-      //   return `Error en el  campo ${field}. Error al crear Libro`;
+
+      console.log('Archivo seleccionado:', imageFile);
+      console.log('Datos del libro:', newBookData);
+
+      // Enviar datos e imagen (modificado)
+      const response = await createBookWithImage(newBookData, imageFile); // Nueva función
       
-      // }
+      setSuccessMessage("Libro creado correctamente");
+      setTimeout(() => setSuccessMessage(null), 3000);
       
-    });
-    if (error.status === 400 ) {
-      const fullMessage = errorMessages.join('. ');
-      setErrorMessage(fullMessage);
-      setSuccessMessage(null);
-      setTimeout(() => {
-        setErrorMessage(null);
-        router.push("/routes/createbook");
-      }, 3000);
-    } else {
-      const fullMessage = errorMessages.join('. ');
-      setErrorMessage(fullMessage);
-      setSuccessMessage(null);
-      setTimeout(() => setErrorMessage(null), 3000);
+    } catch (error: any) {
+      console.error('Error completo:', error);
+      
+      let errorMessage = "Error al crear el libro";
+      if (error?.error?.message) {
+        errorMessage = error.error.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.errors) {
+        errorMessage = error.errors.map((err: any) => {
+          if (err.path?.[0] === "ISBN_ISSN") return "Este ISSN ya está registrado";
+          return `Error en ${err.path?.join('.') || 'campo desconocido'}`;
+        }).join('. ');
+      }
+  
+      setErrorMessage(errorMessage);
+      setTimeout(() => setErrorMessage(null), 5000);
     }
-          }
-    };
+};
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -181,12 +184,22 @@ const CreateBook = () => {
                                 .replace(/^\s+/, ""); // Eliminar espacios al principio
         }
         if (name === "precio") {
-
           const rawValue = cleanPrice(value);
+          // Guarda el valor formateado para mostrar al usuario
           const formattedPrice = formatPrice(rawValue);
           formattedValue = formattedPrice;
+          
+          // Valida que sea un número válido
+          const numericValue = parseFloat(rawValue.replace(/,/g, ''));
+          if (isNaN(numericValue)) {
+            setErrorMessage("El precio debe ser un número válido");
+            setTimeout(() => setErrorMessage(null), 3000)
+            return;
+          }
+          
           if (rawValue.replace(".", "").length > 12) return;
         }
+
         if(name === "cantidad") {
           // Para el campo cantidad, solo permitir números y limitar a 5 dígitos
           formattedValue = value.replace(/\D/g, "").slice(0, 5) // Solo números, máximo 5 dígitos
@@ -221,25 +234,12 @@ const CreateBook = () => {
     }));
   }
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="w-full max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg relative">
       {/* Encabezado */}
-      <div className="bg-orange-600 text-white p-9 rounded-t-lg relative">
+      <div className="bg-orange-600 text-white p-9 rounded-t-lg ">
         <h1 className="text-2xl font-bold">CREAR LIBRO</h1>
-        <div className="absolute top-5 right-5 transform translate-x-0 bg-gray-200 p-2 rounded-md shadow-md mb-10
-                sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:right-auto w-40">
-          {image ? (
-            <img
-              src={image}
-              alt="Imagen del libro"
-              className="w-[120px] h-[120px] object-contain mx-auto"
-
-            />
-          ) : (
-            <p className="text-sm text-center text-gray-500">No se ha subido ninguna imagen aún.</p>
-          )}
-            <ImageUpload onImageUpload = {setImage} imageUrl={image}/>
-        </div>
       </div>
+
       {(successMessage || errorMessage) && (
         <motion.div
           initial={{ opacity: 0, y: -50 }}
@@ -282,7 +282,21 @@ const CreateBook = () => {
       )}
 
       {/* Formulario */}
-      <form onSubmit={ConfirmSubmit} className="grid grid-cols-2 md:grid-cols-2 gap-6 mt-18 p-6">
+      <form onSubmit={ConfirmSubmit} className="grid grid-cols-2 md:grid-cols-2 gap-6 p-6 relative z-10 -mt-28">
+
+        {/* Sección de imagen - ahora dentro del formulario */}
+    <div className="col-span-2 flex justify-center mb-6">
+      <div className="bg-gray-200 p-4 rounded-md shadow-md w-40 h-40 flex items-center justify-center">
+        <ImageUpload 
+          onImageUpload={(url, file) => {
+            setImagePreview(url);
+            setImageFile(file);
+          }}
+          imageUrl={imagePreview}
+        />
+      </div>
+    </div>
+
         <div>
           <label className="text-sm font-medium inline-flex items-center gap-2">ISSN{errorMessage&&<span className="text-red-500 text-sm">{errorMessage}</span>}</label>
           <input 

@@ -31,21 +31,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //       const fetchBooks = async () => {
-  //         try {
-  //           const data = await getAllLibrosData();
-  //           console.log(data)
-  //           setBooks(data);
-  //         } catch (err) {
-  //           setError(err instanceof Error ? err.message : 'Error desconocido');
-  //         } finally {
-  //           setLoading(false);
-  //         }
-  //       };
-    
-  //       fetchBooks();
-  //   }, []);
+
 
 
   useEffect(() => {

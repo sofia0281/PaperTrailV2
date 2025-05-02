@@ -57,7 +57,7 @@ const CardBooks = ({
       handleMessage(); // Muestra mensaje si no está autenticado
       return;
     }
-    addToCart({ idLibro, title, price }); // Añade el libro al carrito
+    addToCart({ idLibro, title, price}); // Añade el libro al carrito
       const Mensaje = "Tu libro se añadió exitosamente al carrito "
       setSuccessMessage(Mensaje);
       setTimeout(() => setSuccessMessage(null), 2000);

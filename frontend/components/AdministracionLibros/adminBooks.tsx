@@ -31,6 +31,7 @@ const ManageBooks = () => {
       const fetchBooks = async () => {
         try {
           const data = await getAllBooksData();
+          console.log("libros data:", data)
           setBooks(data);
         } catch (err) {
           setError(err instanceof Error ? err.message : 'Error desconocido');

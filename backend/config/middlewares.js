@@ -5,7 +5,14 @@ module.exports = [
   'strapi::cors',
   'strapi::poweredBy',
   'strapi::query',
-  'strapi::body',
+  {
+    name: 'strapi::body',
+    config: {
+      formidable: {
+        maxFileSize: 50 * 1024 * 1024 // 50MB
+      }
+    }
+  },
   'strapi::session',
   'strapi::favicon',
   'strapi::public',

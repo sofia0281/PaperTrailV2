@@ -22,6 +22,12 @@
     },
     "IdPedido": {
       "type": "string"
+    },
+    "Title": {
+      "type": "string"
+    },
+    "totalPrice": {
+      "type": "integer"
     }
   }
 }
