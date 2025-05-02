@@ -314,10 +314,16 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
               name="fechaNacimiento" 
               value={formData.fechaNacimiento} 
               onChange={handleChange} 
+              onBlur={handleBlur} // Llamar a handleBlur al perder el foco
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Lugar de nacimiento</label>
-            <input type="text" name="lugarNacimiento" value={formData.lugarNacimiento} onChange={handleChange} 
+            <input 
+            required
+            type="text" 
+            name="lugarNacimiento" 
+            value={formData.lugarNacimiento} 
+            onChange={handleChange} 
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
           </div>
 

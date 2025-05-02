@@ -8,7 +8,34 @@ import { XCircle } from "lucide-react";
 import withAuthROOT from '@/components/Auth/withAuthROOT';
 
 const CreateAdmin = () => {
+
+  const maxLengths: Record<string, number> = {
+    nombre: 20,
+    apellido: 30,
+    direccion: 80,
+    correo: 30,
+    usuario: 15,
+    password: 20,
+    confirmarPassword: 20
+  };
+
+  const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  const minDate = "1900-01-01";
+
+  // Calcular fecha máxima dinámica (hoy menos 18 años)
+  const today = new Date();
+  const maxDateObj = new Date(today);
+  maxDateObj.setFullYear(today.getFullYear() - 18);
+  const maxDate = maxDateObj.toISOString().split("T")[0]; // YYYY-MM-DD
+
   const router = useRouter()
+
+  {/*Estados para las ventanas de confirmación */}
+  const [showConfirm, setShowConfirm] = useState(false);
+
+    const [EmailError, setEmailError] = useState<string | null>(null);
+
   {/*Estados para la ventana emergente */}
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -21,7 +48,7 @@ const CreateAdmin = () => {
     fechaNacimiento: "",
     lugarNacimiento: "",
     direccion: "",
-    email: "",
+    correo: "",
     usuario: "",
     password: "",
     // confirmarPassword: "",
@@ -32,45 +59,129 @@ const CreateAdmin = () => {
 
     let formattedValue = value;
 
+    if (
+      name === "nombre" || 
+      name === "apellido" || 
+      name === "direccion" || 
+      name === "correo" || 
+      name === "usuario"
+    ) {
+      if (name === "correo") {
+        // Para el campo email, eliminar los espacios
+        formattedValue = value.replace(/\s+/g, "");
+      } else {
+        // Para los otros campos, eliminar caracteres no deseados y los espacios al principio
+        formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, "") // Solo letras y espacios
+                               .replace(/^\s+/, ""); // Eliminar espacios al principio
+      }
+    } else if (name === "cedula") {
+      // Para el campo cédula, solo permitir números y limitar a 10 dígitos
+      formattedValue = value.replace(/\D/g, "").slice(0, 10) // Solo números, máximo 10 dígitos
+                             .replace(/^\s+/, ""); // Eliminar espacios al principio
+    }
+    if(name === "direccion" || name === "usuario"){
+      // Para el campo dirección, eliminar caracteres no deseados y los espacios al principio
+      formattedValue = value.replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s.,#-]/g, "") // Solo letras, números, espacios y caracteres permitidos
+                             .replace(/^\s+/, ""); // Eliminar espacios al principio
+    }
+    // Aplicar límite de longitud a los inputs
+    if (maxLengths[name]) {
+      formattedValue = formattedValue.slice(0, maxLengths[name]);
+    }
     // Validación para fecha de nacimiento
     if (name === "fechaNacimiento") {
-      const selectedDate = new Date(value);
-      const minDate = new Date("2006-01-01"); // Fecha mínima (1 de enero de 2006)
-      
-      if (selectedDate > minDate) {
-        // Si la fecha seleccionada es posterior a 2006, mostrar error
-        setErrorMessage("Debes tener al menos 18 años (nacido antes de 2006)");
-        setTimeout(() => setErrorMessage(null), 3000);
-        return; // No actualizar el estado
-      }
-      
       formattedValue = value; // Aceptar la fecha si es válida
     }
-
-    if (name === "nombre" || name === "apellido" || name === "lugarNacimiento") {
-      formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, "") // Solo letras y espacios
-      .replace(/^\s+/, ""); 
-    }
-
-    if (name === "cedula") {
-      formattedValue = value.replace(/\D/g, "").slice(0, 10) // Solo números, máximo 10 dígitos
-      .replace(/^\s+/, "")
-    }
-
+    // Actualizar el estado con el valor formateado
     setFormData((prevData) => ({
       ...prevData,
       [name]: formattedValue,
     }));
   };
 
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    if (name === "correo") {
+      
+      // Verificamos si el correo es válido
+      if (!emailPattern.test(value)) {
+        setEmailError("Por favor, ingresa un correo válido.");
+      } else {
+        setEmailError(null); // Limpiar mensaje de error si es válido
+      }
+    }
+    
+    if (name === "fechaNacimiento") {
+      const selectedDate = new Date(value);
+      const minDateObj = new Date(minDate);
+      const selectedDateOnly = new Date(selectedDate.toISOString().split("T")[0]);
+      
+      if (selectedDateOnly < minDateObj || selectedDateOnly > maxDateObj) {
+        setErrorMessage(`Debes tener al menos 18 años (nacido antes del ${maxDate})`);
+        setTimeout(() => setErrorMessage(null), 3000);
+        return;
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setShowConfirm(true);
+  };
+
+  const ConfirmSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formData.fechaNacimiento === "fechaNacimiento") {
+      const selectedDate = new Date(formData.fechaNacimiento);
+      const minDateObj = new Date(minDate);
+      const selectedDateOnly = new Date(selectedDate.toISOString().split("T")[0]);
+      
+      if (selectedDateOnly < minDateObj || selectedDateOnly > maxDateObj) {
+        setErrorMessage(`Debes tener al menos 18 años (nacido antes del ${maxDate})`);
+        setTimeout(() => setErrorMessage(null), 3000);
+        return;
+      }
+    }
+
+    // Verificamos si el correo es válido
+    if (!emailPattern.test(formData.correo)) {
+      setErrorMessage("Por favor, ingresa un correo válido.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.nombre.length < 2) {
+      setErrorMessage("El nombre debe tener al menos 2 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.apellido.length < 2) {
+      setErrorMessage("El apellido debe tener al menos 2 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.cedula.length < 6) {
+      setErrorMessage("La cédula debe tener al menos 6 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.direccion.length < 10) {
+      setErrorMessage("La dirección debe tener al menos 10 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if(formData.usuario.length < 4){
+      setErrorMessage("El usuario debe tener al menos 4 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    setShowConfirm(false);
     try {
         // Crear una copia de formData sin los campos no deseados
         const createAdminData = {
           "username":formData.usuario,
           "password":formData.password,
-          "email":formData.email,
+          "email":formData.correo,
           "Nombre":formData.nombre,
           "Apellido":formData.apellido,
           "cedula":formData.cedula,
@@ -156,11 +267,18 @@ const CreateAdmin = () => {
               className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Fecha de nacimiento</label>
-            <input type="date" name="fechaNacimiento" value={formData.fechaNacimiento} onChange={handleChange} 
+            <input 
+            min={minDate}
+            max={maxDate}
+            type="date" 
+            name="fechaNacimiento" 
+            value={formData.fechaNacimiento} 
+            onChange={handleChange} 
               className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Lugar de nacimiento</label>
-            <input type="text" name="lugarNacimiento" value={formData.lugarNacimiento} onChange={handleChange} 
+            <input required
+            type="text" name="lugarNacimiento" value={formData.lugarNacimiento} onChange={handleChange} 
               className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
           </div>
 
@@ -186,9 +304,14 @@ const CreateAdmin = () => {
                 <option value="otro">Otro</option>
               </select>
             <label className="block text-sm font-semibold">Correo</label>
-            <input type="email" name="email" value={formData.email} onChange={handleChange} 
-              className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
-
+            <input type="email" 
+            name="correo" 
+            value={formData.correo} 
+            onChange={handleChange}
+            onBlur={handleBlur} 
+            onInput={(e) => e.target.value = e.target.value.replace(/\s+/g, "")}
+              className={"border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" + (EmailError ? " border-red-500" : "")} />
+            {EmailError && <p className="text-red-500 text-sm">{EmailError}</p>}
             <label className="block text-sm font-semibold">Dirección</label>
             <input type="text" name="direccion" value={formData.direccion} onChange={handleChange} 
               className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
@@ -205,12 +328,12 @@ const CreateAdmin = () => {
               className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             {/* Botón de Enviar */}
-            <button type="submit" className="cursor-pointer w-full bg-orange-500 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:scale-105">
+            <button type="submit" className="cursor-pointer w-full bg-orange-500 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:bg-orange-600 active:scale-95">
               CREAR ADMINISTRADOR
             </button>
             <button 
             type="button" 
-            className="cursor-pointer w-full bg-blue-500 text-white py-2 rounded-md mt-2 transition-transform duration-300 transform hover:scale-105"
+            className="cursor-pointer w-full bg-blue-500 text-white py-2 rounded-md mt-2 transition-transform duration-300 transform hover:bg-blue-600 active:scale-95"
             onClick={() => router.push("/routes/gestionroot")}>
               CANCELAR
             </button>
@@ -218,6 +341,23 @@ const CreateAdmin = () => {
         </form>
         
       </div>
+              {/* Modal de confirmación */}
+              {showConfirm && (
+        <>
+        <div className="fixed inset-0 bg-black/50 z-40"></div>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-80 text-center border z-50">
+          <p className="text-lg font-semibold">¿Deseas continuar con los cambios?</p>
+          <div className="mt-4 flex justify-center space-x-4">
+            <button className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm cursor-pointer hover:bg-gray-400 active:scale-95" onClick={() => setShowConfirm(false)}>
+              Cancelar
+            </button>
+            <button className="bg-orange-500 text-white px-4 py-2 rounded-md text-sm cursor-pointer hover:bg-orange-600 active:scale-95" onClick={ConfirmSubmit}>
+              Sí, editar
+            </button>
+          </div>
+        </div>
+        </>
+      )}
     </div>
   );
 };
