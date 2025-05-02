@@ -8,6 +8,8 @@ import { createPedido, createItemPedido } from "@/services/pedidosCRUD";
 import { getPedidosByUser } from "@/services/pedidosCRUD";
 import {XCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { getBookByIdLibro , putBookData } from "@/services/bookCRUD";
+
 
 const PreviewShoppingCart = () => {
   const { cart, authUser, clearCart } = useAuth();
@@ -47,26 +49,47 @@ const PreviewShoppingCart = () => {
 
       console.log(pedidoResponse); 
       // console.log(pedidoResponse.data.id)
+
       // 2. Crear los items del pedido
       await Promise.all(
-        cart.map((item) =>
-          // console.log(item.unitPrice),
+        cart.map(async (item) => {
+          const bookData = await getBookByIdLibro(item.idLibro);
+          const newCantidad = bookData.cantidad - item.quantity;
+      
+          const updatedBookData = {
+            ISBN_ISSN: bookData.ISBN_ISSN,
+            fecha_publicacion: bookData.fecha_publicacion,
+            title: bookData.title,
+            condition: bookData.condition,
+            author: bookData.author,
+            price: bookData.price,
+            editorial: bookData.editorial,
+            numero_paginas: bookData.numero_paginas,
+            genero: bookData.genero,
+            idioma: bookData.idioma,
+            cantidad: newCantidad,
+            idLibro: bookData.idLibro,
+          };
+      
+          await putBookData(updatedBookData, item.idLibro);
+      
           createItemPedido({
             PrecioItem: item.unitPrice,
             Cantidad: item.quantity,
-            IdItem: item.idLibro,      // ID del libro
-            IdPedido: pedidoResponse.data.id,        // ID del pedido padre
+            IdItem: item.idLibro,
+            IdPedido: pedidoResponse.data.id,
             Title: item.title,
-            totalPrice : item.totalPrice,
-          })
-        )
+            totalPrice: item.totalPrice,
+          });
+        })
       );
+      
 
 
       //Limpiar el carrito (si el pago es exitoso)
       clearCart();
       
-      console.log("pedido creado correctamente")
+      console.log("Pedido creado correctamente")
       setSuccessMessage("Pago realizado exitosamente. Muchas Gracias  !!!");
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {

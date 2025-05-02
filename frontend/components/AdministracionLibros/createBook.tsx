@@ -118,13 +118,13 @@ const [imagePreview, setImagePreview] = useState<string | null>(null); // Vista 
       setTimeout(() => setSuccessMessage(null), 3000);
       
     } catch (error: any) {
-      console.error('Error completo:', error);
+      console.log('Error completo:', error);
       
       let errorMessage = "Error al crear el libro";
       if (error?.error?.message) {
-        errorMessage = error.error.message;
+        console.log('Error completo:', error.error.message);
       } else if (error?.message) {
-        errorMessage = error.message;
+        console.log('Error completo:', error.error.message);
       } else if (error?.errors) {
         errorMessage = error.errors.map((err: any) => {
           if (err.path?.[0] === "ISBN_ISSN") return "Este ISSN ya está registrado";

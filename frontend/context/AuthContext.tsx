@@ -1,7 +1,13 @@
 // context/AuthContext.js
 "use client";
 import React, { useState, useEffect, useContext } from 'react';
-
+type CartItem = {
+    idLibro: string;
+    quantity: number;
+    title : string;
+    unitPrice: number;
+    totalPrice?: number;
+};
 export const AuthContext = React.createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -9,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     const [authToken, setAuthToken] = useState(null);
     const [authRole, setAuthRole] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [cart, setCart] = useState([]); // Estado para el carrito
+    const [cart, setCart] = useState<CartItem[]>([]); // Estado para el carrito
 
     // Cargar datos del localStorage al iniciar
     useEffect(() => {
@@ -131,16 +137,16 @@ export const AuthProvider = ({ children }) => {
 
         setCart(prevCart =>
             prevCart.map(item =>
-                item.idLibro === idLibro
-                    ? { 
-                        ...item, 
-                        quantity: newQuantity,
-                        totalPrice: newQuantity * item.unitPrice // Recalculamos precio total
-                    }
-                    : item
+              item.idLibro === idLibro
+                ? {
+                    ...item,
+                    quantity: newQuantity,
+                    totalPrice: newQuantity * item.unitPrice, // Recalcula el precio
+                  }
+                : item
             )
-        );
-    };
+        )
+    }
 
     // Función para limpiar el carrito
     const clearCart = () => {
