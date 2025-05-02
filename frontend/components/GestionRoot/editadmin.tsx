@@ -40,6 +40,8 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Estado para la sección del menú
+  const[SeccionMenu, setSeccionMenu] = useState("Principal")
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -277,15 +279,33 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
         {/* Sección Izquierda */}
         <div className="flex flex-col items-center">
-            <h2 className="mt-10 text-xl font-bold italic text-center">EDITAR</h2>
-            <h2 className="mb-8 text-xl font-bold italic text-center">ADMINISTRADOR</h2>
+          <h2 className="mt-10 text-xl font-bold italic text-center">EDITAR</h2>
+          <h2 className="mb-8 text-xl font-bold italic text-center">ADMINISTRADOR</h2>
+
+          <div className="cursor-pointer flex items-center justify-center flex-col mb-4 text-gray-400 border-b border-gray pb-1 hover:border-black hover:text-black"
+          onClick={()=>{
+            router.push('/routes/editadmin/'+adminID)
+            setSeccionMenu("Principal")
+        }}>
+
             <div className="w-32 h-32 bg-gray-200 flex items-center justify-center rounded-full">
                 <span className="justify-center text-gray-500 text-6xl">/</span>
             </div>
+            <p className="mt-4 ">Editar perfil</p>
+          </div>
+          <p className="cursor-pointer flex-col mb-4 text-gray-400 border-b border-gray pb-1 hover:border-black hover:text-black"
+          onClick={()=>{
+            setSeccionMenu("Password")
+          }}>Cambiar contraseña</p>
+
         </div>
 
         {/* Separador */}
         <div className="hidden md:block w-px bg-gray-300 h-full"></div>
+
+        {/*----------------SELECTOR DE SECCION------------------*/}
+      {SeccionMenu === "Principal" ? (
+          <>
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="w-full lg:w-2/3 bg-white p-6 rounded-lg shadow-md grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Columna 1 */}
@@ -400,8 +420,30 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
             </button>
           </div>
         </form>
+        </>
+        ):(<>
+        {/*-------------- Formulario para cambiar contraseña -------------*/}
+        <div className="min-w-[500px] max-w-4xl h-auto min-h-[300px] md:min-h-[300px] bg-white p-6 rounded-lg shadow-md gap-4 mx-auto my-auto justify-center flex flex-col items-center">
 
+
+        <form className="items-center justify-center flex flex-col gap-4" onSubmit={handleSubmit}>
+          <label className="block font-semibold">Nueva contraseña</label>
+          <input 
+          type="password" 
+          name="password" 
+          value={formData.password} 
+          onChange={handleChange} 
+          className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
+          <button 
+          type="submit" 
+          className="w-full bg-orange-500 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:bg-orange-600 active:scale-95 cursor-pointer">
+            Cambiar Clave</button>
+        </form>
+    
+        </div>
+        </>) }
       </div>
+        
         {/* Modal de confirmación */}
         {showConfirm && (
         <>
