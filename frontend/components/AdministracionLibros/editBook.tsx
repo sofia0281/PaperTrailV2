@@ -114,7 +114,11 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
       
 
       setSuccessMessage("Libro editado correctamente");
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setTimeout(() => {setSuccessMessage(null);router.push
+
+
+        (          "/routes/adminbooks");
+      }, 2000);
   
     } catch (error: any) {
       const errorMessages = error.errors?.map(errorItem => {

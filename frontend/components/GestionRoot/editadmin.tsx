@@ -306,11 +306,12 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
             </div>
             <p className="mt-4 ">Editar perfil</p>
           </div>
+          {/* SECCION CAMBIAR CONTRASEÑA 
           <p className="cursor-pointer flex-col mb-4 text-gray-400 border-b border-gray pb-1 hover:border-black hover:text-black"
           onClick={()=>{
             setSeccionMenu("Password")
           }}>Cambiar contraseña</p>
-
+          */}
         </div>
 
         {/* Separador */}

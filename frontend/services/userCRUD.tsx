@@ -64,9 +64,16 @@ export const putUserData = async (userDataForm) => {
             body: JSON.stringify(userDataForm), // Enviar todos los campos
         });
 
-        if (!response.ok) {
-            throw new Error('Error al actualizar los datos del usuario');
-        }
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error detallado de Strapi2:', errorData);
+      throw {
+        status: errorData.error.status,
+        message: errorData.error.message,
+        errors: errorData.error.details.errors,
+        errorData
+      };
+    }
 
         const updatedUser = await response.json();
         console.log('Usuario actualizado:', updatedUser);
