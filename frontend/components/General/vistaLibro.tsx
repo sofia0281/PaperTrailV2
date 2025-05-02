@@ -33,14 +33,11 @@ const Books = ({ idLibro }: { idLibro: string }) => {
 
 
   const handleupdateQuantity = () => {
-    const newCount = count + 1;
-    const comprobacion = updateQuantity(idLibro, newCount);
-  
-    if (comprobacion === false) {
-      setErrorMessage("Límite de unidades permitidas");
-      setTimeout(() => setErrorMessage(null), 3000);
+    if (count < 20) {
+      setCount(count + 1);
     } else {
-      setCount(newCount); // ✅ Aquí se actualiza el contador
+      setErrorMessage("Máximo 20 unidades por libro.");
+      setTimeout(() => setErrorMessage(null), 3000);
     }
   };
   
