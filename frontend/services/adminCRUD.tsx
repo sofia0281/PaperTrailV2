@@ -126,9 +126,15 @@ export const getAdminData = async (adminID: number) => {
         });
 
         if (!response.ok) {
-            console.log(response)
-            throw new Error('Error al actualizar los datos del usuario');
-        }
+            const errorData = await response.json();
+            console.error('Error detallado en usuarioAdmin de Strapi2:', errorData);
+            throw {
+              status: errorData.error.status,
+              message: errorData.error.message,
+              errors: errorData.error.details.errors,
+              errorData
+            };
+          }
 
         const updatedUser = await response.json();
         console.log('Usuario actualizado:', updatedUser);
@@ -136,7 +142,7 @@ export const getAdminData = async (adminID: number) => {
         return updatedUser;
     } catch (error) {
         console.error('Error:', error.message);
-        alert('Error al actualizar los datos');
+        // alert('Error al actualizar los datos');
     }
 };
 
@@ -185,9 +191,15 @@ export const createAdmin = async (adminData) => {
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error('Error detallado de Strapi:', errorData);
-            throw new Error('Error al crear el usuario');
-        }
+            console.error('Error detallado de Strapi2:', errorData);
+            throw {
+              status: errorData.error.status,
+              message: errorData.error.message,
+              errors: errorData.error.details.errors,
+              errorData
+            };
+          }
+      
 
         const data = await response.json();
         console.log('Usuario creado en Strapi:', data);

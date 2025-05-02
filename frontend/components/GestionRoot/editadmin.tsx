@@ -7,17 +7,42 @@ import { putUsuarioAdminData } from '@/services/usuarioAdminCRUD';
 import { motion } from "framer-motion";
 import { XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { AutocompleteLocation } from "@/components/ui/register/AutocompleteLocation";
 
 const EditAdmin =  ({ adminID }: { adminID: number }) => {
 
+  const maxLengths: Record<string, number> = {
+    nombre: 20,
+    apellido: 30,
+    direccion: 80,
+    email: 30,
+    usuario: 15,
+    password: 20,
+    confirmarPassword: 20
+  };
+
+  const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  const minDate = "1900-01-01";
+
+  // Calcular fecha máxima dinámica (hoy menos 18 años)
+  const today = new Date();
+  const maxDateObj = new Date(today);
+  maxDateObj.setFullYear(today.getFullYear() - 18);
+  const maxDate = maxDateObj.toISOString().split("T")[0]; // YYYY-MM-DD
+  
   const router = useRouter();
 
+  {/*Confirmar correo en tiempo real */}
+  const [EmailError, setEmailError] = useState<string | null>(null);
   {/*Estados para las ventanas de confirmación */}
   const [showConfirm, setShowConfirm] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Estado para la sección del menú
+  const[SeccionMenu, setSeccionMenu] = useState("Principal")
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -38,36 +63,71 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
 
     let formattedValue = value;
 
+    if (
+      name === "nombre" || 
+      name === "apellido" || 
+      name === "direccion" || 
+      name === "correo" || 
+      name === "usuario"
+    ) {
+      if (name === "correo") {
+        // Para el campo email, eliminar los espacios
+        formattedValue = value.replace(/\s+/g, "");
+      } else {
+        // Para los otros campos, eliminar caracteres no deseados y los espacios al principio
+        formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, "") // Solo letras y espacios
+                               .replace(/^\s+/, ""); // Eliminar espacios al principio
+      }
+    } else if (name === "cedula") {
+      // Para el campo cédula, solo permitir números y limitar a 10 dígitos
+      formattedValue = value.replace(/\D/g, "").slice(0, 10) // Solo números, máximo 10 dígitos
+                             .replace(/^\s+/, ""); // Eliminar espacios al principio
+    }
+    if(name === "direccion" || name === "usuario"){
+      // Para el campo dirección, eliminar caracteres no deseados y los espacios al principio
+      formattedValue = value.replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s.,#-]/g, "") // Solo letras, números, espacios y caracteres permitidos
+                             .replace(/^\s+/, ""); // Eliminar espacios al principio
+    }
+    // Aplicar límite de longitud a los inputs
+    if (maxLengths[name]) {
+      formattedValue = formattedValue.slice(0, maxLengths[name]);
+    }
     // Validación para fecha de nacimiento
     if (name === "fechaNacimiento") {
-      const selectedDate = new Date(value);
-      const minDate = new Date("2006-01-01"); // Fecha mínima (1 de enero de 2006)
-      
-      if (selectedDate > minDate) {
-        // Si la fecha seleccionada es posterior a 2006, mostrar error
-        setMessage("Debes tener al menos 18 años (nacido antes de 2006)");
-        setTimeout(() => setMessage(null), 3000);
-        return; // No actualizar el estado
-      }
-      
       formattedValue = value; // Aceptar la fecha si es válida
     }
-
-    if (name === "nombre" || name === "apellido" || name === "lugarNacimiento") {
-      formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, "") // Solo letras y espacios
-      .replace(/^\s+/, ""); 
-    }
-
-    if (name === "cedula") {
-      formattedValue = value.replace(/\D/g, "").slice(0, 10) // Solo números, máximo 10 dígitos
-      .replace(/^\s+/, "")
-    }
+    // Actualizar el estado con el valor formateado
     setFormData((prevData) => ({
       ...prevData,
       [name]: formattedValue,
     }));
   };
+  
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
 
+    if (name === "correo") {
+      
+      // Verificamos si el correo es válido
+      if (!emailPattern.test(value)) {
+        setEmailError("Por favor, ingresa un correo válido.");
+      } else {
+        setEmailError(null); // Limpiar mensaje de error si es válido
+      }
+    }
+    
+    if (name === "fechaNacimiento") {
+      const selectedDate = new Date(value);
+      const minDateObj = new Date(minDate);
+      const selectedDateOnly = new Date(selectedDate.toISOString().split("T")[0]);
+      
+      if (selectedDateOnly < minDateObj || selectedDateOnly > maxDateObj) {
+        setErrorMessage(`Debes tener al menos 18 años (nacido antes del ${maxDate})`);
+        setTimeout(() => setErrorMessage(null), 3000);
+        return;
+      }
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,6 +135,50 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
   };
 
   const confirmSubmit = async () => {
+
+    if (formData.fechaNacimiento === "fechaNacimiento") {
+      const selectedDate = new Date(formData.fechaNacimiento);
+      const minDateObj = new Date(minDate);
+      const selectedDateOnly = new Date(selectedDate.toISOString().split("T")[0]);
+      
+      if (selectedDateOnly < minDateObj || selectedDateOnly > maxDateObj) {
+        setErrorMessage(`Debes tener al menos 18 años (nacido antes del ${maxDate})`);
+        setTimeout(() => setErrorMessage(null), 3000);
+        return;
+      }
+    }
+
+    // Verificamos si el correo es válido
+    if (!emailPattern.test(formData.correo)) {
+      setErrorMessage("Por favor, ingresa un correo válido.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.nombre.length < 2) {
+      setErrorMessage("El nombre debe tener al menos 2 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.apellido.length < 2) {
+      setErrorMessage("El apellido debe tener al menos 2 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.cedula.length < 6) {
+      setErrorMessage("La cédula debe tener al menos 6 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.direccion.length < 10) {
+      setErrorMessage("La dirección debe tener al menos 10 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if(formData.usuario.length < 4){
+      setErrorMessage("El usuario debe tener al menos 4 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
     setShowConfirm(false);
     try {
       const updatedUserData = {
@@ -89,43 +193,56 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
         "Direccion": formData.direccion,
         // "password": formData.password 
       };
-      await putAdminData(updatedUserData, adminID);
-      // await putUsuarioAdminData(updatedUserData);
-      setMessage("Administrador editado correctamente");
-      setTimeout(() => setMessage(null), 3000);
-    } catch (error) {
-      // console.error('Error completo:', error);
-      const errorMessages = error.errors.map(errorItem => {
-        const field = errorItem.path[0];
-        if (field === "username")
-        {
-          return `Este nombre de usuario ya se encuentra registrado`;
+      await putUsuarioAdminData(updatedUserData);
+      try {
+                const creadoUser =await putAdminData(updatedUserData, adminID);
+                console.log('Usuario  admin editar en tabla user:', creadoUser);
+                setSuccessMessage("Registro  de administrador completado exitosamente");
+                setMessage("Administrador editado correctamente");
+                setTimeout(() => {setMessage(null);
+                router.push('/routes/gestionroot')}, 2000);
+                
+              } catch (userError) {
+                console.error('Error al editar el admin  en tabla user:', userError);
+                
+                setSuccessMessage("Registro completado con observaciones");
+                setErrorMessage(null);
+                setTimeout(() => {
+                    setSuccessMessage(null);
+                }, 3000);
+              }
+      } catch (error) {
+          // console.error('Error completo:', error);
+          const errorMessages = error.errors.map(errorItem => {
+            const field = errorItem.path[0];
+            if (field === "username")
+            {
+              return `Este nombre de usuario ya se encuentra registrado`;
+            }
+            else if (field === "email"){
+              return `Este correo electrónico ya se encuentra registrado`;
+            }
+            else if (field === "cedula"){
+              return `Esta cédula ya se encuentra registrada`;
+            }
+            return `Error en el  campo ${field}. Error al registrar usuario`;
+            
+          });
+          if (error.status === 400 ) {
+            const fullMessage = errorMessages.join('. ');
+            setErrorMessage(fullMessage);
+            setSuccessMessage(null);
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 3000);
+          } else {
+            const fullMessage = errorMessages.join('. ');
+            setErrorMessage(fullMessage);
+            setSuccessMessage(null);
+            setTimeout(() => setErrorMessage(null), 3000);
+          }
         }
-        else if (field === "Email"){
-          return `Este correo electrónico ya se encuentra registrado`;
-        }
-        else if (field === "cedula"){
-          return `Esta cédula ya se encuentra registrada`;
-        }
-        return `Error en el  campo ${field}. Error al registrar usuario`;
-        
-      });
-      if (error.status === 400 ) {
-        const fullMessage = errorMessages.join('. ');
-        setErrorMessage(fullMessage);
-        setSuccessMessage(null);
-  	    setTimeout(() => {
-          setErrorMessage(null);
-          // router.push("/routes/login");
-        }, 3000);
-      } else {
-        const fullMessage = errorMessages.join('. ');
-        setErrorMessage(fullMessage);
-        setSuccessMessage(null);
-        setTimeout(() => setErrorMessage(null), 3000);
-      }
-    }
-  };
+    };
 
   useEffect(() => {
     const loadAdminData = async () => {
@@ -150,13 +267,15 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
   
   return (
     <div className="flex w-full max-w-5xl mx-auto p-6 justify-center">
+      
       {(successMessage || errorMessage) && (
+        
         <motion.div
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -50 }}
           className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
-            successMessage ? "bg-orange-500" : "bg-black"
+            successMessage ? "bg-orange-500" : "bg-red-500"
           }`}
         >
           <span>{successMessage || errorMessage}</span>
@@ -173,15 +292,33 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
         {/* Sección Izquierda */}
         <div className="flex flex-col items-center">
-            <h2 className="mt-10 text-xl font-bold italic text-center">EDITAR</h2>
-            <h2 className="mb-8 text-xl font-bold italic text-center">ADMINISTRADOR</h2>
+          <h2 className="mt-10 text-xl font-bold italic text-center">EDITAR</h2>
+          <h2 className="mb-8 text-xl font-bold italic text-center">ADMINISTRADOR</h2>
+
+          <div className="cursor-pointer flex items-center justify-center flex-col mb-4 text-gray-400 border-b border-gray pb-1 hover:border-black hover:text-black"
+          onClick={()=>{
+            router.push('/routes/editadmin/'+adminID)
+            setSeccionMenu("Principal")
+        }}>
+
             <div className="w-32 h-32 bg-gray-200 flex items-center justify-center rounded-full">
                 <span className="justify-center text-gray-500 text-6xl">/</span>
             </div>
+            <p className="mt-4 ">Editar perfil</p>
+          </div>
+          <p className="cursor-pointer flex-col mb-4 text-gray-400 border-b border-gray pb-1 hover:border-black hover:text-black"
+          onClick={()=>{
+            setSeccionMenu("Password")
+          }}>Cambiar contraseña</p>
+
         </div>
 
         {/* Separador */}
         <div className="hidden md:block w-px bg-gray-300 h-full"></div>
+
+        {/*----------------SELECTOR DE SECCION------------------*/}
+      {SeccionMenu === "Principal" ? (
+          <>
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="w-full lg:w-2/3 bg-white p-6 rounded-lg shadow-md grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Columna 1 */}
@@ -204,15 +341,21 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
 
             <label className="block text-sm font-semibold">Fecha de nacimiento</label>
             <input 
+              min={minDate}
+              max={maxDate}
               type="date" 
               name="fechaNacimiento" 
               value={formData.fechaNacimiento} 
               onChange={handleChange} 
+              onBlur={handleBlur} // Llamar a handleBlur al perder el foco
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
-
             <label className="block text-sm font-semibold">Lugar de nacimiento</label>
-            <input type="text" name="lugarNacimiento" value={formData.lugarNacimiento} onChange={handleChange} 
-              className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                <AutocompleteLocation
+                          value={formData.lugarNacimiento}
+                          onChange={(value) => setFormData({...formData, lugarNacimiento: value})}
+                          placeholder="Lugar de nacimiento"
+                          required
+            />
           </div>
 
           {/* Columna 2 */}
@@ -226,19 +369,29 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Género</label>
-            <input 
-              type="text" 
-              name="genero" 
-              value={formData.genero} 
-              onChange={handleChange} 
-              className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
+              <select
+                  name="genero"
+                  value={formData.genero}
+                  onChange={handleChange}
+                  className="border border-gray-400 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                >
+                  <option value="">Selecciona tu género</option>
+                  <option value="masculino">Masculino</option>
+                  <option value="femenino">Femenino</option>
+                  <option value="otro">Otro</option>
+                </select>
 
-            <label className="block text-sm font-semibold">Correo</label>
+            <label className="block text-sm font-semibold">Correo</label> 
             <input 
               type="email" 
               name="correo" 
-              value={formData.correo} onChange={handleChange} 
-              className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
+              value={formData.correo} 
+              onChange={handleChange} 
+              onBlur={handleBlur} // Llamar a handleBlur al perder el foco
+              className={"border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" + (EmailError ? " border-red-500" : "")}
+              onInput={(e) => e.target.value = e.target.value.replace(/\s+/g, "")} />
+            {EmailError && <p className="text-red-500 text-sm">{EmailError}</p>}
 
             <label className="block text-sm font-semibold">Dirección</label>
             <input type="text" 
@@ -267,32 +420,57 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" /> */}
 
             {/* Botón de Enviar */}
-            <button type="submit" className="w-full bg-orange-500 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:scale-105 cursor-pointer">
+            <button type="submit" className="w-full bg-orange-500 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:bg-orange-600 active:scale-95 cursor-pointer">
               EDITAR ADMINISTRADOR
             </button>
             <button 
               type="button" 
-              className="w-full bg-blue-500 text-white py-2 rounded-md transition-transform duration-300 transform hover:scale-105 cursor-pointer"
+              className="w-full bg-blue-500 text-white py-2 rounded-md transition-transform duration-300 transform hover:bg-blue-600 active:scale-95 cursor-pointer"
               onClick={()=>router.push("/routes/gestionroot")}>
               CANCELAR
             </button>
           </div>
         </form>
+        </>
+        ):(<>
+        {/*-------------- Formulario para cambiar contraseña -------------*/}
+        <div className="min-w-[500px] max-w-4xl h-auto min-h-[300px] md:min-h-[300px] bg-white p-6 rounded-lg shadow-md gap-4 mx-auto my-auto justify-center flex flex-col items-center">
 
+
+        <form className="items-center justify-center flex flex-col gap-4" onSubmit={handleSubmit}>
+          <label className="block font-semibold">Nueva contraseña</label>
+          <input 
+          type="password" 
+          name="password" 
+          value={formData.password} 
+          onChange={handleChange} 
+          className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
+          <button 
+          type="submit" 
+          className="w-full bg-orange-500 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:bg-orange-600 active:scale-95 cursor-pointer">
+            Cambiar Clave</button>
+        </form>
+    
+        </div>
+        </>) }
       </div>
+        
         {/* Modal de confirmación */}
         {showConfirm && (
+        <>
+        <div className="fixed inset-0 bg-black/50 z-40"></div>
         <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-80 text-center border z-50">
           <p className="text-lg font-semibold">¿Deseas continuar con los cambios?</p>
           <div className="mt-4 flex justify-center space-x-4">
-            <button className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm" onClick={() => setShowConfirm(false)}>
+            <button className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm cursor-pointer hover:bg-gray-400 active:scale-95" onClick={() => setShowConfirm(false)}>
               Cancelar
             </button>
-            <button className="bg-orange-500 text-white px-4 py-2 rounded-md text-sm" onClick={confirmSubmit}>
+            <button className="bg-orange-500 text-white px-4 py-2 rounded-md text-sm cursor-pointer hover:bg-orange-600 active:scale-95" onClick={confirmSubmit}>
               Sí, editar
             </button>
           </div>
         </div>
+        </>
       )}
       {/* Notificación emergente */}
       {message && (
