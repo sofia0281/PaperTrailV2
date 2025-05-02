@@ -101,16 +101,17 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
       };
   
       
-      // Verificar que la imagen existe antes de enviar
-      if (!imageFile) {
-          throw new Error("Debes seleccionar una imagen para el libro");
-        }
+      
       
       console.log('Archivo seleccionado:', imageFile);
       
             // Enviar datos e imagen (modificado)
       await putBookData(updatedBookData, bookID); // Nueva función
-      await updateBookImage(bookID, imageFile);
+      // Verificar que la imagen existe antes de enviar
+      if (imageFile) {
+        await updateBookImage(bookID, imageFile);
+      }
+      
 
       setSuccessMessage("Libro editado correctamente");
       setTimeout(() => setSuccessMessage(null), 3000);
