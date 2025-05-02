@@ -32,16 +32,18 @@ const Books = ({ idLibro }: { idLibro: string }) => {
   const { addToCart, authRole , updateQuantity} = useAuth();
 
 
-  const handleupdateQuantity =  () => {
-   const comprobacion = updateQuantity(idLibro, count);
-   if (comprobacion === false)
-   {
-    setErrorMessage("Limite de unidades permitidas");
-    setTimeout(() => setErrorMessage(null), 3000);
-
-   }
-
-  }
+  const handleupdateQuantity = () => {
+    const newCount = count + 1;
+    const comprobacion = updateQuantity(idLibro, newCount);
+  
+    if (comprobacion === false) {
+      setErrorMessage("Límite de unidades permitidas");
+      setTimeout(() => setErrorMessage(null), 3000);
+    } else {
+      setCount(newCount); // ✅ Aquí se actualiza el contador
+    }
+  };
+  
     useEffect(() => {
       const storedRole = localStorage.getItem('role');
       setRole(storedRole?.replace(/"/g, '') || null);
@@ -53,27 +55,29 @@ const Books = ({ idLibro }: { idLibro: string }) => {
   }
   const handleAddToCart = () => {
     if (role !== "Authenticated") {
-      handleMessage(); // Muestra mensaje si no está autenticado
+      handleMessage(); // Mensaje si no está autenticado
       return;
     }
-    try {
-        addToCart({
-            idLibro,
-            title: formData.titulo,
-            price: parseFloat(formData.precio),
-            quantity: count,
-            imageUrl: image
-        });
-        setSuccessMessage(`Tu  libro se ha añadido exitosamente al carrito `);
-    } catch (error) {
-      setSuccessMessage(error.message);
-    } finally {
-        setTimeout(() => {
-            setSuccessMessage(null);
-            // setErrorMessage(null);
-        }, 3000);
+  
+    const wasAdded = addToCart({
+      idLibro,
+      title: formData.titulo,
+      price: parseFloat(formData.precio),
+      quantity: count,
+      imageUrl: image,
+    });
+  
+    if (!wasAdded) {
+      setSuccessMessage("Solo puedes agregar hasta 20 unidades de este libro.");
+    } else {
+      setSuccessMessage("Tulibro se ha añadido exitosamente al carrito.");
     }
-};
+  
+    setTimeout(() => {
+      setSuccessMessage(null);
+    }, 3000);
+  };
+  
 
   const loadBookData = async () => {
     const bookData = await getBookByIdLibro(idLibro);
@@ -210,7 +214,8 @@ const Books = ({ idLibro }: { idLibro: string }) => {
               </button>
               <span>{count}</span>
               <button
-                onClick = {() =>handleupdateQuantity()}
+                onClick={() => handleupdateQuantity()}
+
                 className="cursor-pointer p-1 border rounded-full hover:bg-orange-200"
               >
                 <Plus size={16} />

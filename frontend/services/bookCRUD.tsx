@@ -32,13 +32,19 @@ export const createBook = async (bookData) => {
 };
 
 
+
+
 export const createBookWithImage = async (bookData, imageFile) => {
   try {
+    const token = localStorage.getItem('authToken');
+    if (!token) throw new Error('No authentication token found');
+
     // 1. Crear el libro (solo datos)
     const bookResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({ data: bookData }),
     });
@@ -51,36 +57,50 @@ export const createBookWithImage = async (bookData, imageFile) => {
 
     const bookDataResponse = await bookResponse.json();
     const bookId = bookDataResponse.data.id;
-    console.log('Libro creado con ID:', bookId);
+    console.log('✅ Libro creado con ID:', bookId);
 
-    // 2. Subir la imagen y asociarla al libro
-    const formData = new FormData();
-    formData.append('files', imageFile); // El archivo real
-    formData.append('ref', 'api::book.book'); // Nombre del modelo
-    formData.append('refId', bookId); // ID del libro
-    formData.append('field', 'cover'); // Nombre del campo media en el modelo
-
-    const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload`, {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!uploadResponse.ok) {
-      const uploadError = await uploadResponse.json();
-      console.error('Error al subir imagen:', uploadError);
-      throw new Error('Error al subir la imagen');
+    // 2. Subir la imagen (usando la función reutilizable)
+    if (imageFile) {
+      await newBookImage(bookId, imageFile);
     }
 
-    const uploadResult = await uploadResponse.json();
-    console.log('Imagen subida:', uploadResult);
-
-    return { book: bookDataResponse, image: uploadResult };
+    return bookDataResponse;
 
   } catch (error) {
-    console.error('Error en createBookWithImage:', error);
+    console.error('❌ Error en createBookWithImage:', error);
     throw error;
   }
 };
+
+export const newBookImage = async (bookId, imageFile) => {
+  const token = localStorage.getItem('authToken');
+  if (!token) throw new Error('No authentication token found');
+
+  const formData = new FormData();
+  formData.append('files', imageFile);
+  formData.append('ref', 'api::book.book');
+  formData.append('refId', bookId);
+  formData.append('field', 'cover');
+
+  const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!uploadResponse.ok) {
+    const rawError = await uploadResponse.text();
+    console.error('❌ Error crudo al subir imagen:', rawError);
+    throw new Error('Error al subir la imagen');
+  }
+
+  const uploadResult = await uploadResponse.json();
+  console.log('✅ Imagen subida correctamente:', uploadResult);
+  return uploadResult;
+};
+
 
 
 // getAllBooksData trae la información de cada libro de la tabla
@@ -231,54 +251,100 @@ export const getBookByIdLibro = async (idLibro: string) => {
   };
 
 
-// metodo put para actualizar datos de un libro
-export const putBookData = async (bookDataForm, idLibro) => {
-  try {
-    const token = localStorage.getItem('authToken');
-    if (!token) throw new Error('No authentication token found');
-
-    // Buscar el ID interno del libro en Strapi
-    const bookId = await findBookIdByIdLibro(idLibro);
-    if (!bookId) throw new Error('Libro no encontrado');
-
-    // Preparar los datos para Strapi v4
-    const requestData = {
-      data: {
-        ...bookDataForm,
-        // Si necesitas actualizar la imagen, deberías manejar eso aparte
-        // con un endpoint específico para uploads
-      }
-    };
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books/${bookId}`,
-      {
+  // metodo put para actualizar datos de un libro
+  export const putBookData = async (bookDataForm, idLibro) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) throw new Error('No authentication token found');
+  
+      const bookId = await findBookIdByIdLibro(idLibro);
+      if (!bookId) throw new Error('Libro no encontrado');
+  
+      const requestData = { data: { ...bookDataForm } };
+  
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books/${bookId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(requestData),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error al actualizar libro:', errorData);
+        throw new Error('Error al actualizar el libro');
       }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Error detallado de Strapi:', errorData);
-      throw {
-        status: errorData.error?.status || 500,
-        message: errorData.error?.message || 'Error desconocido',
-        errors: errorData.error?.details?.errors || [],
-        errorData
-      };
+  
+      return await response.json();
+    } catch (error) {
+      console.error('Error in putBookData:', error);
+      throw error;
     }
+  };
 
-    return await response.json();
-  } catch (error) {
-    console.error('Error in putBookData:', error);
-    throw error;
-  }
-};
+  export const updateBookImage = async (idLibro, imageFile) => {
+    try {
+      if (!imageFile) return;
+  
+      const token = localStorage.getItem('authToken');
+      if (!token) throw new Error('No authentication token found');
+  
+      const bookId = await findBookIdByIdLibro(idLibro);
+      if (!bookId) throw new Error('Libro no encontrado');
+  
+      // Subir la imagen
+      const formData = new FormData();
+      formData.append('files', imageFile);
+  
+      const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+  
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text();
+        console.error("❌ Error al subir la imagen:", errorText);
+        throw new Error('Error al subir la imagen');
+      }
+  
+      const uploadedFiles = await uploadResponse.json();
+      const uploadedImageId = uploadedFiles[0]?.id;
+  
+      if (!uploadedImageId) throw new Error('No se pudo obtener el ID de la imagen subida');
+  
+      // Asociar la imagen al libro
+      const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books/${bookId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          data: {
+            cover: uploadedImageId,
+          },
+        }),
+      });
+  
+      if (!updateResponse.ok) {
+        const errorData = await updateResponse.json();
+        console.error('Error al asociar la imagen:', errorData);
+        throw new Error('Error al asociar la imagen');
+      }
+  
+      return await updateResponse.json();
+    } catch (error) {
+      console.error('Error in updateBookImage:', error);
+      throw error;
+    }
+  };
+  
+  
 
 
 export const deleteBook = async (idLibro) => {
