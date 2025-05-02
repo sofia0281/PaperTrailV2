@@ -63,62 +63,51 @@ export const AuthProvider = ({ children }) => {
 
     // Función para añadir items al carrito
     const addToCart = (book) => {
-        const { idLibro, title, price, quantity } = book;
-        let message: string | undefined;
+        const { idLibro, title, price, quantity, imageUrl } = book;
+      
+        let wasAdded = true;
+      
         setCart(prevCart => {
-            const existingItem = prevCart.find(item => item.idLibro === idLibro);
-            
-            if (existingItem) {
-                    // Actualizar cantidad y calcular precio total
-                    if (quantity > 1)
-                        {
-                            return prevCart.map(item =>
-                                item.idLibro === idLibro
-                                    ? { 
-                                        ...item, 
-                                        quantity: item.quantity + quantity,
-                                        totalPrice: (item.quantity + 1) * price // Precio total actualizado
-                                    }
-                                    : item
-                            );
-                        }else{
-                            return prevCart.map(item =>
-                                item.idLibro === idLibro
-                                    ? { 
-                                        ...item, 
-                                        quantity: item.quantity + 1,
-                                        totalPrice: (item.quantity + 1) * price // Precio total actualizado
-                                    }
-                                    : item
-                            );
-                        }
-
-                
-
-            } else {
-                // Añadir nuevo item con precio total inicial
-                if (quantity > 1)
-                {
-                    return [...prevCart, { 
-                        idLibro, 
-                        title, 
-                        unitPrice: price, // Guardamos precio unitario como referencia
-                        quantity: quantity,
-                        totalPrice: price // Precio total = unitPrice * quantity
-                    }];                  
-                }else{
-                    return [...prevCart, { 
-                        idLibro, 
-                        title, 
-                        unitPrice: price, // Guardamos precio unitario como referencia
-                        quantity: 1,
-                        totalPrice: price // Precio total = unitPrice * quantity
-                    }];
-                }
-
-            }
+          const existingItem = prevCart.find(item => item.idLibro === idLibro);
+          const unitsToAdd = quantity && quantity > 0 ? quantity : 1;
+          const currentQuantity = existingItem ? existingItem.quantity : 0;
+          const newQuantity = currentQuantity + unitsToAdd;
+      
+          // Validar límite de 20 unidades por libro
+          if (newQuantity > 20) {
+            wasAdded = false;
+            return prevCart; // No modificar el carrito
+          }
+      
+          if (existingItem) {
+            return prevCart.map(item =>
+              item.idLibro === idLibro
+                ? {
+                    ...item,
+                    quantity: newQuantity,
+                    totalPrice: newQuantity * item.unitPrice,
+                  }
+                : item
+            );
+          } else {
+            return [
+              ...prevCart,
+              {
+                idLibro,
+                title,
+                unitPrice: price,
+                quantity: unitsToAdd,
+                totalPrice: price * unitsToAdd,
+                imageUrl,
+              },
+            ];
+          }
         });
-    };
+      
+        return wasAdded; // Devuelve true o false según si se pudo agregar
+      };
+      
+      
 
     // Función para eliminar items del carrito
     const removeFromCart = (idLibro) => {
