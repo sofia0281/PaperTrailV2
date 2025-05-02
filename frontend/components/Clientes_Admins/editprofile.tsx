@@ -11,16 +11,27 @@ import { PrefetchRSCPathnameNormalizer } from "next/dist/server/normalizers/requ
 import { PassThrough } from "stream";
 import MenuLateralEditProfile from "@/components/ui/menulateraleditprofile";
 import EditPassword from "@/components/Clientes_Admins/editpassword";
+import { AutocompleteLocation } from "@/components/ui/register/AutocompleteLocation";
 
 const EditProfile = () => {
   const maxLengths: Record<string, number> = {
     nombre: 20,
     apellido: 30,
     direccion: 80,
-    passwordActual: 20,
-    passwordNueva: 20,
-    passwordConfirmar: 20,
+    email: 30,
+    usuario: 15,
+    password: 20,
+    confirmarPassword: 20
   };
+  const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  const minDate = "1900-01-01";
+
+  // Calcular fecha máxima dinámica (hoy menos 18 años)
+  const today = new Date();
+  const maxDateObj = new Date(today);
+  maxDateObj.setFullYear(today.getFullYear() - 18);
+  const maxDate = maxDateObj.toISOString().split("T")[0]; // YYYY-MM-DD
 
   const router = useRouter();
   const role = localStorage.getItem("role");
@@ -39,6 +50,7 @@ const EditProfile = () => {
     setShowPassword(!showPassword);
   };
 
+
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
@@ -55,10 +67,6 @@ const EditProfile = () => {
     passwordNueva: "",
     passwordConfirmar: "",
   });
-
-  const handleCancelar = () => {
-    router.push("/");
-  };
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -86,7 +94,33 @@ const EditProfile = () => {
 
     loadUserData();
   }, []);
+  const [EmailError, setEmailError] = useState<string | null>(null);
 
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    if (name === "correo") {
+      
+      // Verificamos si el correo es válido
+      if (!emailPattern.test(value)) {
+        setEmailError("Por favor, ingresa un correo válido.");
+      } else {
+        setEmailError(null); // Limpiar mensaje de error si es válido
+      }
+    }
+    
+    if (name === "fechaNacimiento") {
+      const selectedDate = new Date(value);
+      const minDateObj = new Date(minDate);
+      const selectedDateOnly = new Date(selectedDate.toISOString().split("T")[0]);
+      
+      if (selectedDateOnly < minDateObj || selectedDateOnly > maxDateObj) {
+        setErrorMessage(`Debes tener al menos 18 años (nacido antes del ${maxDate})`);
+        setTimeout(() => setErrorMessage(null), 3000);
+        return;
+      }
+    }
+  };
   const updatePassword = async (userId: number, newPassword: string) => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`, {
@@ -154,22 +188,37 @@ const EditProfile = () => {
     let formattedValue = value;
 
     if (
-      name === "nombre" ||
-      name === "apellido" ||
-      name === "direccion" 
+      name === "nombre" || 
+      name === "apellido" || 
+      name === "direccion" || 
+      name === "correo" || 
+      name === "usuario"
     ) {
-      if(name === "direccion"){
-        // Para el campo dirección, eliminar caracteres no deseados y los espacios al principio
-        formattedValue = value.replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s.,#-]/g, "") // Solo letras, números, espacios y caracteres permitidos
-                               .replace(/^\s+/, ""); // Eliminar espacios al principio
-      }else{
+      if (name === "correo") {
+        // Para el campo email, eliminar los espacios
+        formattedValue = value.replace(/\s+/g, "");
+      } else {
         // Para los otros campos, eliminar caracteres no deseados y los espacios al principio
         formattedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, "") // Solo letras y espacios
                                .replace(/^\s+/, ""); // Eliminar espacios al principio
       }
+    } else if (name === "cedula") {
+      // Para el campo cédula, solo permitir números y limitar a 10 dígitos
+      formattedValue = value.replace(/\D/g, "").slice(0, 10) // Solo números, máximo 10 dígitos
+                             .replace(/^\s+/, ""); // Eliminar espacios al principio
     }
+    if(name === "direccion" || name === "usuario"){
+      // Para el campo dirección, eliminar caracteres no deseados y los espacios al principio
+      formattedValue = value.replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s.,#-]/g, "") // Solo letras, números, espacios y caracteres permitidos
+                             .replace(/^\s+/, ""); // Eliminar espacios al principio
+    }
+    // Aplicar límite de longitud a los inputs
     if (maxLengths[name]) {
       formattedValue = formattedValue.slice(0, maxLengths[name]);
+    }
+    // Validación para fecha de nacimiento
+    if (name === "fechaNacimiento") {
+      formattedValue = value; // Aceptar la fecha si es válida
     }
 
     setFormData((prevData) => ({
@@ -185,7 +234,51 @@ const EditProfile = () => {
 
   const confirmSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.nacimiento === "fechaNacimiento") {
+      const selectedDate = new Date(formData.nacimiento);
+      const minDateObj = new Date(minDate);
+      const selectedDateOnly = new Date(selectedDate.toISOString().split("T")[0]);
+      
+      if (selectedDateOnly < minDateObj || selectedDateOnly > maxDateObj) {
+        setErrorMessage(`Debes tener al menos 18 años (nacido antes del ${maxDate})`);
+        setTimeout(() => setErrorMessage(null), 3000);
+        return;
+      }
+    }
+
+    // Verificamos si el correo es válido
+    if (!emailPattern.test(formData.email)) {
+      setErrorMessage("Por favor, ingresa un correo válido.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.nombre.length < 2) {
+      setErrorMessage("El nombre debe tener al menos 2 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.apellido.length < 2) {
+      setErrorMessage("El apellido debe tener al menos 2 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.cedula.length < 6) {
+      setErrorMessage("La cédula debe tener al menos 6 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if (formData.direccion.length < 10) {
+      setErrorMessage("La dirección debe tener al menos 10 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    if(formData.usuario.length < 4){
+      setErrorMessage("El usuario debe tener al menos 4 caracteres.");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
     setShowConfirm(false);
+
     try {
       const updatedUserData = {
         username: formData.usuario,
@@ -202,11 +295,11 @@ const EditProfile = () => {
         // password: formData.passwordConfirmar,
       };
 
-      const actualizado2 = await putUsuarioData(updatedUserData)
+      await putUsuarioData(updatedUserData)
       try {
                 
                 const actualizado = await putUserData(updatedUserData);
-                console.log('Usuario actualizado en tabla user:', creadoUser);
+                console.log('Usuario actualizado en tabla user:', actualizado);
                 setSuccessMessage("Usuario editado exitosamente.");
                 setErrorMessage(null);
                 setTimeout(() => {
@@ -246,7 +339,7 @@ const EditProfile = () => {
         setSuccessMessage(null);
   	    setTimeout(() => {
           setErrorMessage(null);
-          router.push("/routes/login");
+          // router.push("/routes/login");
         }, 3000);
       } else {
         const fullMessage = errorMessages.join('. ');
@@ -341,8 +434,8 @@ const EditProfile = () => {
                 type="text"
                 name="cedula"
                 value={formData.cedula}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"               
-                readOnly
+                onChange={handleChange} 
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"               
                 />
             </div>
             <div>
@@ -360,24 +453,25 @@ const EditProfile = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium">Lugar de Nacimiento</label>
-              <input
-                required
-                type="text"
-                name="lugarNacimiento"
-                value={formData.lugarNacimiento}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"
-                readOnly               />
+            <label className="block text-sm font-semibold">Lugar de nacimiento</label>
+                <AutocompleteLocation
+                          value={formData.lugarNacimiento}
+                          onChange={(value) => setFormData({...formData, lugarNacimiento: value})}
+                          placeholder="Lugar de nacimiento"
+                          required
+            />
             </div>
             <div>
-              <label className="block text-sm font-medium">Fecha de Nacimiento</label>
-              <input
-                required
-                type="date"
-                name="nacimiento"
-                value={formData.nacimiento}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"
-                readOnly               />
+            <label className="block text-sm font-semibold">Fecha de nacimiento</label>
+            <input 
+              min={minDate}
+              max={maxDate}
+              type="date" 
+              name="fechaNacimiento" 
+              value={formData.nacimiento} 
+              onChange={handleChange} 
+              onBlur={handleBlur} // Llamar a handleBlur al perder el foco
+              className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
             </div>
           </div>
 
@@ -400,8 +494,11 @@ const EditProfile = () => {
                 type="email"
                 name="email"
                 value={formData.email}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"
-                readOnly               />
+                onChange={handleChange} 
+                onBlur={handleBlur} // Llamar a handleBlur al perder el foco
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                onInput={(e) => e.target.value = e.target.value.replace(/\s+/g, "")} />
+                {EmailError && <p className="text-red-500 text-sm">{EmailError}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium">Usuario</label>
@@ -410,8 +507,9 @@ const EditProfile = () => {
                 type="text"
                 name="usuario"
                 value={formData.usuario}
-                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-400"
-                readOnly               />
+                onChange={handleChange} 
+                className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            />
             </div>
             <div>
             {role && role.toString().replace(/"/g, '') === "Authenticated" && (

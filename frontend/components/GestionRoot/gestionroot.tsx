@@ -83,7 +83,7 @@ const GestionRoot = () => {
         <div className="flex justify-between items-center">
           <p className="text-gray-600"><strong>Administradores</strong> · Cantidad: {admins.length}</p>
           <button 
-            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors cursor-pointer active:scale-95" 
             onClick={() => router.push('/routes/createadmin')}
           >
             Crear administrador
@@ -92,18 +92,24 @@ const GestionRoot = () => {
       </div>
 
       {showConfirm && (
+         <>
+        <div className="fixed inset-0 bg-black/50 z-40"></div>
         <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-80 text-center border z-50">
           <p className="text-lg font-semibold">¿Estás seguro?</p>
           <p className="text-gray-600 text-sm mt-2">Esta acción no se puede deshacer.</p>
           <div className="mt-4 flex justify-center space-x-4">
-            <button className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm" onClick={() => setShowConfirm(false)}>Cancelar</button>
-            <button className="bg-red-500 text-white px-4 py-2 rounded-md text-sm" onClick={handleDelete}>Sí, eliminar</button>
+            <button className="cursor-pointer bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm hover:bg-gray-400 active:scale-95" onClick={() => setShowConfirm(false)}>Cancelar</button>
+            <button className="cursor-pointer bg-red-500 text-white px-4 py-2 rounded-md text-sm hover:bg-red-600 active:scale-95" onClick={handleDelete}>Sí, eliminar</button>
           </div>
         </div>
+        </>
       )}
 
       {message && (
+        <>
+        <div className="fixed inset-0 bg-black/50 z-40"></div>
         <motion.div 
+        
           initial={{ opacity: 0, y: -50 }} 
           animate={{ opacity: 1, y: 0 }} 
           exit={{ opacity: 0, y: -50 }}
@@ -112,6 +118,7 @@ const GestionRoot = () => {
           <span className="flex-1 text-center">{message}</span>
           <XCircle size={20} className="cursor-pointer hover:text-gray-200" onClick={() => setMessage(null)} />
         </motion.div>
+        </>
       )}
 
       <div className="space-y-4">
@@ -125,13 +132,13 @@ const GestionRoot = () => {
               </div>
               <div className="flex space-x-2">
                 <button 
-                  className="text-red-600 border border-red-600 px-3 py-1 rounded-md hover:bg-red-50 transition-colors"
+                  className="text-red-600 border border-red-600 px-3 py-1 rounded-md hover:bg-red-50 transition-colors cursor-pointer"
                   onClick={() => { setShowConfirm(true); setSelectedAdmin(admin.id); setSelectedNameAdmin(admin.username)}}
                 >
                   ELIMINAR
                 </button>
                 <button 
-                  className="text-blue-600 border border-blue-600 px-3 py-1 rounded-md hover:bg-blue-50 transition-colors"
+                  className="text-blue-600 border border-blue-600 px-3 py-1 rounded-md hover:bg-blue-50 transition-colors cursor-pointer"
                   onClick={() => handleEditar(admin.id)}
                 >
                   EDITAR
