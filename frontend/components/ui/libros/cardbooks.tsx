@@ -57,21 +57,35 @@ const CardBooks = ({
       handleMessage(); // Muestra mensaje si no está autenticado
       return;
     }
-    addToCart({ idLibro, title, price}); // Añade el libro al carrito
-      const Mensaje = "Tu libro se añadió exitosamente al carrito "
-      setSuccessMessage(Mensaje);
-      setTimeout(() => setSuccessMessage(null), 2000);
-
+  
+    const wasAdded = addToCart({ idLibro, title, price, imageUrl }); // Devuelve true o false
+  
+    if (!wasAdded) {
+      setSuccessMessage("Solo puedes agregar hasta 20 unidades de este libro.");
+    } else {
+      setSuccessMessage("Tu libro se añadió exitosamente al carrito.");
+    }
+  
+    setTimeout(() => setSuccessMessage(null), 3000);
   };
-
+  
   const handleAddToCartAndRedirect = () => {
     if (role !== "Authenticated") {
-      handleMessage(); // Muestra mensaje si no está autenticado
+      handleMessage();
       return;
     }
-    handleAddToCart(); // Primero añade al carrito
-    router.push("/routes/previewshoppingcart"); // Luego redirige
+  
+    const wasAdded = addToCart({ idLibro, title, price, imageUrl });
+  
+    if (!wasAdded) {
+      setSuccessMessage("Solo puedes agregar hasta 20 unidades de este libro.");
+      setTimeout(() => setSuccessMessage(null), 3000);
+      return;
+    }
+  
+    router.push("/routes/previewshoppingcart");
   };
+  
   return (
     <>
           {(successMessage) && (

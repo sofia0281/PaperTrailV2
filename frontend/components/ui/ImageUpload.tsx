@@ -68,7 +68,7 @@ const ImageUpload = ({ onImageUpload, imageUrl, disabled }: ImageUploadProps) =>
             src={preview}
             alt="Preview"
             className="w-full h-full object-contain"
-          />
+          />  
           {!disabled && (
             <button
               type="button"

@@ -6,6 +6,7 @@ import { createUsuarioAdmin } from '@/services/usuarioAdminCRUD';
 import { motion } from "framer-motion";
 import { XCircle } from "lucide-react";
 import withAuthROOT from '@/components/Auth/withAuthROOT';
+import { AutocompleteLocation } from "@/components/ui/register/AutocompleteLocation";
 
 const CreateAdmin = () => {
 
@@ -196,24 +197,62 @@ const CreateAdmin = () => {
           "role":null,
           "provider":null
         };
-      await createAdmin(createAdminData);
-      await createUsuarioAdmin(createAdminData);
       
-      setSuccessMessage("Usuario creado exitosamente.");
-      setErrorMessage(null);
-      setTimeout(() => {
-        setSuccessMessage(null);
-        router.push("/routes/gestionroot");
-      }, 3000);
+      await createUsuarioAdmin(createAdminData);
 
+
+      
+try {
+          const creadoUser =await createAdmin(createAdminData);;
+          console.log('Usuario  admin creado en tabla user:', creadoUser);
+          setSuccessMessage("Registro  de administrador completado exitosamente");
+          setErrorMessage(null);
+          setTimeout(() => {
+              setSuccessMessage(null);
+              router.push('/routes/gestionroot')
+          }, 3000);
+          
+        } catch (userError) {
+          console.error('Error al crear el admin  en tabla user:', userError);
+          
+          setSuccessMessage("Registro completado con observaciones");
+          setErrorMessage(null);
+          setTimeout(() => {
+              setSuccessMessage(null);
+          }, 3000);
+        }
     } catch (error) {
-      //console.error('Error:', error.message);
-      setErrorMessage("Error al crear usuario.");
-      setSuccessMessage(null);
-      setTimeout(() => setErrorMessage(null), 3000);
+      // console.error('Error completo:', error);
+      const errorMessages = error.errors.map(errorItem => {
+        const field = errorItem.path[0];
+        if (field === "username")
+        {
+          return `Este nombre de usuario ya se encuentra registrado`;
+        }
+        else if (field === "email"){
+          return `Este correo electrónico ya se encuentra registrado`;
+        }
+        else if (field === "cedula"){
+          return `Esta cédula ya se encuentra registrada`;
+        }
+        return `Error en el  campo ${field}. Error al registrar usuario`;
+        
+      });
+      if (error.status === 400 ) {
+        const fullMessage = errorMessages.join('. ');
+        setErrorMessage(fullMessage);
+        setSuccessMessage(null);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 3000);
+      } else {
+        const fullMessage = errorMessages.join('. ');
+        setErrorMessage(fullMessage);
+        setSuccessMessage(null);
+        setTimeout(() => setErrorMessage(null), 3000);
+      }
     }
-
-  }
+};
   return (
     <div className="flex w-full max-w-5xl mx-auto p-6 justify-center">
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
@@ -277,9 +316,12 @@ const CreateAdmin = () => {
               className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
             <label className="block text-sm font-semibold">Lugar de nacimiento</label>
-            <input required
-            type="text" name="lugarNacimiento" value={formData.lugarNacimiento} onChange={handleChange} 
-              className="border border-gray-200 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                        <AutocompleteLocation
+                          value={formData.lugarNacimiento}
+                          onChange={(value) => setFormData({...formData, lugarNacimiento: value})}
+                          placeholder="Lugar de nacimiento"
+                          required
+                        />
           </div>
 
           {/* Columna 2 */}
