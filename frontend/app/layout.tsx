@@ -23,11 +23,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${urbanist.variable} antialiased`} // Aplica la fuente Urbanist
+        className={`${urbanist.variable} antialiased flex flex-col min-h-screen`} // Aplica la fuente Urbanist
       >
         <AuthProvider>
           <Navbar/>
-            {children}
+            <main className="flex-grow">{children}</main>
           <Footer/>
         </AuthProvider>
 
