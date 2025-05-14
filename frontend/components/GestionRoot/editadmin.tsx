@@ -7,6 +7,8 @@ import { putUsuarioAdminData } from '@/services/usuarioAdminCRUD';
 import { motion } from "framer-motion";
 import { XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { AutocompleteLocation } from "@/components/ui/register/AutocompleteLocation";
+import EditPasswordAdminByRoot from "./editpasswordofadmin";
 
 const EditAdmin =  ({ adminID }: { adminID: number }) => {
 
@@ -192,44 +194,56 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
         "Direccion": formData.direccion,
         // "password": formData.password 
       };
-      await putAdminData(updatedUserData, adminID);
-      // await putUsuarioAdminData(updatedUserData);
-      setMessage("Administrador editado correctamente");
-      setTimeout(() => {setMessage(null);
-      router.push('/routes/gestionroot')}, 2000);
-    } catch (error) {
-      // console.error('Error completo:', error);
-      const errorMessages = error.errors.map(errorItem => {
-        const field = errorItem.path[0];
-        if (field === "username")
-        {
-          return `Este nombre de usuario ya se encuentra registrado`;
+      await putUsuarioAdminData(updatedUserData);
+      try {
+                const creadoUser =await putAdminData(updatedUserData, adminID);
+                console.log('Usuario  admin editar en tabla user:', creadoUser);
+                setSuccessMessage("Registro  de administrador completado exitosamente");
+                setMessage("Administrador editado correctamente");
+                setTimeout(() => {setMessage(null);
+                router.push('/routes/gestionroot')}, 2000);
+                
+              } catch (userError) {
+                console.error('Error al editar el admin  en tabla user:', userError);
+                
+                setSuccessMessage("Registro completado con observaciones");
+                setErrorMessage(null);
+                setTimeout(() => {
+                    setSuccessMessage(null);
+                }, 3000);
+              }
+      } catch (error) {
+          // console.error('Error completo:', error);
+          const errorMessages = error.errors.map(errorItem => {
+            const field = errorItem.path[0];
+            if (field === "username")
+            {
+              return `Este nombre de usuario ya se encuentra registrado`;
+            }
+            else if (field === "email"){
+              return `Este correo electrónico ya se encuentra registrado`;
+            }
+            else if (field === "cedula"){
+              return `Esta cédula ya se encuentra registrada`;
+            }
+            return `Error en el  campo ${field}. Error al registrar usuario`;
+            
+          });
+          if (error.status === 400 ) {
+            const fullMessage = errorMessages.join('. ');
+            setErrorMessage(fullMessage);
+            setSuccessMessage(null);
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 3000);
+          } else {
+            const fullMessage = errorMessages.join('. ');
+            setErrorMessage(fullMessage);
+            setSuccessMessage(null);
+            setTimeout(() => setErrorMessage(null), 3000);
+          }
         }
-        else if (field === "Email"){
-          return `Este correo electrónico ya se encuentra registrado`;
-        }
-        else if (field === "cedula"){
-          return `Esta cédula ya se encuentra registrada`;
-        }
-        return `Error en el  campo ${field}. Error al registrar usuario`;
-        
-      });
-      if (error.status === 400 ) {
-        const fullMessage = errorMessages.join('. ');
-        setErrorMessage(fullMessage);
-        setSuccessMessage(null);
-  	    setTimeout(() => {
-          setErrorMessage(null);
-          // router.push("/routes/login");
-        }, 2000);
-      } else {
-        const fullMessage = errorMessages.join('. ');
-        setErrorMessage(fullMessage);
-        setSuccessMessage(null);
-        setTimeout(() => setErrorMessage(null), 2000);
-      }
-    }
-  };
+    };
 
   useEffect(() => {
     const loadAdminData = async () => {
@@ -293,11 +307,12 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
             </div>
             <p className="mt-4 ">Editar perfil</p>
           </div>
+           SECCION CAMBIAR CONTRASEÑA 
           <p className="cursor-pointer flex-col mb-4 text-gray-400 border-b border-gray pb-1 hover:border-black hover:text-black"
           onClick={()=>{
             setSeccionMenu("Password")
           }}>Cambiar contraseña</p>
-
+          
         </div>
 
         {/* Separador */}
@@ -336,15 +351,13 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
               onChange={handleChange} 
               onBlur={handleBlur} // Llamar a handleBlur al perder el foco
               className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
-
             <label className="block text-sm font-semibold">Lugar de nacimiento</label>
-            <input 
-            required
-            type="text" 
-            name="lugarNacimiento" 
-            value={formData.lugarNacimiento} 
-            onChange={handleChange} 
-              className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                <AutocompleteLocation
+                          value={formData.lugarNacimiento}
+                          onChange={(value) => setFormData({...formData, lugarNacimiento: value})}
+                          placeholder="Lugar de nacimiento"
+                          required
+            />
           </div>
 
           {/* Columna 2 */}
@@ -424,22 +437,7 @@ const EditAdmin =  ({ adminID }: { adminID: number }) => {
         ):(<>
         {/*-------------- Formulario para cambiar contraseña -------------*/}
         <div className="min-w-[500px] max-w-4xl h-auto min-h-[300px] md:min-h-[300px] bg-white p-6 rounded-lg shadow-md gap-4 mx-auto my-auto justify-center flex flex-col items-center">
-
-
-        <form className="items-center justify-center flex flex-col gap-4" onSubmit={handleSubmit}>
-          <label className="block font-semibold">Nueva contraseña</label>
-          <input 
-          type="password" 
-          name="password" 
-          value={formData.password} 
-          onChange={handleChange} 
-          className="border border-gray-400 border-solid rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" />
-          <button 
-          type="submit" 
-          className="w-full bg-orange-500 text-white py-2 rounded-md mt-4 transition-transform duration-300 transform hover:bg-orange-600 active:scale-95 cursor-pointer">
-            Cambiar Clave</button>
-        </form>
-    
+          <EditPasswordAdminByRoot/>
         </div>
         </>) }
       </div>

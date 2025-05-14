@@ -74,7 +74,13 @@ export const putUserData = async (userDataForm) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error?.message || 'Error al actualizar usuario');
+      console.error('Error detallado de Strapi2:', errorData);
+      throw {
+        status: errorData.error.status,
+        message: errorData.error.message,
+        errors: errorData.error.details.errors,
+        errorData
+      };
     }
 
     return await response.json();

@@ -41,25 +41,25 @@ const EditPassword = ({ userId, userEmail }: EditPasswordProps) => {
   });
 
   // Función para verificar la contraseña actual
-  const verifyCurrentPassword = async (email: string, password: string) => {
+  const verifyCurrentPassword = async (identifier: string, password: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/local`, {
+      const response = await fetch("http://localhost:1337/api/auth/local", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          identifier: email,
-          password: password,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier, password }),
       });
-
+  
       const data = await response.json();
-      
+  
       if (response.ok && data.jwt) {
         return true;
       } else {
-        throw new Error(data.error?.message || 'Credenciales incorrectas');
+        // Intercepta el error específico de Strapi y reemplaza el mensaje
+        const strapiMessage = data?.error?.message;
+        if (strapiMessage === "Invalid identifier or password") {
+          throw new Error("Contraseña inválida");
+        }
+        throw new Error(strapiMessage || "Credenciales incorrectas");
       }
     } catch (error) {
       console.error("Error verificando contraseña:", error);
@@ -71,6 +71,7 @@ const EditPassword = ({ userId, userEmail }: EditPasswordProps) => {
       return false;
     }
   };
+  
 
   // Función para actualizar la contraseña
   const updatePassword = async (userId: number, newPassword: string) => {

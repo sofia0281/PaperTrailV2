@@ -2,11 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { getBookByIdLibro, putBookData } from "@/services/bookCRUD";
+import { getBookByIdLibro, putBookData, updateBookImage } from "@/services/bookCRUD";
 import withAuthADMIN from '../Auth/withAuthADMIN';
-import {XCircle } from "lucide-react";Home
-Content Manager
-
+import {XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { AutocompleteLanguage } from "@/components/ui/createBook/Autocompleteidioma";
 import { AutocompleteEditorial } from "@/components/ui/createBook/Autocompleteeditorial";
@@ -15,6 +13,7 @@ import ImageUpload from "../ui/ImageUpload";
 const EditBook =  ({ bookID }: { bookID: string }) => {
 
   const [image, setImage] = useState<string | null>(null);
+  
 
   //ventana modal de confirmación
   const [showConfirm, setShowConfirm] = useState(false);
@@ -22,6 +21,9 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
   const router = useRouter();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null); // Archivo real
+  const [imagePreview, setImagePreview] = useState<string | null>(null); // Vista previa
+  
   // Función para formatear el precio
   const formatPrice = (value: string): string => {
     const [integer, decimal = ""] = value.split(".");
@@ -79,59 +81,59 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowConfirm(false);
-      try {
-        const precioNumerico = parseFloat(
-          formData.precio.replace(/,/g, '') // Elimina las comas
-        );
-        const updatedBookData = {
-          "ISBN_ISSN": formData.issn,
-          "fecha_publicacion": formData.fechaPublicacion,
-          "title": formData.titulo,
-          "condition": formData.estado,
-          "author": formData.autor,
-          "price": precioNumerico,
-          "editorial": formData.editorial,
-          "numero_paginas": formData.numeroPaginas,
-          "genero": formData.genero,
-          "idioma": formData.idioma ,
-          "cantidad": formData.cantidad,
-          "idLibro": formData.issn
-        }
-        await putBookData(updatedBookData, bookID);
-        setSuccessMessage("Libro editado correctamente");
-        setTimeout(() => setSuccessMessage(null), 3000);
-      } catch (error) {
-    // console.error('Error completo:', error);
-        const errorMessages = error.errors.map(errorItem => {
-          const field = errorItem.path[0];
-          if (field === "ISBN_ISSN")
-          {
-            return `Este ISSN ya se encuentra registrado`;
-          }
-          // else if (field === "idLibro"){
-          //   return `Este ISSN ya se encuentra registrado`;
-          // }
-          else {
-            return `Error en el  campo ${field}. Error al editar Libro`;
-          
-          }
-        });
-        if (error.status === 400 ) {
-          const fullMessage = errorMessages.join('. ');
-          setErrorMessage(fullMessage);
-          setSuccessMessage(null);
-          setTimeout(() => {
-            setErrorMessage(null);
-            router.push("/routes/createbook");
-          }, 3000);
-        } else {
-          const fullMessage = errorMessages.join('. ');
-          setErrorMessage(fullMessage);
-          setSuccessMessage(null);
-          setTimeout(() => setErrorMessage(null), 3000);
-        }
-          }
-    };
+  
+    try {
+      const precioNumerico = parseFloat(formData.precio.replace(/,/g, ''));
+  
+      const updatedBookData = {
+        ISBN_ISSN: formData.issn,
+        fecha_publicacion: formData.fechaPublicacion,
+        title: formData.titulo,
+        condition: formData.estado,
+        author: formData.autor,
+        price: precioNumerico,
+        editorial: formData.editorial,
+        numero_paginas: formData.numeroPaginas,
+        genero: formData.genero,
+        idioma: formData.idioma,
+        cantidad: formData.cantidad,
+        idLibro: formData.issn
+      };
+  
+      
+      
+      
+      console.log('Archivo seleccionado:', imageFile);
+      
+            // Enviar datos e imagen (modificado)
+      await putBookData(updatedBookData, bookID); // Nueva función
+      // Verificar que la imagen existe antes de enviar
+      if (imageFile) {
+        await updateBookImage(bookID, imageFile);
+      }
+      
+
+      setSuccessMessage("Libro editado correctamente");
+      setTimeout(() => {setSuccessMessage(null);router.push
+
+
+        (          "/routes/adminbooks");
+      }, 2000);
+  
+    } catch (error: any) {
+      const errorMessages = error.errors?.map(errorItem => {
+        const field = errorItem.path?.[0];
+        if (field === "ISBN_ISSN") return `Este ISSN ya se encuentra registrado`;
+        return `Error en el campo ${field || 'desconocido'}. Error al editar libro`;
+      });
+  
+      const fullMessage = errorMessages?.join('. ') || error.message || "Error al editar el libro";
+      setErrorMessage(fullMessage);
+      setSuccessMessage(null);
+      setTimeout(() => setErrorMessage(null), 3000);
+    }
+  };
+  
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -295,8 +297,13 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
 
 
   return (
-    <>
-          {(successMessage || errorMessage) && (
+    <div className="w-full max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg relative">
+      {/* Encabezado */}
+      <div className="bg-orange-600 text-white p-9 rounded-t-lg ">
+        <h1 className="text-2xl font-bold">EDITAR LIBRO</h1>
+        
+      </div>
+      {(successMessage || errorMessage) && (
         <motion.div
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -316,43 +323,6 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
           />
         </motion.div>
       )} 
-    <div className="w-full max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      {/* Encabezado */}
-      <div className="bg-orange-600 text-white p-9 rounded-t-lg relative">
-        <h1 className="text-2xl font-bold">EDITAR LIBRO</h1>
-        <div className="absolute top-5 right-5 transform translate-x-0 bg-gray-200 p-2 rounded-md shadow-md mb-10
-    sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:right-auto w-40">
-            {image ? (
-              <>
-                <img
-                  src={image}
-                  alt="Imagen del libro"
-                  className="w-[120px] h-[120px] object-contain mx-auto"
-                  onError={() => setImage(null)} // Si falla la carga de la imagen
-                />
-                {/* <ImageUpload 
-                  onImageUpload={setImage} 
-                  imageUrl={image}
-                  endpoint="/api/upload"
-                  bookId={bookID}
-                /> */}
-              </>
-            ) : (
-              <>
-                <div className="w-[120px] h-[120px] bg-gray-100 flex items-center justify-center mx-auto">
-                  <span className="text-gray-500 text-xs text-center">No hay imagen</span>
-                </div>
-                {<ImageUpload 
-                  onImageUpload={setImage} 
-                  imageUrl={null}
-                  endpoint="/api/upload"
-                  bookId={bookID}
-                />}
-              </>
-            )}
-        </div>
-      </div>
-
 
     {/* ------------------------Ventana modal de confirmación ----------------------------*/}
             {showConfirm && (
@@ -375,7 +345,18 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
       )}
 
       {/* Formulario */}
-      <form onSubmit={ConfirmSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-18 p-6">
+      <form onSubmit={ConfirmSubmit} className="grid grid-cols-2 md:grid-cols-2 gap-6 p-6 relative z-10 -mt-28">
+        <div className="col-span-2 flex justify-center mb-6">
+      <div className="bg-gray-200 p-4 rounded-md shadow-md w-40 h-40 flex items-center justify-center">
+        <ImageUpload 
+          onImageUpload={(url, file) => {
+            setImagePreview(url);
+            setImageFile(file);
+          }}
+          imageUrl={imagePreview}
+        />
+      </div>
+    </div>
         <div>
           <label className="block text-sm font-medium">ISSN</label>
           <input 
@@ -580,7 +561,6 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
         </div>
       </form>
     </div>
-    </>
   );
 };
 

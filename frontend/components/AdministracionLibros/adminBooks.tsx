@@ -80,17 +80,23 @@ const ManageBooks = () => {
       <h1 className="text-3xl font-bold text-center mb-4">Administrar Libros</h1>
 
       {showConfirm && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-40"></div>
         <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-80 text-center border z-50">
           <p className="text-lg font-semibold">¿Estás seguro?</p>
           <p className="text-gray-600 text-sm mt-2">Esta acción no se puede deshacer.</p>
           <div className="mt-4 flex justify-center space-x-4">
-            <button className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm" onClick={() => setShowConfirm(false)}>Cancelar</button>
-            <button className="bg-red-500 text-white px-4 py-2 rounded-md text-sm" onClick={handleDelete}>Sí, eliminar</button>
+            <button className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm cursor-pointer active:scale-95 hover:bg-gray-400" onClick={() => setShowConfirm(false)}>Cancelar</button>
+            <button className="bg-red-500 text-white px-4 py-2 rounded-md text-sm cursor-pointer active:scale-95 hover:bg-red-600" onClick={handleDelete}>Sí, eliminar</button>
           </div>
         </div>
+        </>
       )}
 
       {message && (
+
+        <>
+        <div className="fixed inset-0 bg-black/50 z-40"></div>
         <motion.div 
           initial={{ opacity: 0, y: -50 }} 
           animate={{ opacity: 1, y: 0 }} 
@@ -100,6 +106,8 @@ const ManageBooks = () => {
           <span className="flex-1 text-center">{message}</span>
           <XCircle size={20} className="cursor-pointer hover:text-gray-200" onClick={() => setMessage(null)} />
         </motion.div>
+        </>
+
       )}
       
       {/* Barra de herramientas */}

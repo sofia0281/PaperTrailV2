@@ -47,8 +47,14 @@ export const createUsuarioAdmin = async (usuarioData) => {
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Error detallado de Strapi2:', errorData);
-        throw new Error('Error al crear el usuario2');
+        throw {
+          status: errorData.error.status,
+          message: errorData.error.message,
+          errors: errorData.error.details.errors,
+          errorData
+        };
       }
+  
   
       const data = await response.json();
       console.log('Usuario creado en Strapi2:', data);
@@ -126,7 +132,7 @@ export const putUsuarioAdminData = async (userDataForm) => {
       return updatedUser;
   
     } catch (error) {
-      console.error('Error en putUsuarioData3:', error.message);
+      console.error('Error en putUsuarioData:', error.message);
       throw error; 
     }
 };
