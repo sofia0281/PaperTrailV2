@@ -156,7 +156,7 @@ export const AuthProvider = ({ children }) => {
                 authRole,
                 loading,
                 cart, // Añadir carrito al contexto
-                addedItems, 
+                 
                 setAuthUser,
                 setAuthToken,
                 setAuthRole,
