@@ -28,9 +28,9 @@ export default function OrderStatus({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border rounded-lg shadow-sm">
+    <div className="border rounded-lg shadow-sm bg-orange-400 text-white">
       <button
-        className="w-full flex justify-between items-center p-4 font-semibold text-left"
+        className="w-full flex justify-between items-center p-4 font-semibold text-left cursor-pointer"
         onClick={() => setOpen(!open)}
       >
         Pedido activo {orderNumber}
@@ -38,7 +38,7 @@ export default function OrderStatus({
       </button>
 
       {open && (
-        <div className="p-4 border-t text-sm text-gray-700">
+        <div className="p-4 border-t text-sm text-gray-700 bg-white">
           <p>Nro. Pedido: {orderNumber}</p>
           <p>Fecha del pedido: {orderDate}</p>
           <p>Dirección de envío: {shippingAddress}</p>

@@ -29,7 +29,7 @@ const orders = [
 
 export default function ActiveOrders() {
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="max-w-4xl mx-auto p-4">
       <h1 className="text-5xl font-bold">
         Hola, <span className="text-orange-600">Usuario</span>
       </h1>
@@ -47,6 +47,11 @@ export default function ActiveOrders() {
             steps={steps}
           />
         ))}
+      </div>
+      <div className='mt-16'>
+        <button className="mt-3 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded cursor-pointer">
+            Volver menu principal
+        </button>
       </div>
     </div>
   );
