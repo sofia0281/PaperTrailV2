@@ -1,4 +1,5 @@
-export const createPedido = async (pedidoData) => {
+  
+  export const createPedido = async (pedidoData) => {
     try {
   
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pedidos`, {
@@ -105,12 +106,33 @@ export const getPedidosByUser = async (userId: number) => {
   }
 };
 
-// services/pedidoCRUD.ts
+
+
+
 export const getItemsByPedido = async (pedidoId: string) => {
+  console.log("Obteniendo items por IdPedido:", pedidoId);
+  const token = localStorage.getItem('authToken');
+  
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/item-pedidos?filters[IdPedido][$eq]=${pedidoId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || "Error al obtener items del pedido");
+  }
+
+  return await response.json();
+};  
+
+
+export const getAllPedidos = async () => {
   try {
     const token = localStorage.getItem('authToken');
-    
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/item-pedidos?filters[IdPedido][$eq]=${pedidoId}`, {
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pedidos?populate=usuario`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -120,12 +142,110 @@ export const getItemsByPedido = async (pedidoId: string) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error?.message || "Error al obtener items del pedido");
+      throw new Error(errorData.error?.message || "Error al obtener todos los pedidos");
+    }
+
+    const data = await response.json();
+    console.log("Pedidos obtenidos:", data);
+
+    return {
+      data: data.data.map((pedido: any) => ({
+        id: pedido.documentId,  // ID interno de Strapi
+        
+        idPedido: pedido.documentId,  // UID personalizado
+        total: pedido.TotalPrecio || 0,
+        estado: pedido.estado || 'pendiente',
+        usuarioNombre: pedido.usuario?.username || 'Desconocido',
+      }))
+    };
+  } catch (error) {
+    console.error("Error en getAllPedidos:", error);
+    throw error;
+  }
+};
+
+
+
+export const getItemStrapiByPedidoId = async (pedidoId) => {
+  const token = localStorage.getItem('authToken');
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pedidos?filters[IdPedido][$eq]=${pedidoId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  const data = await res.json();
+  console.log("Respuesta de Strapi:-  -------------------------", data);
+  return data.data?.[0]; // <- esto es importante: solo uno, no todo el array
+};
+
+
+export const updatePedidoStatus = async (pedidoId, newStatus) => {
+  console.log("Actualizando estado de pedido:", pedidoId, "Nuevo estado:", newStatus);
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) throw new Error("Token no encontrado");
+
+    // Ya no necesitamos buscar el item, usamos directamente el ID
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pedidos/${pedidoId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        data: {
+          estado: newStatus
+        }
+      })
+    });
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = { error: { message: "Respuesta no es JSON" } };
+      }
+      console.error('❌ Error detallado del backend:', errorData);
+      throw new Error(errorData.error?.message || 'Error al actualizar el estado');
+    }
+
+    const result = await response.json();
+    console.log("✅ Estado actualizado correctamente:", result);
+    return result;
+  } catch (error) {
+    console.error("⚠️ Error completo en updatePedidoStatus:", error);
+    throw new Error("No se pudo actualizar el estado.");
+  }
+};
+
+
+
+
+export const getPedidoById = async (pedidoId: string) => {
+  try {
+    const token = localStorage.getItem('authToken');
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pedidos?filters[idPedido][$eq]=${pedidoId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al obtener el pedido");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error en getItemsByPedido:", error);
+    console.error("Error en getPedidoById:", error);
     throw error;
   }
 };
+
+

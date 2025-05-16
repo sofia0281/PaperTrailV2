@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 import { useSearchParams } from 'next/navigation';
-import { getItemsByPedido } from '@/services/pedidosCRUD';
+import { getItemsByPedido, getPedidoById } from '@/services/pedidosCRUD';
 import CardMoreInfoPurchase from '@/components/ui/cardmoreinfopurchase';
 import { useAuth } from '@/context/AuthContext';
 
@@ -14,26 +14,47 @@ const MorePurchaseHistory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [total, setTotal] = useState(0);
+  const [estadoPedido, setEstadoPedido] = useState('');
+
 
   // Obtener el ID del pedido de la URL
   const pedidoId = searchParams.get('id');
 
   useEffect(() => {
     const fetchItems = async () => {
+      console.log("Pedido ID:", pedidoId);
       if (!pedidoId) return;
       
       try {
         setLoading(true);
+  
+        // Traer info del pedido (incluye estado)
+        const pedidoResponse = await getPedidoById(pedidoId);
+        const pedidoData = pedidoResponse.data;
+        console.log("Pedido completo:", pedidoData); // Este te mostrará el objeto entero
+        console.log("Estado del pedido:", pedidoData?.attributes?.estado);
+        setEstadoPedido(pedidoData?.attributes?.estado || '');
+        
+
+
+  
         const response = await getItemsByPedido(pedidoId);
-        console.log("items:")
-        console.log(response)
-        // Calcular el total sumando todos los items
+        console.log("items:", response);
+
+        if (response.data?.length > 0) {
+          const estadoDesdeItems = response.data[0].estado;
+          console.log("Estado del pedido (desde items):", estadoDesdeItems);
+          setEstadoPedido(estadoDesdeItems || '');
+}
+
+  
         const calculatedTotal = response.data.reduce((sum, item) => {
           return sum + (item.PrecioItem * item.Cantidad);
         }, 0);
-        
+  
         setItems(response.data);
         setTotal(calculatedTotal);
+  
       } catch (err) {
         setError(err.message);
         console.error("Error fetching items:", err);
@@ -41,9 +62,10 @@ const MorePurchaseHistory = () => {
         setLoading(false);
       }
     };
-
+  
     fetchItems();
   }, [pedidoId]);
+  
 
   if (loading) {
     return (
@@ -89,6 +111,7 @@ const MorePurchaseHistory = () => {
           <span>Total</span>
           <span>${total.toLocaleString('es-CO')}</span>
         </div>
+        
 
         <div className="mt-auto">
           <button className="cursor-pointer bg-red-700 hover:bg-red-800 text-white w-full py-2 rounded-lg font-medium">
@@ -97,6 +120,13 @@ const MorePurchaseHistory = () => {
           <button className="cursor-pointer bg-orange-500 hover:bg-orange-600 text-white p-2 mt-2 rounded-lg font-medium"
           onClick={()=>{router.push('/routes/purchasehistory')}}>
             Regresar
+          </button>
+          <button 
+            className="cursor-pointer bg-orange-500 hover:bg-orange-600 text-white p-2 mt-2 rounded-lg font-medium"
+
+            onClick={() => { router.push(`/routes/purchaseStatus?id=${pedidoId}`) }}>
+              
+            Estado de la compra
           </button>
         </div>
       </div>

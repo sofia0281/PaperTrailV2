@@ -141,3 +141,35 @@ export const putUsuarioData = async (userDataForm) => {
     throw error; 
   }
 };
+
+
+
+
+export const fetchAllUsers = async () => {
+  try {
+    const token = localStorage.getItem('jwt'); // Usa el token JWT correcto
+    if (!token) {
+      console.warn('No se encontró token de autenticación');
+      return [];
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/usuarios`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error al obtener usuarios:', errorData);
+      throw new Error('No se pudo obtener la lista de usuarios');
+    }
+
+    const data = await response.json();
+    return data.data || [];
+  } catch (error) {
+    console.error('Error en fetchAllUsers:', error.message);
+    return [];
+  }
+};

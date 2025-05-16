@@ -10,24 +10,35 @@
   "options": {
     "draftAndPublish": true
   },
+  "pluginOptions": {},
   "attributes": {
     "PrecioItem": {
-      "type": "integer"
+      "type": "integer",
+      "pluginOptions": {}
     },
     "Cantidad": {
-      "type": "integer"
+      "type": "integer",
+      "pluginOptions": {}
     },
     "IdItem": {
-      "type": "string"
+      "type": "string",
+      "pluginOptions": {}
     },
     "IdPedido": {
-      "type": "string"
+      "type": "string",
+      "pluginOptions": {}
     },
     "Title": {
-      "type": "string"
+      "type": "string",
+      "pluginOptions": {}
     },
     "totalPrice": {
-      "type": "integer"
+      "type": "integer",
+      "pluginOptions": {}
+    },
+    "estado": {
+      "type": "string",
+      "default": "recibido"
     }
   }
 }

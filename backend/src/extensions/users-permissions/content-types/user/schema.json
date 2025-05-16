@@ -107,6 +107,10 @@
       "relation": "oneToMany",
       "target": "api::pedido.pedido",
       "mappedBy": "usuario"
+    },
+    "suscripcion": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

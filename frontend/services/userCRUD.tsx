@@ -156,3 +156,37 @@ export const createUser = async (userData) => {
   };
 
 
+  export const fetchAllUsers = async () => {
+    try {
+      const token = localStorage.getItem('authToken'); // o 'authToken', asegúrate de usar el correcto
+      if (!token) {
+        console.warn('No se encontró token de autenticación');
+        return [];
+      }
+  
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users?populate=role`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error al obtener usuarios:', errorData);
+        throw new Error('No se pudo obtener la lista de usuarios');
+      }
+  
+      const data = await response.json();
+      console.log("Usuarios obtenidos:", data);
+      return data;
+    } catch (error) {
+      console.error('Error en fetchAllUsers:', error.message);
+      return [];
+    }
+  };
+  
+
+
+
+  

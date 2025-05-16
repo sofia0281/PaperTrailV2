@@ -4,14 +4,18 @@ import { useRouter } from "next/navigation";
 import {XCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createBook, createBookWithImage } from "@/services/bookCRUD";
+import {fetchAllUsers} from "@/services/userCRUD"
+
 import { motion } from "framer-motion";
 
 import { AutocompleteLanguage } from "@/components/ui/createBook/Autocompleteidioma";
 import { AutocompleteEditorial } from "@/components/ui/createBook/Autocompleteeditorial";
 import ImageUpload from "../ui/ImageUpload";
+import emailjs from "@emailjs/browser";
 
 
 const CreateBook = () => {
+  
 
   //Ventana modal de confirmación
   const [showConfirm, setShowConfirm] = useState(false);
@@ -50,6 +54,15 @@ const [imagePreview, setImagePreview] = useState<string | null>(null); // Vista 
     idioma: "",
     cantidad: ""
   });
+
+
+// ! -------------------------------------------------------------------------------------------------
+
+  
+  
+  
+  
+  
   // Validar el formato del ISSN
   const validarISSN = (issn: string): boolean => {
     if (!/^\d{4}-\d{3}[\dX]$/.test(issn)) return false;
@@ -78,10 +91,41 @@ const [imagePreview, setImagePreview] = useState<string | null>(null); // Vista 
     setShowConfirm(true);
   };
 
+
+
+  const sendEmailNotificacion = async (
+    name: string,
+    email: string,
+    data: {
+      book_title: string;
+      book_author: string;
+      created_at: string;
+      book_description: string;
+      book_image: string;
+      book_link: string;
+    }
+  ) => {
+    try {
+      await emailjs.send(
+        "service_gi0lsm1",
+        "template_pqwybx4",
+        {
+          name,
+          user_email: email,
+          ...data,
+        },
+        "oqxUnGnJBOSZ1aEUn"
+      );
+      console.log(`📩 Notificación enviada a ${email}`);
+    } catch (error) {
+      console.error(`❌ Error al enviar a ${email}:`, error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
-    setShowConfirm(false);
     e.preventDefault();
-    
+    setShowConfirm(false);
+  
     const precioNumerico = parseFloat(formData.precio.replace(/,/g, ''));
   
     try {
@@ -97,45 +141,48 @@ const [imagePreview, setImagePreview] = useState<string | null>(null); // Vista 
         genero: formData.genero,
         idioma: formData.idioma,
         cantidad: formData.cantidad,
-        idLibro: formData.issn
+        idLibro: formData.issn,
       };
+  
+      if (!imageFile) throw new Error("Debes seleccionar una imagen para el libro");
+  
+      // 1. Crear el libro con imagen
+      const response = await createBookWithImage(newBookData, imageFile);
+      const imageUrl = response.imageUrl;
+      console.log("URL de la imagen:", imageUrl);
 
-      
-
-      
-      // Verificar que la imagen existe antes de enviar
-      if (!imageFile) {
-        throw new Error("Debes seleccionar una imagen para el libro");
-      }
-
-      console.log('Archivo seleccionado:', imageFile);
-      console.log('Datos del libro:', newBookData);
-
-      // Enviar datos e imagen (modificado)
-      const response = await createBookWithImage(newBookData, imageFile); // Nueva función
-      
       setSuccessMessage("Libro creado correctamente");
-      setTimeout(() => setSuccessMessage(null), 3000);
-      
-    } catch (error: any) {
-      console.log('Error completo:', error);
-      
-      let errorMessage = "Error al crear el libro";
-      if (error?.error?.message) {
-        console.log('Error completo:', error.error.message);
-      } else if (error?.message) {
-        console.log('Error completo:', error.error.message);
-      } else if (error?.errors) {
-        errorMessage = error.errors.map((err: any) => {
-          if (err.path?.[0] === "ISBN_ISSN") return "Este ISSN ya está registrado";
-          return `Error en ${err.path?.join('.') || 'campo desconocido'}`;
-        }).join('. ');
+  
+      // 2. Obtener usuarios suscritos y con temas compatibles
+      const usuarios = await fetchAllUsers();
+  
+      const usuariosFiltrados = usuarios.filter((u) =>
+        u.suscripcion === true &&
+        (u.TemaL_1?.toLowerCase() === formData.genero.toLowerCase() ||
+         u.TemaL_2?.toLowerCase() === formData.genero.toLowerCase())
+      );
+  
+      // 3. Enviar correos
+      for (const user of usuariosFiltrados) {
+        await sendEmailNotificacion(user.Nombre || user.username, user.email, {
+          book_title: newBookData.title,
+          book_author: newBookData.author,
+          created_at: new Date().toLocaleString(),
+          book_description: "Ya está disponible un nuevo libro que puede interesarte.",
+          book_image: imageUrl, // Asegúrate de devolver `imageUrl` desde `createBookWithImage`
+          book_link: "https://tubiblioteca.com/libros/" + newBookData.idLibro,
+        });
       }
   
-      setErrorMessage(errorMessage);
+      setTimeout(() => setSuccessMessage(null), 3000);
+  
+    } catch (error: any) {
+      console.error("Error completo:", error);
+      setErrorMessage("Error al crear el libro");
       setTimeout(() => setErrorMessage(null), 5000);
     }
-};
+  };
+  
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -233,6 +280,9 @@ const [imagePreview, setImagePreview] = useState<string | null>(null); // Vista 
       [name]: formattedValue,
     }));
   }
+
+
+
   return (
     <div className="w-full max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg relative">
       {/* Encabezado */}

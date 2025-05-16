@@ -425,6 +425,7 @@ export interface ApiItemPedidoItemPedido extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    estado: Schema.Attribute.String & Schema.Attribute.DefaultTo<'recibido'>;
     IdItem: Schema.Attribute.String;
     IdPedido: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -458,6 +459,7 @@ export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    estado: Schema.Attribute.String & Schema.Attribute.DefaultTo<'recibido'>;
     idPedido: Schema.Attribute.UID;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -1076,6 +1078,7 @@ export interface PluginUsersPermissionsUser
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    suscripcion: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     TemaL_1: Schema.Attribute.String;
     TemaL_2: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;

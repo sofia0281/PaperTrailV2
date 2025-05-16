@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createUser} from "@/services/userCRUD";
-import {createUsuario} from "@/services/usuarioCRUD";
+import {createUsuario, } from "@/services/usuarioCRUD";
 import { motion } from "framer-motion";
 import { AutocompleteLocation } from "@/components/ui/register/AutocompleteLocation"; // Importación directa desde la misma carpeta
 import emailjs from "@emailjs/browser";
