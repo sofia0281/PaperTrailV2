@@ -1,10 +1,11 @@
-// components/OrderAccordion.tsx
 'use client'
 import { useState } from 'react';
+import { updatePedidoStatus, getItemsByPedido } from '@/services/pedidosCRUD';
 
 const statusOptions = ['Recibido', 'Confirmado', 'Procesando', 'Enviado', 'Entregado'];
 
 interface OrderAccordionProps {
+  orderId: string | number;
   orderTitle: string;
   initialStatus: string;
   orderNumber: string;
@@ -14,6 +15,7 @@ interface OrderAccordionProps {
 }
 
 export default function OrderAccordion({
+  orderId,
   orderTitle,
   initialStatus,
   orderNumber,
@@ -23,16 +25,52 @@ export default function OrderAccordion({
 }: OrderAccordionProps) {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState(initialStatus);
+  const [items, setItems] = useState([]);
+  const [loadingItems, setLoadingItems] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSave = () => {
-    console.log(`Guardando estado para ${orderTitle}: ${status}`);
-    // Aquí puedes conectar con una API para guardar
+  const handleSave = async () => {
+    try {
+      await updatePedidoStatus(orderId, status);
+      console.log(`Estado actualizado para pedido ${orderId}: ${status}`);
+      // Podrías añadir aquí una notificación de éxito
+    } catch (err) {
+      setError(err.message || 'Error al actualizar el estado');
+      console.error("Error updating status:", err);
+    }
+  };
+
+  const fetchItems = async () => {
+    if (!open) {
+      setOpen(true);
+      return;
+    }
+
+    try {
+      setLoadingItems(true);
+      const response = await getItemsByPedido(orderId);
+      console.log("Items response:", response);
+      setItems(Array.isArray(response?.data) ? response.data : []);
+    } catch (err) {
+      setError(err.message || 'Error al cargar los items');
+      console.error("Error fetching items:", err);
+    } finally {
+      setLoadingItems(false);
+    }
+  };
+
+  const handleToggle = () => {
+    if (open) {
+      setOpen(false);
+    } else {
+      fetchItems();
+    }
   };
 
   return (
     <div className="border rounded-lg shadow-sm mb-4 bg-orange-400 text-white">
       <button
-        onClick={() => setOpen(!open)}
+        onClick={handleToggle}
         className="w-full p-4 text-left font-semibold flex justify-between items-center cursor-pointer"
       >
         {orderTitle}
@@ -46,7 +84,28 @@ export default function OrderAccordion({
           <p><strong>Dirección de envío:</strong> {shippingAddress}</p>
           <p><strong>Total:</strong> {totalAmount}</p>
 
-          <div className="mt-2">
+          {loadingItems ? (
+            <div className="py-4 text-center">Cargando detalles del pedido...</div>
+          ) : error ? (
+            <div className="text-red-500 py-2">{error}</div>
+          ) : (
+            <>
+              {items.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="font-medium mb-2">Productos:</h4>
+                  <ul className="space-y-2">
+                    {items.map((item, index) => (
+                      <li key={index} className="border-b pb-2">
+                        {item.nombre} - Cantidad: {item.cantidad} - ${item.precio?.toLocaleString()}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </>
+          )}
+
+          <div className="mt-4">
             <label className="block mb-1 font-medium">Cambiar Estado del Pedido</label>
             <select
               value={status}
@@ -54,7 +113,7 @@ export default function OrderAccordion({
               className="border px-3 py-1 rounded w-full sm:w-1/2 cursor-pointer"
             >
               {statusOptions.map((opt, i) => (
-                <option key={i} value={opt} >{opt}</option>
+                <option key={i} value={opt}>{opt}</option>
               ))}
             </select>
           </div>

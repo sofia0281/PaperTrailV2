@@ -25,6 +25,10 @@
     },
     "idPedido": {
       "type": "uid"
+    },
+    "estado": {
+      "type": "string",
+      "default": "recibido"
     }
   }
 }

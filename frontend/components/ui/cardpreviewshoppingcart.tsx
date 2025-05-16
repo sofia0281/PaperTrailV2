@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 const CardPreviewShoppingCart = () => {
   const router = useRouter();
   const { cart, updateQuantity, removeFromCart } = useAuth();
+  
 
   return (
     <div className="space-y-4">
