@@ -36,6 +36,7 @@ export default function ActiveOrders() {
 
         // Obtener todos los pedidos del usuario
         const response = await getPedidosByUser(authUser.id);
+        console.log("ID del usuario:", authUser.id);
         const primerPedido = response.data[0];
         console.log("Pedidos response:", response);
   
@@ -47,7 +48,7 @@ export default function ActiveOrders() {
         // Transformar los datos para mostrarlos
         const ordersData = pedidos.map(pedido => ({
           id: pedido.id,
-          orderNumber: pedido.documentId || `#${pedido.id.toString().padStart(4, '0')}`,
+          orderNumber: pedido.idPedido || `#${pedido.id.toString().padStart(4, '0')}`,
           orderDate: pedido.createdAt 
             ? new Date(pedido.createdAt).toLocaleDateString() 
             : new Date().toLocaleDateString(),

@@ -241,16 +241,18 @@ export const getAllPedidos = async () => {
     }
 
     const data = await response.json();
-    console.log("Pedidos obtenidos:", data);
+    console.log("Dirección de envío del primer pedido:", data);
+
 
     return {
       data: data.data.map((pedido: any) => ({
         id: pedido.documentId,  // ID interno de Strapi
-        
-        idPedido: pedido.documentId,  // UID personalizado
+        Date: pedido.createdAt,
+        idPedido: pedido.idPedido,  // UID personalizado
         total: pedido.TotalPrecio || 0,
         estado: pedido.estado || 'pendiente',
         usuarioNombre: pedido.usuario?.username || 'Desconocido',
+        direccionEnvio: pedido.usuario?.Direccion || 'No especificada',
       }))
     };
   } catch (error) {

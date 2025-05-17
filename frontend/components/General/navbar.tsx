@@ -188,12 +188,12 @@ const Navbar = () => {
                             >
                                 Editar Perfil
                             </button>
-                            {/* <button
+                            {<button
                                 className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
-                                onClick={() => router.push("/settings")}
+                                onClick={() => router.push("/routes/adminorderstatus")}
                             >
-                                Opciones
-                            </button> */}
+                                Administrar Pedidos
+                            </button> }
                             <button
                                 className="w-full px-4 py-2 text-left hover:bg-red-100 text-red-500 flex items-center justify-between cursor-pointer"
                                 onClick={() => {
@@ -251,14 +251,14 @@ const Navbar = () => {
                                     setMenuOpen(false)
                                 }}
                             >
-                                Editar Perfil
+                                Editar 
                             </button>
-                            {/* <button
+                            { <button
                                 className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
-                                onClick={() => router.push("/settings")}
+                                onClick={() => router.push("/routes/orderstatus")}
                             >
-                                Opciones
-                            </button> */}
+                                Envios
+                            </button> }
 
                             <button
                                 className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"

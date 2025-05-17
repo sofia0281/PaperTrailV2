@@ -10,6 +10,22 @@ export default function AdminPedidos() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const formatDate = (isoString: string) => {
+    console.log("ISO String:", isoString);
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return 'Fecha inválida';
+  
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+  
+    return `${day}/${month}/${year}`;
+  };
+  
+  // Luego en el componente
+  
+  
+
   useEffect(() => {
     const fetchPedidos = async () => {
       try {
@@ -56,12 +72,12 @@ export default function AdminPedidos() {
       ) : (
         pedidos.map((pedido) => (
           <OrderAccordion 
-            key={pedido.id}
-            orderId={pedido.id}
+            key={pedido.idPedido}
+            orderId={pedido.idPedido}
             orderTitle={`Pedido ${pedido.estado.toLowerCase()}`} 
             initialStatus={pedido.estado} 
-            orderNumber={pedido.id} 
-            orderDate={new Date(pedido.fecha).toLocaleDateString()} 
+            orderNumber={pedido.idPedido} 
+            orderDate={formatDate(pedido.Date)}
             shippingAddress={pedido.direccionEnvio || 'Dirección no especificada'} 
             totalAmount={`$${pedido.total?.toLocaleString() || '0'}`} 
           />
