@@ -428,6 +428,7 @@ export interface ApiItemPedidoItemPedido extends Struct.CollectionTypeSchema {
     estado: Schema.Attribute.String & Schema.Attribute.DefaultTo<'recibido'>;
     IdItem: Schema.Attribute.String;
     IdPedido: Schema.Attribute.String;
+    idstatus: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

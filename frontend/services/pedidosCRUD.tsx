@@ -111,8 +111,11 @@ export const createItemPedido = async (itemData: {
   IdPedido: string;
   Title:string;
   totalPrice:number;
+  idstatus:string;
 }) => {
   try {
+
+    console.log("Creando item de pedido:", itemData);
     const token = localStorage.getItem('authToken'); // Token del usuario
 
     // Convertir a enteros si es necesario
@@ -123,7 +126,8 @@ export const createItemPedido = async (itemData: {
         IdItem: itemData.IdItem.toString(), // Asegurar que sea string
         IdPedido: itemData.IdPedido.toString(), // Asegurar que sea string
         Title:itemData.Title.toString(),
-        totalPrice: Math.round(itemData.totalPrice)
+        totalPrice: Math.round(itemData.totalPrice),
+        idstatus: itemData.idstatus.toString() // Asegurar que sea string
 
       }
     };
@@ -355,7 +359,7 @@ export const getItemsByPedidoId = async (pedidoId: number) => {
     const token = localStorage.getItem('authToken');
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/item-pedidos?filters[IdPedido]=${pedidoId}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/item-pedidos?filters[idstatus]=${pedidoId}`,
       {
         method: 'GET',
         headers: {
@@ -372,12 +376,16 @@ export const getItemsByPedidoId = async (pedidoId: number) => {
 
     const data = await response.json();
     console.log('Items obtenidos:', data);
-    return data.data.map((item: any) => ({
-      Id: item.id,
-      Title: item.Title || 'Sin nombre',
-      TotalProdcutos: item.Cantidad,
-      PrecioItem: item.PrecioItem,
-    }));
+    return data.data.map((item: any) => {
+      const attrs = item;
+      return {
+        Id: item.id,
+        Title: attrs.Title || 'Sin nombre',
+        TotalProdcutos: attrs.Cantidad,
+        PrecioItem: attrs.PrecioItem,
+      };
+    });
+    
   } catch (error) {
     console.error('Error en getItemsByPedidoId:', error);
     return [];

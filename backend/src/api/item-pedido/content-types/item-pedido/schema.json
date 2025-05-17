@@ -39,6 +39,9 @@
     "estado": {
       "type": "string",
       "default": "recibido"
+    },
+    "idstatus": {
+      "type": "string"
     }
   }
 }

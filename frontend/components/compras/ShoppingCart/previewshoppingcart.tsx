@@ -90,6 +90,7 @@ const PreviewShoppingCart = () => {
             IdPedido: pedidoResponse.data.id,
             Title: item.title,
             totalPrice: item.totalPrice,
+            idstatus: numCompra.toString(),
           });
         })
       );

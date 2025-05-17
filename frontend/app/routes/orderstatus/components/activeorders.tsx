@@ -59,7 +59,7 @@ export default function OrderStatus({
 
     if (!open) {
       console.log('Abriendo pedido:', id);
-      const fetchedItems = await getItemsByPedidoId(id);
+      const fetchedItems = await getItemsByPedidoId(Number(orderNumber));
       setPedidoItems(fetchedItems);
     }
   };
