@@ -72,8 +72,8 @@ export default function AdminPedidos() {
       ) : (
         pedidos.map((pedido) => (
           <OrderAccordion 
-            key={pedido.idPedido}
-            orderId={pedido.idPedido}
+            key={pedido.id}
+            orderId={pedido.id}
             orderTitle={`Pedido ${pedido.estado.toLowerCase()}`} 
             initialStatus={pedido.estado} 
             orderNumber={pedido.idPedido} 
