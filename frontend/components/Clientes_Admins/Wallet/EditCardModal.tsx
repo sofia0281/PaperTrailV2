@@ -112,7 +112,25 @@ const handleUpdateCard = async () => {
             name="name"
             placeholder="Nombre en la tarjeta"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+                let value = e.target.value;
+
+            // Eliminar espacios al inicio
+            value = value.replace(/^\s+/, '');
+            // Permite solo letras y espacios, hasta 40 caracteres
+            if (/^[a-zA-Z\s]{0,40}$/.test(value)) {
+              setName(value);
+            }
+          }}
+            onBlur={() => {
+            // Validar longitud mínima en onBlur
+            if (name.length < 2 || name.length > 40) {
+              setError('El nombre debe tener entre 2 y 40 caracteres.');
+              setTimeout(() => {
+                setError('');
+              }, 3000); // Limpia el error 3 segundos después de mostrarlo
+            }
+          }}
             onFocus={(e) => setFocus(e.target.name)}
             className="w-full border rounded p-2"
           />
@@ -133,7 +151,46 @@ const handleUpdateCard = async () => {
               
                 setExpiry(input);
               }}
-              
+              onBlur={() => {
+                const [month, year] = expiry.split('/');
+
+                // Validación básica
+                if (!month || !year || month.length !== 2 || year.length !== 2) {
+        
+                    setError('Formato de fecha inválido. Debe ser MM/AA.');
+                    setTimeout(() => {
+                      setError('');
+                    }, 3000); // Limpia el error 3 segundos después de mostrarlo
+                  return;
+                }
+
+                const monthNum = parseInt(month);
+                if (monthNum < 1 || monthNum > 12) {
+                    setError('El mes debe estar entre 01 y 12.');
+                    setTimeout(() => {
+                      setError('');
+                    }, 3000); // Limpia el error 3 segundos después de mostrarlo
+                  
+                  return;
+                }
+
+                // Validación opcional: que no sea una fecha pasada
+                const currentYear = new Date().getFullYear() % 100; // Solo los últimos dos dígitos
+                const currentMonth = new Date().getMonth() + 1;
+                const inputYear = parseInt(year);
+                const inputMonth = parseInt(month);
+
+                if (
+                  inputYear < currentYear ||
+                  (inputYear === currentYear && inputMonth < currentMonth)
+                ) {
+
+                setError('La tarjeta ya está vencida.');
+                setTimeout(() => {
+                  setError('');
+                }, 3000); // Limpia el error 3 segundos después de mostrarlo
+                }
+              }}
               onFocus={(e) => setFocus(e.target.name)}
               className="w-1/2 border rounded p-2"
             />
