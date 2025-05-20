@@ -24,7 +24,10 @@ export default function OrderAccordion({
   totalAmount,
 }: OrderAccordionProps) {
   const [open, setOpen] = useState(false);
-  const [status, setStatus] = useState(initialStatus);
+  const [status, setStatus] = useState(
+    statusOptions.includes(initialStatus) ? initialStatus : statusOptions[0]
+  );
+  
   const [items, setItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(false);
   const [error, setError] = useState(null);
@@ -69,7 +72,12 @@ export default function OrderAccordion({
   };
 
   return (
-    <div className="border rounded-lg shadow-sm mb-4 bg-orange-400 text-white">
+    <div
+      className={`border rounded-lg shadow-sm mb-4 text-white ${
+        status === 'Entregado' ? 'bg-green-500' : 'bg-orange-400'
+      }`}
+    >
+
       <button
         onClick={handleToggle}
         className="w-full p-4 text-left font-semibold flex justify-between items-center cursor-pointer"
@@ -109,10 +117,14 @@ export default function OrderAccordion({
           <div className="mt-4">
             <label className="block mb-1 font-medium">Cambiar Estado del Pedido</label>
             <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="border px-3 py-1 rounded w-full sm:w-1/2 cursor-pointer"
-            >
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            disabled={status === 'Entregado'}
+            className={`border px-3 py-1 rounded w-full sm:w-1/2 cursor-pointer ${
+              status === 'Entregado' ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : ''
+            }`}
+          >
+
               {statusOptions.map((opt, i) => (
                 <option key={i} value={opt}>{opt}</option>
               ))}
@@ -121,10 +133,16 @@ export default function OrderAccordion({
 
           <button
             onClick={handleSave}
-            className="mt-3 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded cursor-pointer"
+            disabled={status === 'Entregado'}
+            className={`mt-3 px-4 py-2 rounded cursor-pointer text-white ${
+              status === 'Entregado'
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-sky-600 hover:bg-sky-700'
+            }`}
           >
             Guardar Cambios
           </button>
+
         </div>
       )}
     </div>
