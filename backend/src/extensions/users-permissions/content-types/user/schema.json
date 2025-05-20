@@ -107,6 +107,12 @@
       "relation": "oneToMany",
       "target": "api::pedido.pedido",
       "mappedBy": "usuario"
+    },
+    "cards": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::card.card",
+      "mappedBy": "user"
     }
   }
 }

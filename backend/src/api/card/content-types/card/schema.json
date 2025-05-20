@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "cards",
+  "info": {
+    "singularName": "card",
+    "pluralName": "cards",
+    "displayName": "Card",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Titular": {
+      "type": "string"
+    },
+    "Ultimos4Digitos": {
+      "type": "integer",
+      "max": 999
+    },
+    "Tipo": {
+      "type": "enumeration",
+      "enum": [
+        "Crédito",
+        "Débito"
+      ]
+    },
+    "Banco": {
+      "type": "string"
+    },
+    "FechaVencimiento": {
+      "type": "date",
+      "required": false
+    },
+    "Numero": {
+      "type": "string",
+      "unique": true,
+      "required": true
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "cards"
+    },
+    "Monto": {
+      "type": "biginteger"
+    }
+  }
+}
