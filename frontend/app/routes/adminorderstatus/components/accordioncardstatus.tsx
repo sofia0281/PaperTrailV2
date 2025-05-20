@@ -48,6 +48,7 @@ export default function OrderAccordion({
 
     try {
       setLoadingItems(true);
+      console.log("Fetching items for order ID:", orderId); 
       const response = await getItemsByPedido(orderId);
       console.log("Items response:", response);
       setItems(Array.isArray(response?.data) ? response.data : []);

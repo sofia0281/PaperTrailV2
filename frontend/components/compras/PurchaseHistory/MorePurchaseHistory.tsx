@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 import { useSearchParams } from 'next/navigation';
-import { getItemsByPedido } from '@/services/pedidosCRUD';
+import { getItemsFromPedido } from '@/services/pedidosCRUD';
 import CardMoreInfoPurchase from '@/components/ui/cardmoreinfopurchase';
 import { useAuth } from '@/context/AuthContext';
 
@@ -24,15 +24,14 @@ const MorePurchaseHistory = () => {
       
       try {
         setLoading(true);
-        const response = await getItemsByPedido(pedidoId);
-        console.log("items:")
-        console.log(response)
+        const response = await getItemsFromPedido (pedidoId);
+        console.log("Esto es lo que se extrajo ", response);
         // Calcular el total sumando todos los items
-        const calculatedTotal = response.data.reduce((sum, item) => {
+        const calculatedTotal = response.reduce((sum, item) => {
           return sum + (item.PrecioItem * item.Cantidad);
         }, 0);
         
-        setItems(response.data);
+        setItems(response);
         setTotal(calculatedTotal);
       } catch (err) {
         setError(err.message);

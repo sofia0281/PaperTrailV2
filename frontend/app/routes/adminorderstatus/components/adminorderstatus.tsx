@@ -11,7 +11,6 @@ export default function AdminPedidos() {
   const [error, setError] = useState(null);
 
   const formatDate = (isoString: string) => {
-    console.log("ISO String:", isoString);
     const date = new Date(isoString);
     if (isNaN(date.getTime())) return 'Fecha inválida';
   

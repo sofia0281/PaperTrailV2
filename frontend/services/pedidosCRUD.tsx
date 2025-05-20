@@ -186,8 +186,8 @@ export const getPedidosByUser = async (userId: number) => {
 
 
 export const getItemsByPedido = async (pedidoId: string) => {
-
   console.log("Obteniendo items por IdPedido:", pedidoId);
+  
   const token = localStorage.getItem('authToken');
   
   const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/item-pedidos?filters[IdPedido][$eq]=${pedidoId}`, {
@@ -203,6 +203,57 @@ export const getItemsByPedido = async (pedidoId: string) => {
 
   return await response.json();
 };  
+
+
+
+// El que lea esto, esta funcion no se puede borrar, se creo debido a que getItemsByPedido no esta funcionando correctamente
+// perooo nose donde mas se ete implementando y la verdad que locha ponerme a buscar, entonces cree este que si funciona para mostrar los items
+// de moreinfopurchase
+export const getItemsFromPedido = async (pedidoId: string) => {
+  const token = localStorage.getItem('authToken');
+
+  // Paso 1: obtener el idPedido desde pedidos
+  const pedidoResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pedidos?filters[id][$eq]=${pedidoId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!pedidoResponse.ok) {
+    const errorData = await pedidoResponse.json();
+    throw new Error(errorData.error?.message || "Error al obtener el pedido");
+  }
+
+  const pedidoData = await pedidoResponse.json();
+  const idPedidoInterno = pedidoData.data[0]?.idPedido;
+  console.log("ID de pedido interno:", idPedidoInterno);  
+
+  if (!idPedidoInterno) {
+    throw new Error("No se encontró el idPedido interno para este pedido");
+  }
+
+  // Paso 2: obtener los items usando el idPedido interno
+  const itemsResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/item-pedidos?filters[idstatus][$eq]=${idPedidoInterno}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!itemsResponse.ok) {
+    const errorData = await itemsResponse.json();
+    throw new Error(errorData.error?.message || "Error al obtener los items del pedido");
+  }
+
+  const itemsData = await itemsResponse.json();
+
+  // Devolver directamente los items (puedes modificar según lo que necesites)
+  return itemsData.data;
+};
+
+
+
+
+
 
 
 export const getPedidoUsr = async (pedidoId: string) => {
