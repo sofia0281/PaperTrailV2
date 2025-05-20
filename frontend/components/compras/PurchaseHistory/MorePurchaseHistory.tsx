@@ -90,9 +90,17 @@ const MorePurchaseHistory = () => {
         </div>
 
         <div className="mt-auto">
-          <button className="cursor-pointer bg-red-700 hover:bg-red-800 text-white w-full py-2 rounded-lg font-medium">
-            Solicitar Devolución
-          </button>
+        <button
+          className="cursor-pointer bg-red-700 hover:bg-red-800 text-white w-full py-2 rounded-lg font-medium"
+          onClick={() => {
+            if (pedidoId) {
+              router.push(`/routes/ReturnRequest?id=${pedidoId}`);
+            }
+          }}
+        >
+          Solicitar Devolución
+        </button>
+
           <button className="cursor-pointer bg-orange-500 hover:bg-orange-600 text-white p-2 mt-2 rounded-lg font-medium"
           onClick={()=>{router.push('/routes/purchasehistory')}}>
             Regresar

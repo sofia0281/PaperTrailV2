@@ -255,9 +255,15 @@ const Navbar = () => {
                             </button>
                             { <button
                                 className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
+                                onClick={() => router.push("/routes/wallet")}
+                            >
+                                Monedero
+                            </button> }
+                            { <button
+                                className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
                                 onClick={() => router.push("/routes/orderstatus")}
                             >
-                                Envios
+                                Estado de Compras
                             </button> }
 
                             <button

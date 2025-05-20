@@ -1,16 +1,41 @@
 'use client'
-import { useState } from 'react';
+
+import { useEffect, useState } from 'react';
 import EncabezadoDevolucion from './EncabezadoDevolucion';
+import { useSearchParams } from 'next/navigation';
+import { getItemsFromPedido } from '@/services/pedidosCRUD';
+
+
+
 
 export default function ReturnRequest() {
-  const [reason, setReason] = useState('No era lo que esperaba.');
-  const [comments, setComments] = useState('');
+    const searchParams = useSearchParams();
+    const pedidoId = searchParams.get('id');
   
-  const productos = [
-  { nombre: 'Libro 1', precio: '$150.000', cantidad: 1 },
-  { nombre: 'Libro 2', precio: '$90.000', cantidad: 2 },
-  // Puedes agregar más productos
-];
+    const [productos, setProductos] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [reason, setReason] = useState('No era lo que esperaba.');
+    const [comments, setComments] = useState('');
+          
+  
+    useEffect(() => {
+      const fetchItems = async () => {
+        if (!pedidoId) return;
+  
+        try {
+          setLoading(true);
+          const response = await getItemsFromPedido(pedidoId);
+          setProductos(response);
+        } catch (err) {
+          console.error("Error al obtener productos:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchItems();
+    }, [pedidoId]);
+  
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center">
@@ -44,13 +69,21 @@ export default function ReturnRequest() {
                 </div>
 
                 {/* Productos dinámicos */}
-                {productos.map((producto, index) => (
-                <div key={index} className="grid grid-cols-3 text-sm mb-1">
-                    <span>{producto.nombre}</span>
-                    <span>{producto.precio}</span>
-                    <span>{producto.cantidad}</span>
-                </div>
-                ))}
+                {/* Productos dinámicos con manejo de loading y vacío */}
+                {loading ? (
+                <p className="text-sm text-gray-500">Cargando productos del pedido...</p>
+                ) : productos.length === 0 ? (
+                <p className="text-sm text-red-500">No se encontraron productos en este pedido.</p>
+                ) : (
+                productos.map((producto, index) => (
+                    <div key={index} className="grid grid-cols-3 text-sm mb-1">
+                    <span>{producto?.Title || 'Producto'}</span>
+                    <span>${(producto?.PrecioItem || 0).toLocaleString('es-CO')}</span>
+                    <span>{producto?.Cantidad || 0}</span>
+                    </div>
+                ))
+                )}
+
             </div>
         </div>
 
