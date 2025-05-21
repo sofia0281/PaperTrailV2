@@ -14,18 +14,26 @@ const MorePurchaseHistory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [total, setTotal] = useState(0);
+  
+
 
   // Obtener el ID del pedido de la URL
-  const pedidoId = searchParams.get('id');
+  const factura = searchParams.get('id');
   const documentId = searchParams.get('documentId');
+  const pedido = searchParams.get('pedido');
+
+  const status = searchParams.get('status');
+  const isBlockedStatus = ['Pendiente', 'Revisado', 'Rechazado'].includes(status);
+  const [showModal, setShowModal] = useState(isBlockedStatus);
+  
 
   useEffect(() => {
     const fetchItems = async () => {
-      if (!pedidoId) return;
+      if (!factura) return;
       
       try {
         setLoading(true);
-        const response = await getItemsFromPedido (pedidoId);
+        const response = await getItemsFromPedido (factura);
         console.log("Esto es lo que se extrajo ", response);
         // Calcular el total sumando todos los items
         const calculatedTotal = response.reduce((sum, item) => {
@@ -43,7 +51,7 @@ const MorePurchaseHistory = () => {
     };
 
     fetchItems();
-  }, [pedidoId]);
+  }, [factura]);
 
   if (loading) {
     return (
@@ -92,15 +100,18 @@ const MorePurchaseHistory = () => {
 
         <div className="mt-auto">
         <button
-          className="cursor-pointer bg-red-700 hover:bg-red-800 text-white w-full py-2 rounded-lg font-medium"
+          className={`w-full py-2 rounded-lg font-medium text-white
+            ${isBlockedStatus ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-700 hover:bg-red-800 cursor-pointer'}`}
+          disabled={isBlockedStatus}
           onClick={() => {
-            if (pedidoId) {
-              router.push(`/routes/ReturnRequest?id=${pedidoId}&documentId=${documentId}`);
+            if (!isBlockedStatus && factura) {
+              router.push(`/routes/ReturnRequest?id=${factura}&pedido=${pedido}&documentId=${documentId}`);
             }
           }}
         >
           Solicitar Devolución
         </button>
+
 
           <button className="cursor-pointer bg-orange-500 hover:bg-orange-600 text-white p-2 mt-2 rounded-lg font-medium"
           onClick={()=>{router.push('/routes/purchasehistory')}}>
@@ -108,8 +119,39 @@ const MorePurchaseHistory = () => {
           </button>
         </div>
       </div>
+      {showModal && (
+  <div className="fixed inset-0 flex items-center justify-center z-50 bg-trasparent bg-opacity-30 backdrop-blur-sm">
+    <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-center">
+      <h2 className="text-2xl font-bold mb-4">
+        {
+          status === 'Pendiente' ? 'Solicitud en revisión' :
+          status === 'Revisado' ? 'Solicitud revisada' :
+          status === 'Rechazado' ? 'Solicitud rechazada' : ''
+        }
+      </h2>
+      <p className="text-gray-700 mb-6">
+        {
+          status === 'Pendiente' && 'Este producto se encuentra en revisión para la solicitud de devolución.' ||
+          status === 'Revisado' && 'Este producto ha sido revisado. Pronto recibirás una respuesta.' ||
+          status === 'Rechazado' && 'Este producto fue rechazado para devolución.'
+        }
+      </p>
+      <button
+        onClick={() => setShowModal(false)}
+        className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold"
+      >
+        OK
+      </button>
     </div>
+  </div>
+)}
+
+    </div>
+
+    
   );
+
+  
 };
 
 export default MorePurchaseHistory;

@@ -20,17 +20,20 @@ const PurchaseHistory = () => {
         setLoading(true);
         const response = await getPedidosByUser(authUser.id);
         console.log ("pedidos del cliente: ",response)
-        const formattedPurchases = response.data.map(pedido => ({
+        const sortedData = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        const formattedPurchases = sortedData.map(pedido => ({
           idPedido: `#${pedido.idPedido.padStart(4, '0')}`,
           date: new Date(pedido.createdAt).toLocaleDateString('es-CO', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric'
           }),
-          status: "Completado",
+          status: pedido.estado,
           total: pedido.TotalPrecio,
           originalData: pedido
         }));
+
         console.log("formattedPurchase", formattedPurchases)
         setPurchases(formattedPurchases);
       } catch (error) {
@@ -88,26 +91,37 @@ const PurchaseHistory = () => {
               </tr>
             </thead>
             <tbody>
-              {purchases.map((purchase) => (
-                <tr key={purchase.idPedido} className="border-t">
-                  <td className="py-2 px-4">{purchase.idPedido}</td>
-                  <td className="py-2 px-4">{purchase.date}</td>
-                  <td className="py-2 px-4">{purchase.status}</td>
-                  <td className="py-2 px-4">${purchase.total}</td>
-                  <td className="py-2 px-4">
-                    <button 
-                      className="bg-gray-700 text-white px-3 py-1 rounded-md hover:bg-gray-800 cursor-pointer"
-                      onClick={() => {
-                        router.push(`/routes/moreinfopurchase?id=${purchase.originalData.id}&documentId=${purchase.originalData.documentId}`);
-                        
-                      }}
-                    >
-                      Ver más
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+  {purchases.map((purchase) => {
+    let rowColor = "";
+    if (purchase.status.toLowerCase() === "pendiente") {
+      rowColor = "bg-yellow-100";
+    } else if (purchase.status.toLowerCase() === "revisado") {
+      rowColor = "bg-green-100";
+    } else if (purchase.status.toLowerCase() === "rechazado") {
+      rowColor = "bg-red-100";
+    }
+
+    return (
+      <tr key={purchase.idPedido} className={`border-t ${rowColor}`}>
+        <td className="py-2 px-4">{purchase.idPedido}</td>
+        <td className="py-2 px-4">{purchase.date}</td>
+        <td className="py-2 px-4">{purchase.status}</td>
+        <td className="py-2 px-4">${purchase.total}</td>
+        <td className="py-2 px-4">
+          <button 
+            className="bg-gray-700 text-white px-3 py-1 rounded-md hover:bg-gray-800 cursor-pointer"
+            onClick={() => {
+              router.push(`/routes/moreinfopurchase?id=${purchase.originalData.id}&documentId=${purchase.originalData.documentId}&pedido=${purchase.originalData.idPedido}&status=${purchase.originalData.estado}`);
+            }}
+          >
+            Ver más
+          </button>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
           </table>
         )}
       </div>

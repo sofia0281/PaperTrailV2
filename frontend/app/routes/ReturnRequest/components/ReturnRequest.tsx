@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react';
 import EncabezadoDevolucion from './EncabezadoDevolucion';
 import { useSearchParams } from 'next/navigation';
-import { getItemsFromPedido } from '@/services/pedidosCRUD';
-import { updatePedidoRequest } from '@/services/pedidosCRUD'; // Ajusta la ruta si es distinta
+import { getItemsFromPedido, getPedidoById } from '@/services/pedidosCRUD';
+import { updatePedidoRequest } from '@/services/pedidosCRUD'; 
+import { useRouter } from 'next/navigation';
+
 
 
 
@@ -12,22 +14,29 @@ import { updatePedidoRequest } from '@/services/pedidosCRUD'; // Ajusta la ruta 
 
 export default function ReturnRequest() {
     const searchParams = useSearchParams();
-    const pedidoId = searchParams.get('id');
+    const factura = searchParams.get('id');
+    const pedido = searchParams.get('pedido');
+    
     const documentId = searchParams.get('documentId');
   
     const [productos, setProductos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [reason, setReason] = useState('No era lo que esperaba.');
     const [comments, setComments] = useState('');
+
+    const router = useRouter(); 
+    const Pedido = getPedidoById(pedido);
+    console.log("Pedido obtenido por aqui", Pedido)
+
           
   
     useEffect(() => {
       const fetchItems = async () => {
-        if (!pedidoId) return;
+        if (!factura) return;
   
         try {
           setLoading(true);
-          const response = await getItemsFromPedido(pedidoId);
+          const response = await getItemsFromPedido(factura);
           setProductos(response);
         } catch (err) {
           console.error("Error al obtener productos:", err);
@@ -37,7 +46,7 @@ export default function ReturnRequest() {
       };
   
       fetchItems();
-    }, [pedidoId]);
+    }, [factura]);
     const handleSubmit = async (e) => {
       e.preventDefault();
     
@@ -45,7 +54,7 @@ export default function ReturnRequest() {
         await updatePedidoRequest(documentId, 'Pendiente', reason, comments);
         alert('✅ Solicitud de devolución enviada correctamente.');
         // Opcional: redirigir o limpiar estado
-        // router.push('/perfil'); // o donde desees ir
+        router.push('/routes/purchasehistory'); // o donde desees ir
       } catch (err) {
         alert('❌ Error al enviar la solicitud: ' + err.message);
       }
@@ -62,8 +71,8 @@ export default function ReturnRequest() {
                 className="absolute inset-0 w-full h-full object-fill"
             />
         <EncabezadoDevolucion
-        numeroFactura="123456789"
-        numeroPedido="987654321"
+        numeroFactura ={factura}
+        numeroPedido={pedido}
         fechaCompra="14/05/2025"
         />
 

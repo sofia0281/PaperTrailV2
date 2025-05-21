@@ -301,6 +301,7 @@ export const getAllPedidos = async () => {
 
     return {
       data: data.data.map((pedido: any) => ({
+        factura: pedido.id || 'Sin factura',
         id: pedido.documentId,  // ID interno de Strapi
         Date: pedido.createdAt,
         idPedido: pedido.idPedido,  // UID personalizado

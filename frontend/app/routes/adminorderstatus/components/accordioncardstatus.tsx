@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { updatePedidoStatus, getItemsByPedido } from '@/services/pedidosCRUD';
 
 const statusOptions = ['Recibido', 'Confirmado', 'Procesando', 'Enviado', 'Entregado'];
@@ -31,12 +31,20 @@ export default function OrderAccordion({
   const [items, setItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(false);
   const [error, setError] = useState(null);
+  const [contentHeight, setContentHeight] = useState(0);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Actualizar la altura del contenido cuando cambian los items o el estado
+  useEffect(() => {
+    if (contentRef.current) {
+      setContentHeight(open ? contentRef.current.scrollHeight : 0);
+    }
+  }, [open, items, loadingItems, error]);
 
   const handleSave = async () => {
     try {
       await updatePedidoStatus(orderId, status);
       console.log(`Estado actualizado para pedido ${orderId}: ${status}`);
-      // Podrías añadir aquí una notificación de éxito
     } catch (err) {
       setError(err.message || 'Error al actualizar el estado');
       console.error("Error updating status:", err);
@@ -44,16 +52,9 @@ export default function OrderAccordion({
   };
 
   const fetchItems = async () => {
-    if (!open) {
-      setOpen(true);
-      return;
-    }
-
     try {
       setLoadingItems(true);
-      console.log("Fetching items for order ID:", orderId); 
       const response = await getItemsByPedido(orderId);
-      console.log("Items response:", response);
       setItems(Array.isArray(response?.data) ? response.data : []);
     } catch (err) {
       setError(err.message || 'Error al cargar los items');
@@ -64,30 +65,37 @@ export default function OrderAccordion({
   };
 
   const handleToggle = () => {
-    if (open) {
-      setOpen(false);
-    } else {
+    if (!open) {
       fetchItems();
     }
+    setOpen(!open);
   };
 
   return (
     <div
-      className={`border rounded-lg shadow-sm mb-4 text-white ${
+      className={`border rounded-lg shadow-sm mb-4 overflow-hidden transition-all duration-300 ${
         status === 'Entregado' ? 'bg-green-500' : 'bg-orange-400'
       }`}
     >
-
       <button
         onClick={handleToggle}
-        className="w-full p-4 text-left font-semibold flex justify-between items-center cursor-pointer"
+        className="w-full p-4 text-left font-semibold flex justify-between items-center cursor-pointer text-white"
       >
         {orderTitle}
-        <span>{open ? '▲' : '▼'}</span>
+        <span className="transition-transform duration-300">
+          {open ? '▲' : '▼'}
+        </span>
       </button>
 
-      {open && (
-        <div className="p-4 border-t text-sm text-gray-700 space-y-2 bg-white">
+      <div
+        ref={contentRef}
+        className="bg-white transition-all duration-300 ease-in-out overflow-hidden"
+        style={{
+          maxHeight: `${contentHeight}px`,
+          opacity: open ? 1 : 0.8,
+        }}
+      >
+        <div className="p-4 border-t text-sm text-gray-700 space-y-2">
           <p><strong>Nro. Pedido:</strong> {orderNumber}</p>
           <p><strong>Fecha del pedido:</strong> {orderDate}</p>
           <p><strong>Dirección de envío:</strong> {shippingAddress}</p>
@@ -117,14 +125,13 @@ export default function OrderAccordion({
           <div className="mt-4">
             <label className="block mb-1 font-medium">Cambiar Estado del Pedido</label>
             <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            disabled={status === 'Entregado'}
-            className={`border px-3 py-1 rounded w-full sm:w-1/2 cursor-pointer ${
-              status === 'Entregado' ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : ''
-            }`}
-          >
-
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              disabled={status === 'Entregado'}
+              className={`border px-3 py-1 rounded w-full sm:w-1/2 cursor-pointer ${
+                status === 'Entregado' ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : ''
+              }`}
+            >
               {statusOptions.map((opt, i) => (
                 <option key={i} value={opt}>{opt}</option>
               ))}
@@ -142,9 +149,8 @@ export default function OrderAccordion({
           >
             Guardar Cambios
           </button>
-
         </div>
-      )}
+      </div>
     </div>
   );
 }

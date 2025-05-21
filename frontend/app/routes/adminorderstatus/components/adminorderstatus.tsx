@@ -81,7 +81,9 @@ export default function AdminPedidos() {
       {pedidos.length === 0 ? (
         <div className="text-center py-8">No hay pedidos para mostrar</div>
       ) : (
-        pedidos.map((pedido) => (
+        pedidos
+        .filter(pedido => !['Pendiente', 'Revisado', 'Rechazado'].includes(pedido.estado))
+        .map((pedido) => (
           <OrderAccordion 
             key={pedido.id}
             orderId={pedido.id}
@@ -92,7 +94,8 @@ export default function AdminPedidos() {
             shippingAddress={pedido.direccionEnvio || 'Dirección no especificada'} 
             totalAmount={`$${pedido.total?.toLocaleString() || '0'}`} 
           />
-        ))
+      ))
+
       )}
       
       <div className='mt-16'>

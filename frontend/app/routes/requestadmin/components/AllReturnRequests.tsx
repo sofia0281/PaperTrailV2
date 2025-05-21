@@ -5,8 +5,8 @@ import ReturnRequestAdmin from './ReturnRequestAdmin';
 import { getAllPedidos } from '@/services/pedidosCRUD';
 
 export type ReturnRequest = {
+  factura: string;
   id: number;
-  numeroFactura: string;
   numeroPedido: string;
   fechaCompra: string;
   producto: string;
@@ -36,6 +36,7 @@ export default function AllReturnRequests() {
         setLoading(true);
         const response = await getAllPedidos();
         const pedidos = response?.data || [];
+        console.log('Pedidos:', pedidos);
 
         // Filtrar solo pedidos que tienen estado de devolución
         const devoluciones = pedidos.filter((pedido: any) =>
@@ -47,7 +48,6 @@ export default function AllReturnRequests() {
           numeroFactura: pedido.factura || 'Sin factura',
           numeroPedido: pedido.idPedido || 'Sin número',
           fechaCompra: new Date(pedido.Date).toLocaleDateString('es-ES'),
-          producto: pedido.producto || 'Producto desconocido',
           precio: pedido.total || 0,
           cantidad: pedido.cantidad || 1,
           motivo: pedido.motivo || 'Sin motivo',
