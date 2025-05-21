@@ -29,6 +29,12 @@
     "estado": {
       "type": "string",
       "default": "recibido"
+    },
+    "comentario": {
+      "type": "text"
+    },
+    "motivo": {
+      "type": "string"
     }
   }
 }

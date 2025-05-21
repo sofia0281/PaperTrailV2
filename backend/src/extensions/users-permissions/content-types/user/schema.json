@@ -113,6 +113,10 @@
       "relation": "oneToMany",
       "target": "api::card.card",
       "mappedBy": "user"
+    },
+    "suscripcion": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

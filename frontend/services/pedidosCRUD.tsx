@@ -308,6 +308,8 @@ export const getAllPedidos = async () => {
         estado: pedido.estado || 'pendiente',
         usuarioNombre: pedido.usuario?.username || 'Desconocido',
         direccionEnvio: pedido.usuario?.Direccion || 'No especificada',
+        comentario: pedido.comentario || '',
+        motivo: pedido.motivo || '',
       }))
     };
   } catch (error) {
@@ -335,7 +337,7 @@ export const getItemStrapiByPedidoId = async (pedidoId) => {
 
 
 export const updatePedidoStatus = async (pedidoId, newStatus) => {
-  console.log("Actualizando estado de pedido:", pedidoId, "Nuevo estado:", newStatus);
+  console.log("Actualizando estado de pedido:", pedidoId, "Nuevo estado:", pedidoId);
   try {
     const token = localStorage.getItem('authToken');
     if (!token) throw new Error("Token no encontrado");
@@ -373,6 +375,51 @@ export const updatePedidoStatus = async (pedidoId, newStatus) => {
     throw new Error("No se pudo actualizar el estado.");
   }
 };
+
+
+
+export const updatePedidoRequest = async (pedidoId, newStatus, reason, comment) => {
+  console.log("Actualizando pedido:", pedidoId, "Nuevo estado:", newStatus, "Motivo:", reason, "Comentario:", comment);
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) throw new Error("Token no encontrado");
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pedidos/${pedidoId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        data: {
+          estado: newStatus,
+          motivo: reason,
+          comentario: comment
+        }
+      })
+    });
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = { error: { message: "Respuesta no es JSON" } };
+      }
+      console.error('❌ Error detallado del backend:', errorData);
+      throw new Error(errorData.error?.message || 'Error al actualizar el estado');
+    }
+
+    const result = await response.json();
+    console.log("✅ Pedido actualizado correctamente:", result);
+    return result;
+  } catch (error) {
+    console.error("⚠️ Error completo en updatePedidoRequest:", error);
+    throw new Error("No se pudo actualizar el pedido.");
+  }
+};
+
+
 
 
 

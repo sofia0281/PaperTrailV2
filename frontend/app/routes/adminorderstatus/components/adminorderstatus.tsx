@@ -20,10 +20,6 @@ export default function AdminPedidos() {
   
     return `${day}/${month}/${year}`;
   };
-  
-  // Luego en el componente
-  
-  
 
   useEffect(() => {
     const fetchPedidos = async () => {
@@ -31,7 +27,23 @@ export default function AdminPedidos() {
         setLoading(true);
         const response = await getAllPedidos();
         console.log("Pedidos response:", response);
-        setPedidos(response.data || []);
+        
+        // Ordenar los pedidos por fecha (más reciente primero) o por ID
+        const pedidosOrdenados = [...(response.data || [])].sort((a, b) => {
+          // Primero intentamos ordenar por fecha
+          const fechaA = new Date(a.Date).getTime();
+          const fechaB = new Date(b.Date).getTime();
+          
+          // Si las fechas son válidas, ordenamos por fecha
+          if (!isNaN(fechaA) && !isNaN(fechaB)) {
+            return fechaB - fechaA; // Más reciente primero
+          }
+          
+          // Si no hay fechas válidas, ordenamos por ID (asumiendo que IDs mayores son más recientes)
+          return b.id - a.id;
+        });
+        
+        setPedidos(pedidosOrdenados);
       } catch (err) {
         setError(err.message || 'Error al cargar los pedidos');
         console.error("Error fetching pedidos:", err);

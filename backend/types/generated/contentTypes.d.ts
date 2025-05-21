@@ -501,6 +501,7 @@ export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    comentario: Schema.Attribute.Text;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -512,6 +513,7 @@ export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
       'api::pedido.pedido'
     > &
       Schema.Attribute.Private;
+    motivo: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     TotalPrecio: Schema.Attribute.Integer;
     TotalProductos: Schema.Attribute.Integer;
@@ -1124,6 +1126,7 @@ export interface PluginUsersPermissionsUser
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    suscripcion: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     TemaL_1: Schema.Attribute.String;
     TemaL_2: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;

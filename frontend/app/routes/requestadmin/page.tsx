@@ -1,4 +1,4 @@
-import AdminReturnRequests from './components/ReturnRequestAdmin';
+import AdminReturnRequests from './components/AllReturnRequests';
 
 export default function DevolucionesAdminPage() {
   return <AdminReturnRequests />;

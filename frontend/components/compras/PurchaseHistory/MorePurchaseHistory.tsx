@@ -17,6 +17,7 @@ const MorePurchaseHistory = () => {
 
   // Obtener el ID del pedido de la URL
   const pedidoId = searchParams.get('id');
+  const documentId = searchParams.get('documentId');
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -94,7 +95,7 @@ const MorePurchaseHistory = () => {
           className="cursor-pointer bg-red-700 hover:bg-red-800 text-white w-full py-2 rounded-lg font-medium"
           onClick={() => {
             if (pedidoId) {
-              router.push(`/routes/ReturnRequest?id=${pedidoId}`);
+              router.push(`/routes/ReturnRequest?id=${pedidoId}&documentId=${documentId}`);
             }
           }}
         >

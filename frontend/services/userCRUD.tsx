@@ -160,3 +160,89 @@ export const createUser = async (userData) => {
   };
 
 
+
+
+
+  //Seccion para suscribirse 
+  export const suscribeUser = async (submittedEmail: string) => {
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) return { success: false, message: 'No hay token de autenticación' };
+
+    const queryUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users?filters[email][$eq]=${submittedEmail}`;
+    const userRes = await fetch(queryUrl, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!userRes.ok) {
+      return { success: false, message: 'No se pudo buscar el usuario' };
+    }
+
+    const users = await userRes.json();
+
+    if (!users || users.length === 0) {
+      return { success: false, message: 'El correo no está registrado en el sistema' };
+    }
+
+    const user = users[0];
+    if (user.suscripcion === true) {
+      return { success: true, alreadySubscribed: true };
+    }
+
+    const updateRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${user.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ suscripcion: true }),
+    });
+
+    if (!updateRes.ok) {
+      const errorData = await updateRes.json();
+      return { success: false, message: errorData.error?.message || 'Error al actualizar la suscripción' };
+    }
+
+    const updatedUser = await updateRes.json();
+
+    return { success: true, user: updatedUser };
+
+  } catch (err: any) {
+    // Aquí atrapas errores inesperados del sistema y devuelves mensaje de error
+    return { success: false, message: err.message || 'Error inesperado' };
+  }
+};
+
+  
+
+
+//. parte de la suscripcion para recopilar todo los usuarios y saber quienes estan suscritos o no
+export const fetchAllUsers = async () => {
+  try {
+    const token = localStorage.getItem('authToken'); // o 'authToken', asegúrate de usar el correcto
+    if (!token) {
+      console.warn('No se encontró token de autenticación');
+      return [];
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users?populate=role`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error al obtener usuarios:', errorData);
+      throw new Error('No se pudo obtener la lista de usuarios');
+    }
+
+    const data = await response.json();
+    console.log("Usuarios obtenidos:", data);
+    return data;
+  } catch (error) {
+    console.error('Error en fetchAllUsers:', error.message);
+    return [];
+  }
+};

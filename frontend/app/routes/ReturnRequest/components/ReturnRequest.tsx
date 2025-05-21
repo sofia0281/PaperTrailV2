@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import EncabezadoDevolucion from './EncabezadoDevolucion';
 import { useSearchParams } from 'next/navigation';
 import { getItemsFromPedido } from '@/services/pedidosCRUD';
+import { updatePedidoRequest } from '@/services/pedidosCRUD'; // Ajusta la ruta si es distinta
+
 
 
 
@@ -11,6 +13,7 @@ import { getItemsFromPedido } from '@/services/pedidosCRUD';
 export default function ReturnRequest() {
     const searchParams = useSearchParams();
     const pedidoId = searchParams.get('id');
+    const documentId = searchParams.get('documentId');
   
     const [productos, setProductos] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -35,7 +38,19 @@ export default function ReturnRequest() {
   
       fetchItems();
     }, [pedidoId]);
-  
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+    
+      try {
+        await updatePedidoRequest(documentId, 'Pendiente', reason, comments);
+        alert('✅ Solicitud de devolución enviada correctamente.');
+        // Opcional: redirigir o limpiar estado
+        // router.push('/perfil'); // o donde desees ir
+      } catch (err) {
+        alert('❌ Error al enviar la solicitud: ' + err.message);
+      }
+    };
+    
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center">
@@ -89,61 +104,58 @@ export default function ReturnRequest() {
 
         {/* Motivo de devolución */}
         <div>
-            <form className="space-y-4 m-6">
-            <div className="space-y-2 text-sm">
-                <label className="flex items-center gap-2">
-                <input
-                    type="radio"
-                    name="reason"
-                    value="No era lo que esperaba."
-                    checked={reason === 'No era lo que esperaba.'}
-                    onChange={(e) => setReason(e.target.value)}
-                    className="accent-[#C14A20]"
-                />
-                No era lo que esperaba.
-                </label>
+        <form className="space-y-4 m-6" onSubmit={handleSubmit}>
+          <div className="space-y-2 text-sm">
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="reason"
+                value="No era lo que esperaba."
+                checked={reason === 'No era lo que esperaba.'}
+                onChange={(e) => setReason(e.target.value)}
+                className="accent-[#C14A20]"
+              />
+              No era lo que esperaba.
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="reason"
+                value="Llegó en mal estado."
+                checked={reason === 'Llegó en mal estado.'}
+                onChange={(e) => setReason(e.target.value)}
+                className="accent-[#C14A20]"
+              />
+              Llegó en mal estado.
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="reason"
+                value="Recibí un libro incorrecto."
+                checked={reason === 'Recibí un libro incorrecto.'}
+                onChange={(e) => setReason(e.target.value)}
+                className="accent-[#C14A20]"
+              />
+              Recibí un libro incorrecto.
+            </label>
+          </div>
 
-                <label className="flex items-center gap-2">
-                <input
-                    type="radio"
-                    name="reason"
-                    value="Llegó en mal estado."
-                    checked={reason === 'Llegó en mal estado.'}
-                    onChange={(e) => setReason(e.target.value)}
-                    className="accent-[#C14A20]"
-                />
-                Llegó en mal estado.
-                </label>
+          <textarea
+            placeholder="Cuéntanos más sobre tu devolución (opcional)"
+            value={comments}
+            onChange={(e) => setComments(e.target.value)}
+            className="w-full h-24 border rounded px-3 py-2 text-sm resize-none"
+          />
 
-                <label className="flex items-center gap-2">
-                <input
-                    type="radio"
-                    name="reason"
-                    value="Recibí un libro incorrecto."
-                    checked={reason === 'Recibí un libro incorrecto.'}
-                    onChange={(e) => setReason(e.target.value)}
-                    className="accent-[#C14A20]"
-                />
-                Recibí un libro incorrecto.
-                </label>
-            </div>
+          <button
+            type="submit"
+            className="bg-[#C14A20] hover:bg-[#a73e1a] text-white font-semibold px-6 py-2 rounded cursor-pointer"
+          >
+            Solicitar Devolución
+          </button>
+        </form>
 
-            {/* Comentarios */}
-            <textarea
-                placeholder="Cuéntanos más sobre tu devolución (opcional)"
-                value={comments}
-                onChange={(e) => setComments(e.target.value)}
-                className="w-full h-24 border rounded px-3 py-2 text-sm resize-none"
-            />
-
-            {/* Botón de solicitud */}
-            <button
-                type="submit"
-                className="bg-[#C14A20] hover:bg-[#a73e1a] text-white font-semibold px-6 py-2 rounded cursor-pointer"
-            >
-                Solicitar Devolución
-            </button>
-            </form>
          </div>
         </div>
 

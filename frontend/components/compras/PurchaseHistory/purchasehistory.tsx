@@ -98,7 +98,8 @@ const PurchaseHistory = () => {
                     <button 
                       className="bg-gray-700 text-white px-3 py-1 rounded-md hover:bg-gray-800 cursor-pointer"
                       onClick={() => {
-                        router.push(`/routes/moreinfopurchase?id=${purchase.originalData.id}`);
+                        router.push(`/routes/moreinfopurchase?id=${purchase.originalData.id}&documentId=${purchase.originalData.documentId}`);
+                        
                       }}
                     >
                       Ver más

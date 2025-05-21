@@ -49,6 +49,7 @@ const PreviewShoppingCart = () => {
       }
   
       // Obtener número de pedido
+      console.log("ID de usuario:", authUser.id); 
       const response = await getPedidosByUser(authUser.id);
       const numCompra = response.data.length + 1;
   
