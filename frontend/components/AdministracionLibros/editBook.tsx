@@ -347,16 +347,16 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
       {/* Formulario */}
       <form onSubmit={ConfirmSubmit} className="grid grid-cols-2 md:grid-cols-2 gap-6 p-6 relative z-10 -mt-28">
         <div className="col-span-2 flex justify-center mb-6">
-      <div className="bg-gray-200 p-4 rounded-md shadow-md w-40 h-40 flex items-center justify-center">
-        <ImageUpload 
-          onImageUpload={(url, file) => {
-            setImagePreview(url);
-            setImageFile(file);
-          }}
-          imageUrl={imagePreview}
-        />
-      </div>
-    </div>
+          <div className="bg-gray-200 p-4 rounded-md shadow-md w-40 h-40 flex items-center justify-center">
+            <ImageUpload 
+              onImageUpload={(url, file) => {
+                setImagePreview(url);
+                setImageFile(file);
+              }}
+              imageUrl={imagePreview}
+            />
+          </div>
+        </div>
         <div>
           <label className="block text-sm font-medium">ISSN</label>
           <input 
@@ -426,26 +426,6 @@ const EditBook =  ({ bookID }: { bookID: string }) => {
           value={formData.precio}  
           className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Precio" />
         </div>
-        {/* <div>
-          <label className="block text-sm font-medium">Reseña</label>
-          <input 
-          required
-          type="text" 
-          name="resena"
-          onChange={handleChange}
-          value={formData.resena} 
-          className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Reseña" />
-        </div> */}
-        {/* <div>
-          <label className="block text-sm font-medium">Editorial</label>
-          <input 
-          required
-          type="text" 
-          name="editorial"
-          onChange={handleChange}
-          value={formData.editorial}  
-          className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Editorial" />
-        </div> */}
         <div>
           <label className="block text-sm font-medium">Editorial</label>
           <AutocompleteEditorial

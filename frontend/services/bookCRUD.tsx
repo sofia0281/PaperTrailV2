@@ -138,41 +138,6 @@ export const getAllBooksData = async () => {
     throw error;
   }
 };
-// export const getAllLibrosData = async () => {
-//   try {
-//       const token = localStorage.getItem('authToken');
-//       const booksResponse = await fetch(
-//           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books`,
-//           {
-//               method: 'GET',
-//               headers: {
-//                   'Content-Type': 'application/json',
-//                   'Authorization': `Bearer ${process.env.NEXT_PUBLIC_STRAPI_ADMIN_TOKEN}`,
-//               }
-//           });
-
-//       if (!booksResponse.ok) {
-//           const errorData = await booksResponse.json();
-//           console.error('Error trayendo informacion de los libros:', errorData);
-//           throw new Error(errorData.message || 'Failed to fetch books');
-//       }
-//       const responseData = await booksResponse.json();
-//       console.log('Respuesta completa de la API:', responseData);
-
-//       // Extraer el array de libros de la respuesta de Strapi v4
-//       const booksArray = responseData.data || responseData;
-//       console.log(booksArray)
-//       // Verificar si es un array antes de mapear
-//       if (!Array.isArray(booksArray)) {
-//           console.error('La respuesta no es un array:', booksArray);
-//           return [];
-//       }
-//       return booksArray;
-//   } catch (error) {
-//       console.error('Error in getAllbooksData:', error);
-//       throw new Error(typeof error === 'string' ? error : 'Error al obtener libros');
-//   }
-// };
 
 // trae la información del libro con la UID que en este caso es el idLibro
 export const getBookByIdLibro = async (idLibro: string) => {

@@ -23,9 +23,6 @@
     "TotalProductos": {
       "type": "integer"
     },
-    "idPedido": {
-      "type": "uid"
-    },
     "estado": {
       "type": "string",
       "default": "recibido"
@@ -34,6 +31,9 @@
       "type": "text"
     },
     "motivo": {
+      "type": "string"
+    },
+    "idPedido": {
       "type": "string"
     }
   }

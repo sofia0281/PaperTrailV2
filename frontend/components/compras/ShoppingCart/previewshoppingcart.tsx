@@ -38,6 +38,7 @@ const PreviewShoppingCart = () => {
       // Verificar stock antes de hacer cualquier otra operación
       for (const item of cart) {
         const bookData = await getBookByIdLibro(item.idLibro);
+        console.log(bookData)
         const available = bookData.cantidad;
         const requested = item.quantity;
   
@@ -49,10 +50,11 @@ const PreviewShoppingCart = () => {
       }
   
       // Obtener número de pedido
-      console.log("ID de usuario:", authUser.id); 
+      console.log("ID del usuario que va a comprar:", authUser.id); 
       const response = await getPedidosByUser(authUser.id);
       const numCompra = response.data.length + 1;
-  
+      console.log("Número de compra:", numCompra);
+
       // Crear el pedido principal
       const pedidoResponse = await createPedido({
         usuario: authUser.id,

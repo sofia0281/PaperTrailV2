@@ -2,42 +2,77 @@
 import { Router, Search, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import {getAllTiendasData, deleteTienda} from '@/services/tiendasCRUD';
+import withAuthADMIN from '@/components/Auth/withAuthADMIN';
 import { motion } from "framer-motion";
 import { XCircle } from "lucide-react";
-interface Book {
+interface Tienda {
   id: number;
-  title: string;
-  price: number;
-  author: string;
-  cantidad: number;
-  idLibro: string;
+  Nombre: string;
+  Departamento: string;
+  Ciudad: string;
+  idTienda: string;
+  Region: string;
+  Direction: string;
 }
 
 const ShopStore = () => {
   const router =  useRouter();
-  const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [tiendas, setTiendas] = useState<Tienda[]>([]);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [selectedBook, setSelectedBook] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedTienda, setSelectedTienda] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  
+  useEffect(() => {
+    router.refresh(); // Esto forzará la recarga de los componentes del layout/navbar
+  }, []);
 
+    useEffect(() => {
+        const fetchBooks = async () => {
+          try {
+            const data = await getAllTiendasData();
+            console.log("tiendas data:", data)
+            setTiendas(data);
+          } catch (err) {
+            setError(err instanceof Error ? err.message : 'Error desconocido');
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        fetchBooks();
+    }, []);
 
- const handleDelete = async () => {
-  if (selectedBook === null) return;
-  try {
-    setBooks(prev => prev.filter(book => book.idLibro !== selectedBook));
-    setMessage("Libro eliminado exitosamente");
-    setTimeout(() => setMessage(null), 3000);
-  } catch (error) {
-    console.error("Error al eliminar libro:", error);
-  } finally {
-    setShowConfirm(false);
-    setSelectedBook(null);
-  }
-};
+    if (loading) {
+    return <div className="p-6 max-w-4xl mx-auto"><p>Cargando Tiendas...</p></div>;
+    }
 
+    if (error) {
+      return <div className="p-6 max-w-4xl mx-auto"><p className="text-red-500">Error: {error}</p></div>;
+    }
 
+  const handleDelete = async () => {
+    if (selectedTienda === null) return;
+    try {
+      await deleteTienda(selectedTienda);
+      setTiendas(prev => prev.filter(book => book.idTienda !== selectedTienda));
+      setMessage("Tienda eliminada exitosamente");
+      setTimeout(() => setMessage(null), 3000);
+    } catch (error) {
+      console.error("Error al eliminar la tienda:", error);
+    } finally {
+      setShowConfirm(false);
+      setSelectedTienda(null);
+    }
+  };
+
+  const handleEditar = (tiendaID: string) => {
+    console.log("este es el id de la tienda:")
+    console.log(tiendaID)
+    router.push(`/routes/edittienda/${tiendaID}`);
+  };
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6">
@@ -80,17 +115,17 @@ const ShopStore = () => {
         <h2 className="text-2xl font-semibold">Administrador de tienda</h2>
         <div className="flex items-center gap-2">
             <button 
-            onClick={() => router.push("/routes/createbook")} 
-            className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 whitespace-nowrap cursor-pointer">
-            Agregar Tienda
+              onClick={() => router.push("/routes/createtienda")} 
+              className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 whitespace-nowrap cursor-pointer">
+              Agregar Tienda
             </button>
             <div className="relative flex-grow md:flex-grow-0 md:w-64">
-            <input 
-                type="text" 
-                placeholder="Título, Autor, Año, ISSN" 
-                className="rounded-md px-3 py-2 pl-10 w-full border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-            <Search size={18} className="absolute left-3 top-3 text-gray-500" />
+              <input 
+                  type="text" 
+                  placeholder="Buscar tienda..." 
+                  className="rounded-md px-3 py-2 pl-10 w-full border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+              <Search size={18} className="absolute left-3 top-3 text-gray-500" />
             </div>
         </div>
       </div>
@@ -101,24 +136,25 @@ const ShopStore = () => {
           <thead>
             <tr className="bg-orange-500 text-white">
               <th className="py-2 px-4">Nombre de la tienda</th>
-              <th className="py-2 px-4">Ubicación</th>
-              {/* el estado es para el próximo sprint */}
+              <th className="py-2 px-4">Región</th>
+              <th className="py-2 px-4">Departamento</th>
+              <th className="py-2 px-4">Ciudad</th>
               {/* <th className="py-2 px-4">Estado</th> */}
               <th className="py-2 px-4 text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {books.map(book => ( 
-                <tr key={book.id} className="border-t">
-                  <td className="py-2 px-4">{book.title}</td>
-                  <td className="py-2 px-4">{book.author}</td>
- 
+            {tiendas.map(tienda => ( 
+                <tr key={tienda.id} className="border-t">
+                  <td className="py-2 px-4">{tienda.Nombre}</td>
+                  <td className="py-2 px-4">{tienda.Region}</td>
+                  <td className="py-2 px-4">{tienda.Departamento}</td>
+                  <td className="py-2 px-4">{tienda.Ciudad}</td>
                   <td className="py-2 px-4 text-center">
                     <span className="text-orange-500 cursor-pointer hover:underline"
-                    onClick={() => (book.idLibro)}>
+                    onClick={() => handleEditar(tienda.idTienda)}>
                         Editar</span>
-                    <Trash2 size={18} className="inline ml-3 text-red-500 cursor-pointer hover:text-red-700" 
-                    onClick={() => { setShowConfirm(true); setSelectedBook(book.idLibro);}} />
+                    <Trash2 size={18} className="inline ml-3 text-red-500 cursor-pointer hover:text-red-700" onClick={() => { setShowConfirm(true); setSelectedTienda(tienda.idTienda);}} />
                   </td>
                 </tr>
               ))}
@@ -129,4 +165,4 @@ const ShopStore = () => {
   );
 };
 
-export default ShopStore;
+export default withAuthADMIN(ShopStore);

@@ -1,0 +1,39 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tiendas",
+  "info": {
+    "singularName": "tienda",
+    "pluralName": "tiendas",
+    "displayName": "Tienda",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Nombre": {
+      "type": "string",
+      "required": true
+    },
+    "Departamento": {
+      "type": "string",
+      "required": true
+    },
+    "Ciudad": {
+      "type": "string",
+      "required": true
+    },
+    "Region": {
+      "type": "string",
+      "required": true
+    },
+    "Direction": {
+      "type": "string",
+      "required": true
+    },
+    "idTienda": {
+      "type": "uid",
+      "required": true
+    }
+  }
+}
