@@ -505,6 +505,7 @@ export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    direccion_envio: Schema.Attribute.String;
     estado: Schema.Attribute.String & Schema.Attribute.DefaultTo<'recibido'>;
     idPedido: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -514,6 +515,7 @@ export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     motivo: Schema.Attribute.String;
+    nombre_destinario: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     TotalPrecio: Schema.Attribute.Integer;
     TotalProductos: Schema.Attribute.Integer;

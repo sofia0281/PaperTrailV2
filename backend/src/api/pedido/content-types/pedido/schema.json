@@ -35,6 +35,12 @@
     },
     "idPedido": {
       "type": "string"
+    },
+    "direccion_envio": {
+      "type": "string"
+    },
+    "nombre_destinario": {
+      "type": "string"
     }
   }
 }

@@ -209,3 +209,32 @@ export const deleteTienda= async (idTienda) => {
     }
   };
   
+export const getTiendaByRegionDepartamentoCiudad = async (region: string, departamento:string,ciudad:string) => {
+  try {
+    const token = localStorage.getItem('authToken');
+    const filters = [
+      `filters[region][$eq]=${encodeURIComponent(region)}`,
+      `filters[departamento][$eq]=${encodeURIComponent(departamento)}`,
+      `filters[ciudad][$eq]=${encodeURIComponent(ciudad)}`
+    ].join('&');
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tiendas?${filters}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Error al obtener tienda");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error al obtener tienda :", error);
+    throw error;
+  }
+};

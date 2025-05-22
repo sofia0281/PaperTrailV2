@@ -81,7 +81,7 @@ const CreateTienda = () => {
             return `Error en el campo ${field || 'desconocido'}. Error al crear la tienda`;
             });
 
-            const fullMessage = errorMessages?.join('. ') || error.message || "Error al crear el libro";
+            const fullMessage = errorMessages?.join('. ') || error.message || "Error al crear la tienda";
             setErrorMessage(fullMessage);
             setSuccessMessage(null);
             setTimeout(() => setErrorMessage(null), 3000);

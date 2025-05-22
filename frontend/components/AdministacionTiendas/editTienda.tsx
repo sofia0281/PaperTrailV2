@@ -6,7 +6,8 @@ import { getTienda, putTiendaData} from "@/services/tiendasCRUD";
 import withAuthADMIN from '../Auth/withAuthADMIN';
 import {XCircle } from "lucide-react";
 import { motion } from "framer-motion";
-
+import colombiaData from "@/components/ui/colombia/data_colombia.json";
+import { AutocompleteColombia } from "@/components/ui/colombia/AutocompleteColombia";
 
 const EditTienda =  ({ tiendaID }: { tiendaID: string }) => {
 
@@ -27,7 +28,11 @@ const EditTienda =  ({ tiendaID }: { tiendaID: string }) => {
         idTienda: "",
     });
 
-
+    const [formErrors, setFormErrors] = useState({
+      Region: false,
+      Departamento: false,
+      Ciudad: false
+    });
 
     const ConfirmSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -111,11 +116,48 @@ const EditTienda =  ({ tiendaID }: { tiendaID: string }) => {
         };
     }, [tiendaID]);
 
-
+    const validateForm = (): boolean => {
+        const errors = {
+        Region: false,
+        Departamento: false,
+        Ciudad: false
+        };
+        
+        // Validar región
+        if (!formData.Region || !colombiaData.regiones.some(r => r.nombre === formData.Region)) {
+            errors.Region = true;
+        }
+        
+        // Validar departamento
+        if (formData.Region && (!formData.Departamento || 
+            !colombiaData.regiones.find(r => r.nombre === formData.Region)?.departamentos.some(d => d.nombre === formData.Departamento))) {
+            errors.Departamento = true;
+        }
+        
+        // Validar ciudad
+        if (formData.Departamento && (!formData.Ciudad || 
+            !colombiaData.regiones.find(r => r.nombre === formData.Region)
+            ?.departamentos.find(d => d.nombre === formData.Departamento)
+            ?.ciudades.includes(formData.Ciudad))) {
+            errors.Ciudad = true;
+            }
+        
+        setFormErrors(errors);
+        return !Object.values(errors).some(Boolean);
+    };
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setShowConfirm(false);
-    
+        if (!validateForm()) {
+          setErrorMessage("Por favor complete correctamente los datos de ubicación");
+          setTimeout(() => setErrorMessage(null), 3000);
+          return;
+        }
+        if (formData.Direction.length < 10) {
+          setErrorMessage("La dirección debe tener al menos 10 caracteres.");
+          setTimeout(() => setErrorMessage(null), 3000);
+          return;
+        }  
         try {
         
             const updatedTiendaData = {
@@ -211,34 +253,58 @@ const EditTienda =  ({ tiendaID }: { tiendaID: string }) => {
             className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Título" />
         </div>
         <div>
-            <label className="block text-sm font-medium">Region</label>
-            <input 
+           <label className="block text-sm font-medium">Región</label>
+          <AutocompleteColombia
+            value={formData.Region}
+            onChange={(value) => setFormData(prev => ({ 
+              ...prev, 
+              Region: value,
+              Departamento: "",
+              Ciudad: ""
+            }))}
+            placeholder="Seleccione una región"
             required
-            type="text" 
-            name="Region"
-            onChange={handleChange}
-            value={formData.Region} 
-            className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Título" />
+            type="region"
+          />
+          {formErrors.Region && (
+            <p className="text-red-500 text-xs mt-1">Seleccione una región válida</p>
+          )}
         </div>
+
         <div>
-            <label className="block text-sm font-medium">Departamento</label>
-            <input 
+          <label className="block text-sm font-medium">Departamento</label>
+          <AutocompleteColombia
+            value={formData.Departamento}
+            onChange={(value) => setFormData(prev => ({ 
+              ...prev, 
+              Departamento: value,
+              Ciudad: ""
+            }))}
+            placeholder={formData.Region ? "Seleccione un departamento" : "Primero seleccione una región"}
             required
-            type="text" 
-            name="Departamento"
-            onChange={handleChange}
-            value={formData.Departamento}  
-            className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Departamento" />
+            type="departamento"
+            dependencia={formData.Region}
+            disabled={!formData.Region}
+          />
+          {formErrors.Departamento && (
+            <p className="text-red-500 text-xs mt-1">Seleccione un departamento válido</p>
+          )}
         </div>
+
         <div>
-            <label className="block text-sm font-medium">Ciudad</label>
-            <input 
+          <label className="block text-sm font-medium">Ciudad</label>
+          <AutocompleteColombia
+            value={formData.Ciudad}
+            onChange={(value) => setFormData(prev => ({ ...prev, Ciudad: value }))}
+            placeholder={formData.Departamento ? "Seleccione una ciudad" : "Primero seleccione un departamento"}
             required
-            type="text" 
-            name="Ciudad"
-            onChange={handleChange}
-            value={formData.Ciudad}  
-            className="border border-gray-200 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Ciudad" />
+            type="ciudad"
+            dependencia={formData.Departamento}
+            disabled={!formData.Departamento}
+          />
+          {formErrors.Ciudad && (
+            <p className="text-red-500 text-xs mt-1">Seleccione una ciudad válida</p>
+          )}
         </div>
         <div>
             <label className="block text-sm font-medium">Dirección</label>
