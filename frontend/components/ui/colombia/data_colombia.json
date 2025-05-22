@@ -1,0 +1,47 @@
+{
+    "regiones": [
+    {
+        "nombre": "Región Andina",
+        "departamentos": [
+        {
+            "nombre": "Antioquia",
+            "ciudades": ["Medellín", "Bello", "Itagüí", "Envigado", "Rionegro"]
+        },
+        {
+            "nombre": "Boyacá",
+            "ciudades": ["Tunja", "Duitama", "Sogamoso", "Chiquinquirá"]
+        },
+        {
+            "nombre": "Cundinamarca",
+            "ciudades": ["Bogotá", "Soacha", "Zipaquirá", "Facatativá"]
+        }
+        ]
+    },
+    {
+        "nombre": "Región Caribe",
+        "departamentos": [
+        {
+            "nombre": "Atlántico",
+            "ciudades": ["Barranquilla", "Soledad", "Malambo", "Sabanalarga"]
+        },
+        {
+            "nombre": "Bolívar",
+            "ciudades": ["Cartagena", "Magangué", "Turbaco", "Arjona"]
+        }
+        ]
+    },
+    {
+        "nombre": "Región Pacífico",
+        "departamentos": [
+        {
+            "nombre": "Valle del Cauca",
+            "ciudades": ["Cali", "Buenaventura", "Palmira", "Tuluá"]
+        },
+        {
+            "nombre": "Chocó",
+            "ciudades": ["Quibdó", "Istmina", "Tadó", "Condoto"]
+        }
+        ]
+    }
+    ]
+}

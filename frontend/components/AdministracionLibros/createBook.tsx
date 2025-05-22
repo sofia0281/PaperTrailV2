@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import {XCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createBook, createBookWithImage } from "@/services/bookCRUD";
-import {fetchAllUsers} from "@/services/userCRUD"
-
+import {fetchAllUsers} from "@/services/userCRUD";
+import withAuthADMIN from '../Auth/withAuthADMIN';
 import { motion } from "framer-motion";
 
 import { AutocompleteLanguage } from "@/components/ui/createBook/Autocompleteidioma";
@@ -14,7 +14,7 @@ import ImageUpload from "../ui/ImageUpload";
 import emailjs from "@emailjs/browser";
 
 
-const CreateBook = () => {
+const CreateBook= () => {
   
   
 
@@ -180,10 +180,18 @@ const [imagePreview, setImagePreview] = useState<string | null>(null); // Vista 
       setTimeout(() => setSuccessMessage(null), 3000);
   
     } catch (error: any) {
-      console.error("Error completo:", error);
-      setErrorMessage("Error al crear el libro");
-      setTimeout(() => setErrorMessage(null), 5000);
+      const errorMessages = error.errors?.map(errorItem => {
+        const field = errorItem.path?.[0];
+        if (field === "ISBN_ISSN") return `Este ISSN ya se encuentra registrado`;
+        return `Error en el campo ${field || 'desconocido'}. Error al crear libro`;
+      });
+  
+      const fullMessage = errorMessages?.join('. ') || error.message || "Error al crear el libro";
+      setErrorMessage(fullMessage);
+      setSuccessMessage(null);
+      setTimeout(() => setErrorMessage(null), 3000);
     }
+    
   };
   
   
@@ -282,8 +290,7 @@ const [imagePreview, setImagePreview] = useState<string | null>(null); // Vista 
       ...prevData,
       [name]: formattedValue,
     }));
-  }
-
+  };
 
 
   return (
@@ -547,4 +554,4 @@ const [imagePreview, setImagePreview] = useState<string | null>(null); // Vista 
   );
 };
 
-export default CreateBook;
+export default withAuthADMIN(CreateBook);

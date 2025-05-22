@@ -506,7 +506,7 @@ export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     estado: Schema.Attribute.String & Schema.Attribute.DefaultTo<'recibido'>;
-    idPedido: Schema.Attribute.UID;
+    idPedido: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -551,6 +551,40 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
+  };
+}
+
+export interface ApiTiendaTienda extends Struct.CollectionTypeSchema {
+  collectionName: 'tiendas';
+  info: {
+    description: '';
+    displayName: 'Tienda';
+    pluralName: 'tiendas';
+    singularName: 'tienda';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Ciudad: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Departamento: Schema.Attribute.String & Schema.Attribute.Required;
+    Direction: Schema.Attribute.String & Schema.Attribute.Required;
+    idTienda: Schema.Attribute.UID & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tienda.tienda'
+    > &
+      Schema.Attribute.Private;
+    Nombre: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    Region: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1156,6 +1190,7 @@ declare module '@strapi/strapi' {
       'api::item-pedido.item-pedido': ApiItemPedidoItemPedido;
       'api::pedido.pedido': ApiPedidoPedido;
       'api::product.product': ApiProductProduct;
+      'api::tienda.tienda': ApiTiendaTienda;
       'api::usuario.usuario': ApiUsuarioUsuario;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
