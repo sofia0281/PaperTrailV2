@@ -27,14 +27,14 @@ export default function OrderAccordion({
   const [status, setStatus] = useState(
     statusOptions.includes(initialStatus) ? initialStatus : statusOptions[0]
   );
-  
+  const [savedStatus, setSavedStatus] = useState(status); // Nuevo estado para rastrear el estado guardado
   const [items, setItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(false);
   const [error, setError] = useState(null);
   const [contentHeight, setContentHeight] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [isSaving, setIsSaving] = useState(false); // Estado para controlar el guardado
 
-  // Actualizar la altura del contenido cuando cambian los items o el estado
   useEffect(() => {
     if (contentRef.current) {
       setContentHeight(open ? contentRef.current.scrollHeight : 0);
@@ -43,11 +43,15 @@ export default function OrderAccordion({
 
   const handleSave = async () => {
     try {
+      setIsSaving(true);
       await updatePedidoStatus(orderId, status);
       console.log(`Estado actualizado para pedido ${orderId}: ${status}`);
+      setSavedStatus(status); // Actualizamos el estado guardado
     } catch (err) {
       setError(err.message || 'Error al actualizar el estado');
       console.error("Error updating status:", err);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -71,10 +75,13 @@ export default function OrderAccordion({
     setOpen(!open);
   };
 
+  // Verificamos si hay cambios no guardados
+  const hasUnsavedChanges = status !== savedStatus;
+
   return (
     <div
       className={`border rounded-lg shadow-sm mb-4 overflow-hidden transition-all duration-300 ${
-        status === 'Entregado' ? 'bg-green-500' : 'bg-orange-400'
+        savedStatus === 'Entregado' ? 'bg-green-500' : 'bg-orange-400'
       }`}
     >
       <button
@@ -122,14 +129,14 @@ export default function OrderAccordion({
             </>
           )}
 
-          <div className="mt-4">
+<div className="mt-4">
             <label className="block mb-1 font-medium">Cambiar Estado del Pedido</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              disabled={status === 'Entregado'}
+              disabled={savedStatus === 'Entregado'} // Solo deshabilitar si el estado guardado es Entregado
               className={`border px-3 py-1 rounded w-full sm:w-1/2 cursor-pointer ${
-                status === 'Entregado' ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : ''
+                savedStatus === 'Entregado' ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : ''
               }`}
             >
               {statusOptions.map((opt, i) => (
@@ -140,15 +147,21 @@ export default function OrderAccordion({
 
           <button
             onClick={handleSave}
-            disabled={status === 'Entregado'}
+            disabled={savedStatus === 'Entregado' || !hasUnsavedChanges || isSaving}
             className={`mt-3 px-4 py-2 rounded cursor-pointer text-white ${
-              status === 'Entregado'
+              savedStatus === 'Entregado' || !hasUnsavedChanges
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-sky-600 hover:bg-sky-700'
             }`}
           >
-            Guardar Cambios
+            {isSaving ? 'Guardando...' : 'Guardar Cambios'}
           </button>
+
+          {hasUnsavedChanges && savedStatus !== 'Entregado' && (
+            <div className="text-sm text-yellow-600 mt-2">
+              Tienes cambios sin guardar
+            </div>
+          )}
         </div>
       </div>
     </div>
