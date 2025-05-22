@@ -201,7 +201,12 @@ const Navbar = () => {
                             >
                                 Devoluciones
                             </button>
-
+                            <button
+                                className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
+                                onClick={() => router.push("/routes/adminshop")}
+                            >
+                                Administrar Tiendas
+                            </button>
                             <button
                                 className="w-full px-4 py-2 text-left hover:bg-red-100 text-red-500 flex items-center justify-between cursor-pointer"
                                 onClick={() => {
