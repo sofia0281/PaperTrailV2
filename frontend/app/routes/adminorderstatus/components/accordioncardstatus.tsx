@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react';
 import { updatePedidoStatus, getItemsByPedido } from '@/services/pedidosCRUD';
-
+import { useRouter } from "next/navigation";
 const statusOptions = ['Recibido', 'Confirmado', 'Procesando', 'Enviado', 'Entregado'];
 
 interface OrderAccordionProps {
@@ -34,7 +34,11 @@ export default function OrderAccordion({
   const [contentHeight, setContentHeight] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
   const [isSaving, setIsSaving] = useState(false); // Estado para controlar el guardado
-
+  const router =  useRouter();
+  
+  useEffect(() => {
+    router.refresh(); // Esto forzará la recarga de los componentes del layout/navbar
+  }, []);
   useEffect(() => {
     if (contentRef.current) {
       setContentHeight(open ? contentRef.current.scrollHeight : 0);

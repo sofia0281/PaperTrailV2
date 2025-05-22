@@ -6,10 +6,6 @@ import { putUsuarioData } from "@/services/usuarioCRUD";
 import { useRouter } from "next/navigation";
 import { XCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { prefetchDNS } from "react-dom";
-import { PrefetchRSCPathnameNormalizer } from "next/dist/server/normalizers/request/prefetch-rsc";
-import { PassThrough } from "stream";
-import MenuLateralEditProfile from "@/components/ui/menulateraleditprofile";
 import EditPassword from "@/components/Clientes_Admins/editpassword";
 import { AutocompleteLocation } from "@/components/ui/register/AutocompleteLocation";
 
@@ -35,8 +31,8 @@ const EditProfile = () => {
 
   const router = useRouter();
   const role = localStorage.getItem("role");
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const[SeccionMenu, setSeccionMenu] = useState("Principal")
 
