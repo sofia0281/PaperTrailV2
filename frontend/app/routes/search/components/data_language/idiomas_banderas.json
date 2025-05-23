@@ -1,0 +1,638 @@
+[
+    {
+      "idioma": "Español",
+      "bandera": "🇪🇸"
+    },
+    {
+      "idioma": "Inglés",
+      "bandera": "🇬🇧"
+    },
+    {
+      "idioma": "Francés",
+      "bandera": "🇫🇷"
+    },
+    {
+      "idioma": "Alemán",
+      "bandera": "🇩🇪"
+    },
+    {
+      "idioma": "Italiano",
+      "bandera": "🇮🇹"
+    },
+    {
+      "idioma": "Portugués",
+      "bandera": "🇵🇹"
+    },
+    {
+      "idioma": "Ruso",
+      "bandera": "🇷🇺"
+    },
+    {
+      "idioma": "Chino Mandarín",
+      "bandera": "🇨🇳"
+    },
+    {
+      "idioma": "Japonés",
+      "bandera": "🇯🇵"
+    },
+    {
+      "idioma": "Coreano",
+      "bandera": "🇰🇷"
+    },
+    {
+      "idioma": "Árabe",
+      "bandera": "🇸🇦"
+    },
+    {
+      "idioma": "Hindi",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Bengalí",
+      "bandera": "🇧🇩"
+    },
+    {
+      "idioma": "Turco",
+      "bandera": "🇹🇷"
+    },
+    {
+      "idioma": "Holandés",
+      "bandera": "🇳🇱"
+    },
+    {
+      "idioma": "Sueco",
+      "bandera": "🇸🇪"
+    },
+    {
+      "idioma": "Noruego",
+      "bandera": "🇳🇴"
+    },
+    {
+      "idioma": "Danés",
+      "bandera": "🇩🇰"
+    },
+    {
+      "idioma": "Finlandés",
+      "bandera": "🇫🇮"
+    },
+    {
+      "idioma": "Polaco",
+      "bandera": "🇵🇱"
+    },
+    {
+      "idioma": "Ucraniano",
+      "bandera": "🇺🇦"
+    },
+    {
+      "idioma": "Checo",
+      "bandera": "🇨🇿"
+    },
+    {
+      "idioma": "Griego",
+      "bandera": "🇬🇷"
+    },
+    {
+      "idioma": "Hebreo",
+      "bandera": "🇮🇱"
+    },
+    {
+      "idioma": "Tailandés",
+      "bandera": "🇹🇭"
+    },
+    {
+      "idioma": "Vietnamita",
+      "bandera": "🇻🇳"
+    },
+    {
+      "idioma": "Indonesio",
+      "bandera": "🇮🇩"
+    },
+    {
+      "idioma": "Malayo",
+      "bandera": "🇲🇾"
+    },
+    {
+      "idioma": "Filipino",
+      "bandera": "🇵🇭"
+    },
+    {
+      "idioma": "Persa",
+      "bandera": "🇮🇷"
+    },
+    {
+      "idioma": "Urdu",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Rumano",
+      "bandera": "🇷🇴"
+    },
+    {
+      "idioma": "Húngaro",
+      "bandera": "🇭🇺"
+    },
+    {
+      "idioma": "Búlgaro",
+      "bandera": "🇧🇬"
+    },
+    {
+      "idioma": "Serbio",
+      "bandera": "🇷🇸"
+    },
+    {
+      "idioma": "Croata",
+      "bandera": "🇭🇷"
+    },
+    {
+      "idioma": "Eslovaco",
+      "bandera": "🇸🇰"
+    },
+    {
+      "idioma": "Esloveno",
+      "bandera": "🇸🇮"
+    },
+    {
+      "idioma": "Lituano",
+      "bandera": "🇱🇹"
+    },
+    {
+      "idioma": "Letón",
+      "bandera": "🇱🇻"
+    },
+    {
+      "idioma": "Estonio",
+      "bandera": "🇪🇪"
+    },
+    {
+      "idioma": "Georgiano",
+      "bandera": "🇬🇪"
+    },
+    {
+      "idioma": "Armenio",
+      "bandera": "🇦🇲"
+    },
+    {
+      "idioma": "Azerí",
+      "bandera": "🇦🇿"
+    },
+    {
+      "idioma": "Kazajo",
+      "bandera": "🇰🇿"
+    },
+    {
+      "idioma": "Mongol",
+      "bandera": "🇲🇳"
+    },
+    {
+      "idioma": "Swahili",
+      "bandera": "🇰🇪"
+    },
+    {
+      "idioma": "Afrikáans",
+      "bandera": "🇿🇦"
+    },
+    {
+      "idioma": "Zulú",
+      "bandera": "🇿🇦"
+    },
+    {
+      "idioma": "Xhosa",
+      "bandera": "🇿🇦"
+    },
+    {
+      "idioma": "Amárico",
+      "bandera": "🇪🇹"
+    },
+    {
+      "idioma": "Hausa",
+      "bandera": "🇳🇬"
+    },
+    {
+      "idioma": "Yoruba",
+      "bandera": "🇳🇬"
+    },
+    {
+      "idioma": "Igbo",
+      "bandera": "🇳🇬"
+    },
+    {
+      "idioma": "Malayalam",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Tamil",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Telugu",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Canarés",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Tailandés",
+      "bandera": "🇹🇭"
+    },
+    {
+      "idioma": "Lao",
+      "bandera": "🇱🇦"
+    },
+    {
+      "idioma": "Birmano",
+      "bandera": "🇲🇲"
+    },
+    {
+      "idioma": "Javanés",
+      "bandera": "🇮🇩"
+    },
+    {
+      "idioma": "Sundanés",
+      "bandera": "🇮🇩"
+    },
+    {
+      "idioma": "Cebuano",
+      "bandera": "🇵🇭"
+    },
+    {
+      "idioma": "Hmong",
+      "bandera": "🇨🇳"
+    },
+    {
+      "idioma": "Tibetano",
+      "bandera": "🇨🇳"
+    },
+    {
+      "idioma": "Uigur",
+      "bandera": "🇨🇳"
+    },
+    {
+      "idioma": "Kurdo",
+      "bandera": "🇮🇶"
+    },
+    {
+      "idioma": "Pashto",
+      "bandera": "🇦🇫"
+    },
+    {
+      "idioma": "Sindhi",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Nepalí",
+      "bandera": "🇳🇵"
+    },
+    {
+      "idioma": "Sinhala",
+      "bandera": "🇱🇰"
+    },
+    {
+      "idioma": "Dhivehi",
+      "bandera": "🇲🇻"
+    },
+    {
+      "idioma": "Fiyiano",
+      "bandera": "🇫🇯"
+    },
+    {
+      "idioma": "Tonganés",
+      "bandera": "🇹🇴"
+    },
+    {
+      "idioma": "Maorí",
+      "bandera": "🇳🇿"
+    },
+    {
+      "idioma": "Hawaiano",
+      "bandera": "🇺🇸"
+    },
+    {
+      "idioma": "Quechua",
+      "bandera": "🇵🇪"
+    },
+    {
+      "idioma": "Aimara",
+      "bandera": "🇧🇴"
+    },
+    {
+      "idioma": "Guaraní",
+      "bandera": "🇵🇾"
+    },
+    {
+      "idioma": "Mapudungun",
+      "bandera": "🇨🇱"
+    },
+    {
+      "idioma": "Criollo Haitiano",
+      "bandera": "🇭🇹"
+    },
+    {
+      "idioma": "Papiamento",
+      "bandera": "🇨🇼"
+    },
+    {
+      "idioma": "Bislama",
+      "bandera": "🇻🇺"
+    },
+    {
+      "idioma": "Tok Pisin",
+      "bandera": "🇵🇬"
+    },
+    {
+      "idioma": "Samoano",
+      "bandera": "🇼🇸"
+    },
+    {
+      "idioma": "Tahitiano",
+      "bandera": "🇵🇫"
+    },
+    {
+      "idioma": "Malgache",
+      "bandera": "🇲🇬"
+    },
+    {
+      "idioma": "Sesotho",
+      "bandera": "🇱🇸"
+    },
+    {
+      "idioma": "Setswana",
+      "bandera": "🇧🇼"
+    },
+    {
+      "idioma": "Shona",
+      "bandera": "🇿🇼"
+    },
+    {
+      "idioma": "Oromo",
+      "bandera": "🇪🇹"
+    },
+    {
+      "idioma": "Somali",
+      "bandera": "🇸🇴"
+    },
+    {
+      "idioma": "Tigriña",
+      "bandera": "🇪🇷"
+    },
+    {
+      "idioma": "Bambara",
+      "bandera": "🇲🇱"
+    },
+    {
+      "idioma": "Wolof",
+      "bandera": "🇸🇳"
+    },
+    {
+      "idioma": "Fulah",
+      "bandera": "🇬🇳"
+    },
+    {
+      "idioma": "Mandinga",
+      "bandera": "🇲🇱"
+    },
+    {
+      "idioma": "Ibibio",
+      "bandera": "🇳🇬"
+    },
+    {
+      "idioma": "Kinyarwanda",
+      "bandera": "🇷🇼"
+    },
+    {
+      "idioma": "Kirundi",
+      "bandera": "🇧🇮"
+    },
+    {
+      "idioma": "Luganda",
+      "bandera": "🇺🇬"
+    },
+    {
+      "idioma": "Chichewa",
+      "bandera": "🇲🇼"
+    },
+    {
+      "idioma": "Maldivo",
+      "bandera": "🇲🇻"
+    },
+    {
+      "idioma": "Dzongkha",
+      "bandera": "🇧🇹"
+    },
+    {
+      "idioma": "Bhutanés",
+      "bandera": "🇧🇹"
+    },
+    {
+      "idioma": "Bodo",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Santali",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Gondi",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Khasi",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Mizo",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Meitei",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Bhojpuri",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Awadhi",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Chhattisgarhi",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Garhwali",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Kumaoni",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Tulu",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Konkani",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Dogri",
+      "bandera": "🇮🇳"
+    },
+    {
+      "idioma": "Sindhi",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Balochi",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Saraiki",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Hindko",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Brahui",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Shina",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Wakhi",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Burushaski",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Kalasha",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Khowar",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Torwali",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Palula",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Dameli",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Gawar-Bati",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Nangalami",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Sawi",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Ushojo",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Badeshi",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Yidgha",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Kamviri",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Manki",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Tirahi",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Wotapuri",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Gowro",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Kalami",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Kalkoti",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Chilisso",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Bateri",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Gowri",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Kundal Shahi",
+      "bandera": "🇵🇰"
+    },
+    {
+      "idioma": "Pashayi",
+      "bandera": "🇦🇫"
+    },
+    {
+      "idioma": "Nuristaní",
+      "bandera": "🇦🇫"
+    },
+    {
+      "idioma": "Pamiri",
+      "bandera": "🇦🇫"
+    },
+    {
+      "idioma": "Hazaragi",
+      "bandera": "🇦🇫"
+    },
+    {
+      "idioma": "Aimaq",
+      "bandera": "🇦🇫"
+    },
+    {
+      "idioma": "Brahui",
+      "bandera": "🇦🇫"
+    },
+    {
+      "idioma": "Balochi",
+      "bandera": "🇦🇫"
+    },
+    {
+      "idioma": "Turkmen",
+      "bandera": "🇦🇫"
+    },
+    {
+      "idioma": "Uzbeko",
+      "bandera": "🇦🇫"
+    }
+  ]

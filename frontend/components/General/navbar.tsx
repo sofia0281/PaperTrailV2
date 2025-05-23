@@ -6,6 +6,9 @@ import Image from "next/image";
 import CartSidebar from "../compras/ShoppingCart/CartSideBar";
 import { useAuth } from "@/context/AuthContext";
 
+import SearchBar from "./SearchBar"; // ajusta el path si es necesario
+
+
 type UserType = {
     nombre: string;
 } | null;
@@ -82,16 +85,8 @@ const Navbar = () => {
         </div>
 
         {/*------------------------Barra de búsqueda-------------------------- */}
-        <div className="relative flex-grow mx-4 max-w-lg">
-                <input
-                    type="text"
-                    placeholder="Título, Autor, Año, ISSN"
-                    className="w-full p-2 pl-4 pr-10 rounded-lg bg-white text-black focus:outline-none shadow-md"
-                />
-                <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 transition-transform duration-300 transform hover:scale-110 cursor-pointer">
-                    <Search size={20} />
-                </button>
-        </div> 
+        <SearchBar />
+
 
     {/*--------------------------- Carrito de compras----------------------- */}
     <CartSidebar isOpen={cartOpen} toggleCart={toggleCart} />

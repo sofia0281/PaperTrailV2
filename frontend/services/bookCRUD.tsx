@@ -357,3 +357,129 @@ export const deleteBook = async (idLibro) => {
   
   
   
+
+  //para la barra de busqueda
+
+  // services/bookCRUD.ts
+
+  export const searchBooks = async (query: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books?filters[title][$containsi]=${query}&pagination[limit]=4&populate=cover`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_STRAPI_ADMIN_TOKEN}`,
+          }
+        }
+      );
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || 'Error al buscar libros');
+      }
+  
+      const responseData = await response.json();
+      const booksArray = responseData.data || [];
+  
+      return booksArray.map((book: any) => ({
+        id: book.id,
+        idLibro: book.idLibro,
+        title: book.title,
+        author: book.author,
+        price: book.price,
+        cover: {
+          url: book.cover?.url || '/placeholder-book.jpg'
+        }
+      }));
+    } catch (error) {
+      console.error('Error en searchBooks:', error);
+      return [];
+    }
+  };
+  
+
+
+  const extractYear = (fecha: string): string => {
+    if (!fecha) return "";
+    const date = new Date(fecha);
+    return date.getFullYear().toString();
+  };
+  
+
+
+interface BookFilters {
+  q?: string;
+  condition?: string;
+  maxPrice?: number;
+  author?: string;
+  genero?: string;
+  idioma?: string;
+  year?: string; // Cambiamos de fecha_publicacion a year
+}
+
+export const searchBooksWithFilters = async (filters: BookFilters) => {
+
+  console.log("Filtros recibidos:", filters);
+  try {
+    const params = new URLSearchParams();
+
+    if (filters.q) params.append("filters[title][$containsi]", filters.q);
+    if (filters.condition && filters.condition !== "Todos") params.append("filters[condition][$eq]", filters.condition);
+    if (filters.maxPrice) params.append("filters[price][$lte]", filters.maxPrice.toString());
+    if (filters.author) params.append("filters[author][$containsi]", filters.author);
+    if (filters.genero) params.append("filters[genero][$containsi]", filters.genero);
+    if (filters.idioma) params.append("filters[idioma][$containsi]", filters.idioma);
+    console.log("Año recibido en filtros:", filters.year);
+
+    if (filters.year) {
+      const startDate = `${filters.year}-01-01`;
+      const endDate = `${filters.year}-12-31`;
+      params.append("filters[fecha_publicacion][$gte]", startDate);
+      params.append("filters[fecha_publicacion][$lte]", endDate);
+    }
+    
+
+    params.append("populate", "cover");
+    console.log("URL completa:", `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books?${params.toString()}`);
+
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books?${params.toString()}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_ADMIN_TOKEN}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || "Error al buscar libros con filtros");
+    }
+
+    const responseData = await response.json();
+    const booksArray = responseData.data || [];
+
+    return booksArray.map((book: any) => ({
+      id: book.id,
+      idLibro: book.idLibro,
+      title: book.title,
+      author: book.author,
+      price: book.price,
+      editorial: book.editorial,
+      condition: book.condition,
+      idioma: book.idioma,
+      genero: book.genero,
+      fecha_publicacion: extractYear(book.fecha_publicacion),
+      cover: {
+        url: book.cover?.url || "/placeholder-book.jpg",
+      },
+    }));
+  } catch (error) {
+    console.error("Error en searchBooksWithFilters:", error);
+    return [];
+  }
+};
