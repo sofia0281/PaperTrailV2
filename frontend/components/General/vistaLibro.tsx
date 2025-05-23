@@ -31,6 +31,10 @@ const Books = ({ idLibro }: { idLibro: string }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { addToCart, authRole , updateQuantity} = useAuth();
 
+  
+  const handleBack = () => {
+    window.history.back();
+  };
 
   const handleupdateQuantity = () => {
     if (count < 20) {
@@ -261,6 +265,15 @@ const Books = ({ idLibro }: { idLibro: string }) => {
           </div>
         </div>
       </div>
+    </div>
+    <div className="justify-start flex -4">
+      <button
+        onClick={handleBack}
+        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition m-4 cursor-pointer"
+        type="button"
+      >
+        Volver
+    </button>
     </div>
     </>
   );

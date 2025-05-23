@@ -241,7 +241,7 @@ const EditTienda =  ({ tiendaID }: { tiendaID: string }) => {
       )}
 
       {/* Formulario */}
-      <form onSubmit={ConfirmSubmit} className="grid grid-cols-2 md:grid-cols-2 gap-6 p-6 relative z-10 -mt-28">
+      <form onSubmit={ConfirmSubmit} className="grid md:grid-cols-2 gap-6 mt-2">
         <div>
             <label className="block text-sm font-medium">Nombre de la tienda</label>
             <input 

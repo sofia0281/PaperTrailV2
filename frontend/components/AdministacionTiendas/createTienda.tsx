@@ -199,10 +199,11 @@ const CreateTienda = () => {
         </div>
         </>
       )}
-
       {/* Formulario */}
-      <form onSubmit={ConfirmSubmit} className="grid grid-cols-2 md:grid-cols-2 gap-6 p-6 relative z-10 -mt-28">
-
+      <form
+        onSubmit={ConfirmSubmit}
+        className="grid md:grid-cols-2 gap-6 mt-2"
+      >
         {/* Sección de imagen - ahora dentro del formulario */}
         <div className="col-span-2 flex justify-center mb-6">
         </div>
@@ -308,7 +309,7 @@ const CreateTienda = () => {
           </button>
         </div>
       </form>
-    </div>
+      </div>
   );
 };
 
