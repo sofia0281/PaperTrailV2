@@ -481,7 +481,7 @@ export const searchBooksWithFilters = async (filters: BookFilters) => {
       condition: book.condition,
       idioma: book.idioma,
       genero: book.genero,
-      fecha_publicacion: extractYear(book.fecha_publicacion),
+      year: extractYear(book.fecha_publicacion),
       cover: {
         url: book.cover?.url || "/placeholder-book.jpg",
       },

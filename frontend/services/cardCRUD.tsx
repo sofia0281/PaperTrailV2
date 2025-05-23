@@ -17,16 +17,16 @@ export const createCard = async (cardData) => {
         }),
       });
   
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error al crear tarjeta:', errorData);
-        throw {
-          status: errorData.error.status,
-          message: errorData.error.message,
-          errors: errorData.error.details.errors,
-          errorData,
-        };
-      }
+      //if (!response.ok) {
+      //  const errorData = await response.json();
+      //  console.error('Error al crear tarjeta:', errorData);
+      // throw {
+      //    status: errorData.error.status,
+      //   message: errorData.error.message,
+      //    errors: errorData.error.details.errors,
+      //    errorData,
+      //  };
+      //}
   
       const data = await response.json();
       console.log('Tarjeta creada:', data);
