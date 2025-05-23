@@ -1,16 +1,25 @@
 "use client";
 import { useState, useEffect } from "react";
 import withAuth from '@/components/Auth/withAuth';
+import CashCardPago from "@/components/ui/cashcardPago";
 import { fetchUserData, putUserData } from "@/services/userCRUD";
 import { useRouter } from "next/navigation";
 import { XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import colombiaData from "@/components/ui/colombia/data_colombia.json";
-import { AutocompleteColombia } from "@/components/ui/colombia/AutocompleteColombia";
+import { useAuth } from '@/context/AuthContext';
 import { getTiendaByRegionDepartamentoCiudad } from "@/services/tiendasCRUD";
-
+import { getCardsByUser} from '@/services/cardCRUD';
+import { createPedido, createItemPedido } from "@/services/pedidosCRUD";
+import { getPedidosByUser } from "@/services/pedidosCRUD";
+import { getBookByIdLibro , putBookData } from "@/services/bookCRUD";
+import { updateCard} from "@/services/cardCRUD";
 const ProcesoPago = () => {
   const router = useRouter();
+  const { cart, authUser, clearCart } = useAuth();
+  // Calcular el total del carrito
+  const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+
   const [userId, setUserId] = useState<number | null>(null);
   // variables para el manejo del proceoso de pago
   const [currentStep, setCurrentStep] = useState(1);
@@ -150,6 +159,11 @@ const ProcesoPago = () => {
     if (name === "direccion") {
       formattedValue = value.replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s.,#-]/g, "").replace(/^\s+/, "");
     }
+    if (name === "Region" || name === "Departamento" || name === "Ciudad") {
+      setDeliveryMethod(''); // Quita la selección del método de entrega
+      setTiendas([]); // Limpia la lista de tiendas
+      setTiendaSeleccionada(null); // Quita la tienda seleccionada
+    }
 
     // Limpiar errores cuando se cambia un campo
     setFormEnvioErrors(prev => ({
@@ -259,20 +273,114 @@ const ProcesoPago = () => {
       setTiendaSeleccionada(null);
     }
   };
-
+// --------------------STEP 3-----------------------------
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [cards, setCards] = useState([]);
+  const fetchCards = async () => {
+    if (!authUser?.id) return;
+    try {
+      const data = await getCardsByUser(authUser.id);
+      console.log("Datos de las tarjetas:", data);
+      
+      setCards(data);
+    } catch (error) {
+      console.error("No se pudieron cargar las tarjetas");
+    }
+  };
+  useEffect(() => {
+    fetchCards();
+  }, [authUser]);
 
   // -------------------------------------Función para manejar el pago---------------------
-  const handlePayment = () => {
-    setShowSuccess(true);
-    setTimeout(() => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const handlePayment = async () => {
+    if (!selectedCardId) return;
+    console.log("Tarjeta seleccionada para pago:", selectedCardId);
 
-      router.push('/router/historialcompras');
-      setShowSuccess(false);
-      // Aquí puedes agregar la lógica para guardar el pago en la base de datos
-    }, 2000);
+    try {
+          // Obtener número de pedido
+      console.log("ID del usuario que va a comprar:", authUser.id); 
+      const response = await getPedidosByUser(authUser.id);
+      const numCompra = response.data.length + 1;
+      console.log("Número de compra:", numCompra);
+      const montoNumerico = parseInt(selectedCard.Monto.replace(/\./g, ''), 10);
+      const nuevoMonto = montoNumerico - total;
+      console.log("Nuevo monto después de la compra:", nuevoMonto);
+      const cardPayload = {
+              Numero: selectedCard.number,
+              Titular: selectedCard.name,
+              FechaVencimiento: selectedCard.fechaVencimiento,
+              Ultimos4Digitos: selectedCard.cvc,
+              Banco: selectedCard.bancoDetectado,
+              Tipo: selectedCard.tipo,
+              Monto: nuevoMonto,
+      };
+      
+      await updateCard(selectedCardId, cardPayload); // Usa el ID real
+
+      // Crear el pedido principal
+      const pedidoResponse = await createPedido({
+        usuario: authUser.id,
+        TotalPrecio: cart.reduce((sum, item) => sum + item.totalPrice, 0),
+        TotalProductos: cart.reduce((sum, item) => sum + item.quantity, 0),
+        idPedido: numCompra.toString(),
+        direccion_envio: formDataEnvio.direccion || "Recoger en tienda",
+        nombre_destinario: formData.nombre_destinatario,
+      });
+  
+      // Actualizar inventario y crear ítems
+      await Promise.all(
+        cart.map(async (item) => {
+          const bookData = await getBookByIdLibro(item.idLibro);
+          const newCantidad = bookData.cantidad - item.quantity;
+  
+          const updatedBookData = {
+            ISBN_ISSN: bookData.ISBN_ISSN,
+            fecha_publicacion: bookData.fecha_publicacion,
+            title: bookData.title,
+            condition: bookData.condition,
+            author: bookData.author,
+            price: bookData.price,
+            editorial: bookData.editorial,
+            numero_paginas: bookData.numero_paginas,
+            genero: bookData.genero,
+            idioma: bookData.idioma,
+            cantidad: newCantidad,
+            idLibro: bookData.idLibro,
+          };
+
+          await putBookData(updatedBookData, item.idLibro);
+  
+          await createItemPedido({
+            PrecioItem: item.unitPrice,
+            Cantidad: item.quantity,
+            IdItem: item.idLibro,
+            IdPedido: pedidoResponse.data.id,
+            Title: item.title,
+            totalPrice: item.totalPrice,
+            idstatus: numCompra.toString(),
+          });
+        })
+      );
+      setShowSuccess(true);
+      setTimeout(() => {
+        router.push('/routes/purchasehistory')
+        clearCart();
+        setShowSuccess(false);
+      }, 2000);
+     }catch (error) {
+      if (error.message === "stock-insuficiente") {
+        // Ya se mostró mensaje
+      } else {
+        console.error("Error al crear pedido:", error);
+        setErrorMessage("Error al realizar el pedido");
+        setTimeout(() => setErrorMessage(null), 3000);
+      }
+    } 
+
   };
 
-  // Función para manejar LOS PASOS DEL FORMULARIO
+  // --------------------------Función para manejar LOS PASOS DEL FORMULARIO
   // Función para ir a un paso específico
   const goToStep = (step) => {
     // Permitir ir a pasos completados o al siguiente lógico
@@ -297,10 +405,31 @@ const ProcesoPago = () => {
       setCompletedSteps([...completedSteps, nextStepNumber]);
     }
   };
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-
+  const [selectedCard, setSelectedCard] = useState<string[]>([]);
   return (
     <div className="flex justify-center gap-6 p-6 bg-gray-100 min-h-screen">
+          {(successMessage || errorMessage) && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className={`fixed top-17 left-1/2 transform -translate-x-1/2 w-3/4 md:w-1/3 h-auto flex items-center z-20 justify-between px-8 py-5 rounded-lg shadow-lg text-white text-sm ${
+            successMessage ? "bg-orange-500" : "bg-black"
+          }`}
+        >
+          <span>{successMessage || errorMessage}</span>
+          <XCircle
+            size={22}
+            className="cursor-pointer hover:text-gray-200"
+            onClick={() => {
+              setSuccessMessage(null);
+              setErrorMessage(null);
+            }}
+          />
+        </motion.div>
+      )} 
       {/* Notificación de éxito */}
       {showSuccess && (
         <motion.div
@@ -545,33 +674,36 @@ const ProcesoPago = () => {
 
                   {/* Método de entrega*/}
                   <div>
-                      <p className="text-sm text-gray-500 mb-2">Método de entrega*</p>
-                      <div className="flex gap-4">
-                        <button
-                          type="button"
-                          onClick={() => handleDeliveryMethodChange('Retirar en tienda')}
-                          disabled={!formDataEnvio.Region || !formDataEnvio.Departamento || !formDataEnvio.Ciudad}
-                          className={`px-4 py-2 rounded-md border ${
-                            deliveryMethod === 'Retirar en tienda' 
-                              ? 'bg-orange-100 border-orange-500 text-orange-700' 
-                              : 'border-gray-300'
-                          }`}
-                        >
-                          Retirar en tienda
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeliveryMethodChange('Enviar a domicilio')}
-                          className={`px-4 py-2 rounded-md border ${
-                            deliveryMethod === 'Enviar a domicilio' 
-                              ? 'bg-orange-100 border-orange-500 text-orange-700' 
-                              : 'border-gray-300'
-                          }`}
-                        >
-                          Enviar a domicilio
-                        </button>
-                      </div>
+                    <p className="text-sm text-gray-500 mb-2">Método de entrega*</p>
+                    <div className="flex gap-4">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleDeliveryMethodChange('Retirar en tienda');
+                          loadTiendasFiltradas();
+                        }}
+                        disabled={!formDataEnvio.Region || !formDataEnvio.Departamento || !formDataEnvio.Ciudad}
+                        className={`px-4 py-2 rounded-md border ${
+                          deliveryMethod === 'Retirar en tienda' 
+                            ? 'bg-orange-100 border-orange-500 text-orange-700' 
+                            : 'border-gray-300'
+                        }`}
+                      >
+                        Retirar en tienda
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeliveryMethodChange('Enviar a domicilio')}
+                        className={`px-4 py-2 rounded-md border ${
+                          deliveryMethod === 'Enviar a domicilio' 
+                            ? 'bg-orange-100 border-orange-500 text-orange-700' 
+                            : 'border-gray-300'
+                        }`}
+                      >
+                        Enviar a domicilio
+                      </button>
                     </div>
+                  </div>
 
                     {/* Lista de tiendas (solo para retiro en tienda) */}
                     {deliveryMethod === 'Retirar en tienda' && tiendas.length > 0 && (
@@ -661,7 +793,6 @@ const ProcesoPago = () => {
             )}
           </div>
         </div>
-
         {/* Sección de Método de Pago */}
         <div className={`bg-white shadow-md rounded-lg overflow-hidden transition-all ${currentStep === 3 ? '' : 'opacity-50'}`}>
           <div className={`p-4 ${currentStep === 3 ? 'bg-orange-500' : completedSteps.includes(3) ? 'bg-orange-300' : 'bg-gray-300'} text-white`}>
@@ -671,35 +802,66 @@ const ProcesoPago = () => {
             {completedSteps.includes(3) || currentStep === 3 ? (
               <>
                 <div className="space-y-4 ml-4">
-                  <div className="space-y-2">
-                    <div
-                      onClick={() => setPaymentMethod('Debito')}
-                      className={`p-4 border rounded-md cursor-pointer ${paymentMethod === 'Debito' ? 'border-orange-500 bg-orange-50' : 'border-gray-300'}`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Débito</span>
-                        <button className="text-sm text-orange-500">Seleccionar</button>
-                      </div>
-                      <p className="text-sm text-gray-500 mt-1">XXXXXXXXXX,XXX</p>
-                    </div>
-                    <div
-                      onClick={() => setPaymentMethod('Credito')}
-                      className={`p-4 border rounded-md cursor-pointer ${paymentMethod === 'Credito' ? 'border-orange-500 bg-orange-50' : 'border-gray-300'}`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Crédito</span>
-                        <button className="text-sm text-orange-500">Seleccionar</button>
-                      </div>
-                      <p className="text-sm text-gray-500 mt-1">XXXXXXXXXX,XXX</p>
-                    </div>
+                  {/* Lista de tarjetas */}
+                  <div className="w-full flex flex-wrap items-start px-6 gap-6 py-6 justify-center lg:justify-start">
+                    {cards.length === 0 ? (
+                      <p className="text-gray-500">No tienes tarjetas registradas.</p>
+                    ) : (
+                      cards
+                        .filter(card => card.Monto >= total)
+                        .map((card) => (
+                          <div
+                            key={card.documentId}
+                            onClick={() => {
+                              setSelectedCardId(card.documentId);
+                              setPaymentMethod(card.documentId);
+                              setSelectedCard(card);
+                            }}
+                          >
+                            <CashCardPago
+                              numero={card.Numero}
+                              banco={card.Banco}
+                              tipo={card.Tipo}
+                              titular={card.Titular}
+                              vencimiento={card.FechaVencimiento}
+                              monto={card.Monto}
+                              isSelected={selectedCardId === card.documentId}
+                              onSelect={() => {
+                                setSelectedCardId(card.documentId);
+                                setPaymentMethod(card.documentId);
+                                setSelectedCard(card);
+                              }}
+                            />
+                          </div>
+                        ))
+                    )}
                   </div>
+
+                  {cards.length > 0 && cards.filter(card => card.Monto >= total).length === 0 && (
+                    <div className="w-full text-center py-4">
+                      <p className="text-red-500">
+                        No tienes tarjetas con saldo suficiente para este pago (${total.toLocaleString('es-CO')})
+                      </p>
+                      <button 
+                        onClick={() => router.push('/router/mis-tarjetas')}
+                        className="mt-2 text-orange-500 hover:text-orange-600 underline"
+                      >
+                        Agregar más saldo a tus tarjetas
+                      </button>
+                    </div>
+                  )}
+
                   <div className="flex justify-between items-center mt-6">
-                    <p className="font-semibold">Monto: $20.000</p>
+                    <p className="font-semibold">Total a Pagar: ${total.toLocaleString('es-CO')}</p>
                     {currentStep === 3 && (
                       <button
                         onClick={handlePayment}
-                        disabled={!paymentMethod}
-                        className={`px-6 py-2 rounded-md text-white ${paymentMethod ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-400 cursor-not-allowed'} transition`}
+                        disabled={!selectedCardId || cards.filter(card => card.Monto >= total).length === 0}
+                        className={`px-6 py-2 rounded-md text-white ${
+                          selectedCardId && cards.filter(card => card.Monto >= total).length > 0 
+                            ? 'bg-orange-500 hover:bg-orange-600' 
+                            : 'bg-gray-400 cursor-not-allowed'
+                        } transition`}
                       >
                         Pagar
                       </button>
