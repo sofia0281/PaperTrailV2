@@ -213,9 +213,9 @@ export const getTiendaByRegionDepartamentoCiudad = async (region: string, depart
   try {
     const token = localStorage.getItem('authToken');
     const filters = [
-      `filters[region][$eq]=${encodeURIComponent(region)}`,
-      `filters[departamento][$eq]=${encodeURIComponent(departamento)}`,
-      `filters[ciudad][$eq]=${encodeURIComponent(ciudad)}`
+      `filters[Region][$eq]=${encodeURIComponent(region)}`,
+      `filters[Departamento][$eq]=${encodeURIComponent(departamento)}`,
+      `filters[Ciudad][$eq]=${encodeURIComponent(ciudad)}`
     ].join('&');
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tiendas?${filters}`,
@@ -223,7 +223,7 @@ export const getTiendaByRegionDepartamentoCiudad = async (region: string, depart
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_STRAPI_ADMIN_TOKEN}`
         }
       }
     );

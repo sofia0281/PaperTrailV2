@@ -14,30 +14,32 @@ const ProcesoPago = () => {
   const [userId, setUserId] = useState<number | null>(null);
   // variables para el manejo del proceoso de pago
   const [currentStep, setCurrentStep] = useState(1);
-  const [deliveryMethod, setDeliveryMethod] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [completedSteps, setCompletedSteps] = useState([1]); // Paso 1 siempre accesible
   const [formErrors, setFormErrors] = useState({});
-  const [formEnvioErrors, setFormEnvioErrors] = useState({
-        Region: false,
-        Departamento: false,
-        Ciudad: false
-  });
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
     nombre_destinatario: "",
-    direccion: "",
     email: "",
     telefono_envio: "",
     cedula: "",
+  });
+
+  const [formEnvioErrors, setFormEnvioErrors] = useState({
+      Region: false,
+      Departamento: false,
+      Ciudad: false,
+      direccion: false,
   });
   const [formDataEnvio, setFormDataEnvio] = useState({
         Region: "",
         Departamento: "",
         Ciudad: "",
+        direccion: "",
   });
+
   useEffect(() => {
     const loadUserData = async () => {
       const userData = await fetchUserData();
@@ -46,21 +48,24 @@ const ProcesoPago = () => {
         setFormData({
           nombre: userData.Nombre || "",
           apellido: userData.Apellido || "",
-          direccion: userData.Direccion || "",
           email: userData.email || "",
           telefono_envio: "",
           nombre_destinatario:userData.Nombre || "",
           cedula: userData.cedula || "",
         });
+        setFormDataEnvio(prev =>({
+          ...prev,
+          direccion: userData.direccion || "",
+        }));
       }
     };
 
     loadUserData();
   }, []);
-  // Validación del formulario de identificación
+  
 
 
-
+//----------------------------- Validación del formulario de identificación STEP 1-----------------------
   const validateStep1 = () => {
     const errors = {};
 
@@ -80,11 +85,6 @@ const ProcesoPago = () => {
     if (formData.telefono_envio.length > 15) errors.telefono_envio = 'Teléfono no puede exceder 15 dígitos';
 
     if (!formData.nombre_destinatario.trim()) errors.nombre_destinatario = 'Nombre del destinatario requerido';
-    if (!formData.direccion.trim()) errors.direccion = 'Dirección requerida';
-    if (formData.direccion.length < 5) errors.direccion = 'Dirección debe tener al menos 5 caracteres';
-    if (formData.direccion.length > 100) errors.direccion = 'Dirección no puede exceder 100 caracteres';
-
-
 
 
     setFormErrors(errors);
@@ -100,14 +100,12 @@ const ProcesoPago = () => {
       nombre: 50,
       apellido: 50,
       cedula: 10,
-      direccion: 100,
       email: 100,
       telefono: 15,
     };
     if (
       name === "nombre" || 
       name === "apellido" || 
-      name === "direccion" || 
       name === "correo" || 
       name === "telefono_envio" ||
       name === "nombre_destinatario" ||
@@ -126,13 +124,8 @@ const ProcesoPago = () => {
       formattedValue = value.replace(/\D/g, "").slice(0, 10) // Solo números, máximo 10 dígitos
                              .replace(/^\s+/, ""); // Eliminar espacios al principio
     }
-    if(name === "direccion" || name === "usuario"){
-      // Para el campo dirección, eliminar caracteres no deseados y los espacios al principio
-      formattedValue = value.replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s.,#-]/g, "") // Solo letras, números, espacios y caracteres permitidos
-                             .replace(/^\s+/, ""); // Eliminar espacios al principio
-    }
-        if(name === "telefono_envio"){
-      // Para el campo dirección, eliminar caracteres no deseados y los espacios al principio
+    
+    if(name === "telefono_envio"){
           formattedValue = value.replace(/\D/g, "").slice(0, 10) // Solo números, máximo 10 dígitos
                              .replace(/^\s+/, ""); // Eliminar espacios al principio
     }
@@ -149,16 +142,126 @@ const ProcesoPago = () => {
     }));
   };
 
+  // ----------------------------- Validación del formulario de envío STEP 2-----------------------
   const handleChangeStep2 = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+    const { name, value } = e.target;
+    let formattedValue = value;
 
-        let formattedValue = value;
+    if (name === "direccion") {
+      formattedValue = value.replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s.,#-]/g, "").replace(/^\s+/, "");
+    }
 
-        setFormDataEnvio((prevData) => ({
-            ...prevData,
-            [name]: formattedValue,
-        }));
-  }
+    // Limpiar errores cuando se cambia un campo
+    setFormEnvioErrors(prev => ({
+      ...prev,
+      [name]: false,
+      ...(name === "Region" && { Departamento: false, Ciudad: false }),
+      ...(name === "Departamento" && { Ciudad: false })
+    }));
+
+    // Resetear dependencias cuando cambia la región o departamento
+    if (name === "Region") {
+      setFormDataEnvio(prev => ({
+        ...prev,
+        Region: formattedValue,
+        Departamento: "",
+        Ciudad: ""
+      }));
+    } else if (name === "Departamento") {
+      setFormDataEnvio(prev => ({
+        ...prev,
+        Departamento: formattedValue,
+        Ciudad: ""
+      }));
+    } else {
+      setFormDataEnvio(prev => ({
+        ...prev,
+        [name]: formattedValue
+      }));
+    }
+  };
+
+  const validateStep2 = (): boolean => {
+    const newErrors = {
+      Region: false,
+      Departamento: false,
+      Ciudad: false,
+      direccion: false
+    };
+    
+    let isValid = true;
+
+    // Validar región
+    if (!formDataEnvio.Region) {
+      newErrors.Region = true;
+      isValid = false;
+    }
+
+    // Validar departamento solo si la región es válida
+    if (isValid && !formDataEnvio.Departamento) {
+      newErrors.Departamento = true;
+      isValid = false;
+    }
+
+    // Validar ciudad solo si departamento es válido
+    if (isValid && !formDataEnvio.Ciudad) {
+      newErrors.Ciudad = true;
+      isValid = false;
+    }
+
+    // Validar dirección solo para envío a domicilio
+    if (deliveryMethod === 'Enviar a domicilio') {
+      if (!formDataEnvio.direccion.trim()) {
+        newErrors.direccion = true;
+        isValid = false;
+      } else if (formDataEnvio.direccion.length < 5) {
+        newErrors.direccion = true;
+        isValid = false;
+      } else if (formDataEnvio.direccion.length > 100) {
+        newErrors.direccion = true;
+        isValid = false;
+      }
+    }
+
+    setFormEnvioErrors(newErrors);
+    return isValid;
+  };
+
+// para manejar el listado de tiendas 
+  const [tiendas, setTiendas] = useState<any[]>([]);
+  const [tiendaSeleccionada, setTiendaSeleccionada] = useState<string | null>(null);
+  const [direccionEnvio, setDireccionEnvio] = useState('');
+  const loadTiendasFiltradas = async () => {
+    try {
+      console.log("Datos de envío:", formDataEnvio);
+      const tiendaData = await getTiendaByRegionDepartamentoCiudad(
+        formDataEnvio.Region, 
+        formDataEnvio.Departamento, 
+        formDataEnvio.Ciudad
+      );
+      
+      console.log("Datos completos de las tiendas encontradas:", tiendaData);
+      setTiendas(tiendaData.data || []); // Asumiendo que la respuesta tiene formato { data: [...] }
+      setTiendaSeleccionada(null); // Resetear selección al cargar nuevas tiendas
+    } catch (error) {
+      console.error("Error al cargar datos de la tienda:", error);
+      setTiendas([]);
+      // setErrorMessage("Error al cargar los datos de la tienda");
+    }
+  };
+  const [deliveryMethod, setDeliveryMethod] = useState('');
+  const handleDeliveryMethodChange = (method: 'Retirar en tienda' | 'Enviar a domicilio') => {
+    setDeliveryMethod(method);
+    if (method === 'Retirar en tienda') {
+      loadTiendasFiltradas();
+    } else {
+      setTiendas([]);
+      setTiendaSeleccionada(null);
+    }
+  };
+
+
+  // -------------------------------------Función para manejar el pago---------------------
   const handlePayment = () => {
     setShowSuccess(true);
     setTimeout(() => {
@@ -169,7 +272,7 @@ const ProcesoPago = () => {
     }, 2000);
   };
 
-
+  // Función para manejar LOS PASOS DEL FORMULARIO
   // Función para ir a un paso específico
   const goToStep = (step) => {
     // Permitir ir a pasos completados o al siguiente lógico
@@ -196,70 +299,6 @@ const ProcesoPago = () => {
   };
 
 
-  const validateStep2 = (): boolean => {
-    const errors = {
-      Region: false,
-      Departamento: false,
-      Ciudad: false
-    };
-    
-    let isValid = true;
-
-    // Validar región
-    if (!formDataEnvio.Region) {
-      errors.Region = true;
-      isValid = false;
-    } else {
-      const regionValida = colombiaData.regiones.some(r => r.nombre === formDataEnvio.Region);
-      if (!regionValida) {
-        errors.Region = true;
-        isValid = false;
-      }
-    }
-    
-    // Validar departamento solo si la región es válida
-    if (isValid && !formDataEnvio.Departamento) {
-      errors.Departamento = true;
-      isValid = false;
-    } else if (isValid && formDataEnvio.Departamento) {
-      const region = colombiaData.regiones.find(r => r.nombre === formDataEnvio.Region);
-      const deptoValido = region?.departamentos.some(d => d.nombre === formDataEnvio.Departamento);
-      if (!deptoValido) {
-        errors.Departamento = true;
-        isValid = false;
-      }
-    }
-    
-    // Validar ciudad solo si el departamento es válido
-    if (isValid && !formDataEnvio.Ciudad) {
-      errors.Ciudad = true;
-      isValid = false;
-    } else if (isValid && formDataEnvio.Ciudad) {
-      const region = colombiaData.regiones.find(r => r.nombre === formDataEnvio.Region);
-      const departamento = region?.departamentos.find(d => d.nombre === formDataEnvio.Departamento);
-      const ciudadValida = departamento?.ciudades.includes(formDataEnvio.Ciudad);
-      if (!ciudadValida) {
-        errors.Ciudad = true;
-        isValid = false;
-      }
-    }
-    
-    setFormEnvioErrors(errors);
-    return isValid;
-  };
-
-
-    const loadTiendasFiltradas = async () => {
-        try {
-        console.log("Datos de envío:", formDataEnvio);
-        // const tiendaData = await getTiendaByRegionDepartamentoCiudad(formDataEnvio.Region, formDataEnvio.Departamento, formDataEnvio.Ciudad);
-        // console.log("Datos completos de la tiendas encontradas:", tiendaData);
-                    
-        } catch (error) {
-        console.error("Error al cargar datos de la tienda:", error);
-        // setErrorMessage("Error al cargar los datos de la tienda");
-        }
-    };
   return (
     <div className="flex justify-center gap-6 p-6 bg-gray-100 min-h-screen">
       {/* Notificación de éxito */}
@@ -377,7 +416,7 @@ const ProcesoPago = () => {
                   {formErrors.telefono_envio && <p className="text-red-500 text-xs mt-1">{formErrors.telefono_envio}</p>}
                 </div>
 
-                <div>
+                {/* <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Dirección de envío*</label>
                   <input
                     type="text"
@@ -387,8 +426,8 @@ const ProcesoPago = () => {
                     className={`w-full p-2 border rounded-md ${formErrors.direccion ? 'border-red-500' : 'border-gray-300'}`}
                   />
                   {formErrors.direccion && <p className="text-red-500 text-xs mt-1">{formErrors.direccion}</p>}
-                </div>
-                                <div>
+                </div> */}
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del destinario*</label>
                   <input
                     type="text"
@@ -429,7 +468,7 @@ const ProcesoPago = () => {
             {completedSteps.includes(2) || currentStep === 2 ? (
               <>
                 <div className="space-y-4 ml-4">
-                  {/* Región como select */}
+                  {/* Región */}
                   <div>
                     <label className="block text-sm font-medium">Región*</label>
                     <select
@@ -450,16 +489,13 @@ const ProcesoPago = () => {
                     )}
                   </div>
 
-                  {/* Departamento como select */}
+                  {/* Departamento */}
                   <div>
                     <label className="block text-sm font-medium">Departamento*</label>
                     <select
                       name="Departamento"
                       value={formDataEnvio.Departamento}
-                      onChange={(e) => {
-                        handleChangeStep2(e);
-                        setFormDataEnvio(prev => ({...prev, Ciudad: ""}));
-                      }}
+                      onChange={handleChangeStep2}
                       disabled={!formDataEnvio.Region}
                       className={`w-full p-2 border rounded-md ${formEnvioErrors.Departamento ? 'border-red-500' : 'border-gray-300'} ${!formDataEnvio.Region ? 'bg-gray-100' : ''}`}
                     >
@@ -479,7 +515,7 @@ const ProcesoPago = () => {
                     )}
                   </div>
 
-                  {/* Ciudad como select */}
+                  {/* Ciudad */}
                   <div>
                     <label className="block text-sm font-medium">Ciudad*</label>
                     <select
@@ -507,44 +543,113 @@ const ProcesoPago = () => {
                     )}
                   </div>
 
-                  {/* Método de entrega (se mantiene igual) */}
+                  {/* Método de entrega*/}
                   <div>
-                    <p className="text-sm text-gray-500 mb-2">Método de entrega*</p>
-                    <div className="flex gap-4">
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          setDeliveryMethod('Retirar en tienda');
-                          await loadTiendasFiltradas(); // Si loadTiendasFiltradas es async
-                        }}
-                        disabled={!formDataEnvio.Region || !formDataEnvio.Departamento || !formDataEnvio.Ciudad}
-                        className={`px-4 py-2 rounded-md border ${deliveryMethod === 'Retirar en tienda' ? 'bg-orange-100 border-orange-500 text-orange-700' : 'border-gray-300'}`}
-                      >
-                        Retirar en tienda
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDeliveryMethod('Enviar a domicilio')}
-                        className={`px-4 py-2 rounded-md border ${deliveryMethod === 'Enviar a domicilio' ? 'bg-orange-100 border-orange-500 text-orange-700' : 'border-gray-300'}`}
-                      >
-                        Enviar a domicilio
-                      </button>
+                      <p className="text-sm text-gray-500 mb-2">Método de entrega*</p>
+                      <div className="flex gap-4">
+                        <button
+                          type="button"
+                          onClick={() => handleDeliveryMethodChange('Retirar en tienda')}
+                          disabled={!formDataEnvio.Region || !formDataEnvio.Departamento || !formDataEnvio.Ciudad}
+                          className={`px-4 py-2 rounded-md border ${
+                            deliveryMethod === 'Retirar en tienda' 
+                              ? 'bg-orange-100 border-orange-500 text-orange-700' 
+                              : 'border-gray-300'
+                          }`}
+                        >
+                          Retirar en tienda
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeliveryMethodChange('Enviar a domicilio')}
+                          className={`px-4 py-2 rounded-md border ${
+                            deliveryMethod === 'Enviar a domicilio' 
+                              ? 'bg-orange-100 border-orange-500 text-orange-700' 
+                              : 'border-gray-300'
+                          }`}
+                        >
+                          Enviar a domicilio
+                        </button>
+                      </div>
                     </div>
+
+                    {/* Lista de tiendas (solo para retiro en tienda) */}
+                    {deliveryMethod === 'Retirar en tienda' && tiendas.length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-sm font-medium text-gray-700 mb-2">Selecciona una tienda*</p>
+                        <div className="space-y-2 max-h-60 overflow-y-auto">
+                          {tiendas.map((tienda) => (
+                            <div 
+                              key={tienda.id}
+                              onClick={() => setTiendaSeleccionada(tienda.id)}
+                              className={`p-3 border rounded-md cursor-pointer ${
+                                tiendaSeleccionada === tienda.id
+                                  ? 'bg-orange-50 border-orange-500'
+                                  : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                            >
+                              <p className="font-medium">{tienda.Nombre || 'Tienda sin nombre'}</p>
+                              <p className="text-sm text-gray-600">{tienda.Direction}</p>
+                              <p className="text-xs text-gray-500">
+                                {tienda.Ciudad}, {tienda.Departamento}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                        {tiendas.length === 0 && (
+                          <p className="text-sm text-gray-500">No hay tiendas disponibles en esta ubicación</p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Campo de dirección (solo para envío a domicilio) */}
+                    {deliveryMethod === 'Enviar a domicilio' && (
+                      <div className="mt-4">
+                        <label htmlFor="direccion" className="block text-sm font-medium text-gray-700 mb-1">
+                          Dirección de envío*
+                        </label>
+                        <input
+                          type="text"
+                          name="direccion"
+                          value={formDataEnvio.direccion}
+                          onChange={handleChangeStep2}
+                          className={`w-full p-2 border rounded-md ${formEnvioErrors.direccion ? 'border-red-500' : 'border-gray-300'}`}
+                          placeholder="Ingresa tu dirección completa"
+                          required
+                        />
+                        {formEnvioErrors.direccion && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {!formDataEnvio.direccion.trim() ? 'Dirección requerida' : 
+                            formDataEnvio.direccion.length < 5 ? 'Dirección debe tener al menos 5 caracteres' :
+                            'Dirección no puede exceder 100 caracteres'}
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
-                </div>
 
                 {currentStep === 2 && (
                   <div className="flex justify-end mt-6">
                     <button 
-                      onClick={nextStep}
-                      className={`px-4 py-2 rounded-md text-white ${
-                        deliveryMethod && !formEnvioErrors.Region && !formEnvioErrors.Departamento && !formEnvioErrors.Ciudad
-                          ? 'bg-orange-500 hover:bg-orange-600' 
-                          : 'bg-gray-400 cursor-not-allowed'
-                      } transition`}
-                      disabled={!deliveryMethod || formEnvioErrors.Region || formEnvioErrors.Departamento || formEnvioErrors.Ciudad}
-                    >
-                      Continuar
+                        onClick={nextStep}
+                        className={`px-4 py-2 rounded-md text-white ${
+                          deliveryMethod && 
+                          (!formEnvioErrors.Region && !formEnvioErrors.Departamento && !formEnvioErrors.Ciudad) &&
+                          (deliveryMethod === 'Retirar en tienda' ? tiendaSeleccionada : true) &&
+                          (deliveryMethod === 'Enviar a domicilio' ? formDataEnvio.direccion.trim() : true)
+                            ? 'bg-orange-500 hover:bg-orange-600' 
+                            : 'bg-gray-400 cursor-not-allowed'
+                        } transition`}
+                        disabled={
+                          !deliveryMethod || 
+                          formEnvioErrors.Region || 
+                          formEnvioErrors.Departamento || 
+                          formEnvioErrors.Ciudad ||
+                          (deliveryMethod === 'Retirar en tienda' && !tiendaSeleccionada) ||
+                          (deliveryMethod === 'Enviar a domicilio' && !formDataEnvio.direccion.trim())
+                        }
+                      >
+                        Continuar
                     </button>
                   </div>
                 )}
