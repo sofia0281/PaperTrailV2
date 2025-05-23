@@ -364,8 +364,15 @@ export const deleteBook = async (idLibro) => {
 
   export const searchBooks = async (query: string) => {
     try {
+      const filters = [
+        `filters[$or][0][title][$containsi]=${query}`,
+        `filters[$or][1][author][$containsi]=${query}`,
+        `filters[$or][2][ISBN_ISSN][$containsi]=${query}`,
+        `filters[$or][3][fecha_publicacion][$containsi]=${query}`
+      ].join("&");
+  
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books?filters[title][$containsi]=${query}&pagination[limit]=4&populate=cover`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books?${filters}&pagination[limit]=4&populate=cover`,
         {
           method: 'GET',
           headers: {
@@ -398,6 +405,7 @@ export const deleteBook = async (idLibro) => {
       return [];
     }
   };
+  
   
 
 
