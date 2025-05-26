@@ -117,6 +117,12 @@
     "suscripcion": {
       "type": "boolean",
       "default": false
+    },
+    "mensajes": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::mensaje.mensaje",
+      "mappedBy": "user"
     }
   }
 }

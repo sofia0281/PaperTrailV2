@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "respuestas",
+  "info": {
+    "singularName": "respuesta",
+    "pluralName": "respuestas",
+    "displayName": "Respuesta",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "contenido": {
+      "type": "string"
+    },
+    "mensaje": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::mensaje.mensaje",
+      "inversedBy": "respuestas"
+    },
+    "es_admin": {
+      "type": "boolean"
+    }
+  }
+}

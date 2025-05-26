@@ -489,6 +489,43 @@ export interface ApiItemPedidoItemPedido extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiMensajeMensaje extends Struct.CollectionTypeSchema {
+  collectionName: 'mensajes';
+  info: {
+    description: '';
+    displayName: 'Mensaje';
+    pluralName: 'mensajes';
+    singularName: 'mensaje';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    contenido: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::mensaje.mensaje'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    respuestas: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::respuesta.respuesta'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
   collectionName: 'pedidos';
   info: {
@@ -553,6 +590,37 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
+  };
+}
+
+export interface ApiRespuestaRespuesta extends Struct.CollectionTypeSchema {
+  collectionName: 'respuestas';
+  info: {
+    description: '';
+    displayName: 'Respuesta';
+    pluralName: 'respuestas';
+    singularName: 'respuesta';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    contenido: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    es_admin: Schema.Attribute.Boolean;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::respuesta.respuesta'
+    > &
+      Schema.Attribute.Private;
+    mensaje: Schema.Attribute.Relation<'manyToOne', 'api::mensaje.mensaje'>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1148,6 +1216,7 @@ export interface PluginUsersPermissionsUser
     > &
       Schema.Attribute.Private;
     Lugar_nacimiento: Schema.Attribute.String & Schema.Attribute.Required;
+    mensajes: Schema.Attribute.Relation<'oneToMany', 'api::mensaje.mensaje'>;
     Nombre: Schema.Attribute.String & Schema.Attribute.Required;
     password: Schema.Attribute.Password &
       Schema.Attribute.Private &
@@ -1190,8 +1259,10 @@ declare module '@strapi/strapi' {
       'api::book.book': ApiBookBook;
       'api::card.card': ApiCardCard;
       'api::item-pedido.item-pedido': ApiItemPedidoItemPedido;
+      'api::mensaje.mensaje': ApiMensajeMensaje;
       'api::pedido.pedido': ApiPedidoPedido;
       'api::product.product': ApiProductProduct;
+      'api::respuesta.respuesta': ApiRespuestaRespuesta;
       'api::tienda.tienda': ApiTiendaTienda;
       'api::usuario.usuario': ApiUsuarioUsuario;
       'plugin::content-releases.release': PluginContentReleasesRelease;

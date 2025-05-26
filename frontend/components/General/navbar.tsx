@@ -198,6 +198,12 @@ const Navbar = () => {
                             </button>
                             <button
                                 className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
+                                onClick={() => router.push("/routes/messageAdmin")}
+                            >
+                                Mensajeria
+                            </button>
+                            <button
+                                className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
                                 onClick={() => router.push("/routes/adminshop")}
                             >
                                 Administrar Tiendas
@@ -267,6 +273,16 @@ const Navbar = () => {
                             >
                                 Monedero
                             </button> }
+
+                            <button
+                                className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
+                                onClick={() => {
+                                    router.push("/routes/message");
+                                    setMenuOpen(false)
+                                }}
+                            >
+                                Mensajerias
+                            </button>
                             { <button
                                 className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
                                 onClick={() => router.push("/routes/orderstatus")}
@@ -283,6 +299,7 @@ const Navbar = () => {
                             >
                                 Historial de compras
                             </button>
+
 
                             <button
                                 className="w-full px-4 py-2 text-left hover:bg-red-100 text-red-500 flex items-center justify-between cursor-pointer"

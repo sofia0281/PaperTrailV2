@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "axios": "^1.9.0",
     "canvas-confetti": "^1.9.3",
     "card-validator": "^10.0.2",
     "countries-cities": "^0.0.11",
@@ -18,7 +19,7 @@
     "country-state-city": "^3.2.1",
     "framer-motion": "^12.12.1",
     "lucide-react": "^0.483.0",
-    "next": "15.2.3",
+    "next": "^15.3.2",
     "react": "^18.3.1",
     "react-credit-cards-2": "^1.0.3",
     "react-dom": "^18.3.1",
