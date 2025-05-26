@@ -22,6 +22,7 @@ interface OrderStatusProps {
   orderNumber: string;
   orderDate: string;
   shippingAddress: string;
+  nombreCliente: string;
   total: number;
   estadoPedido: string;
   items?: OrderItem[];
@@ -37,6 +38,7 @@ export default function OrderStatus({
   orderNumber,
   orderDate,
   shippingAddress,
+  nombreCliente,
   total,
   estadoPedido,
   items = [],
@@ -103,6 +105,7 @@ export default function OrderStatus({
             <p className="font-semibold">Nro. Pedido: {orderNumber}</p>
             <p>Fecha: {orderDate}</p>
             <p>Dirección: {shippingAddress}</p>
+            <p>Nombre del Destinatario: {nombreCliente}</p>
           </div>
 
           <div className="mb-4">

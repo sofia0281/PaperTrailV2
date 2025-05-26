@@ -1,47 +1,166 @@
 {
     "regiones": [
-    {
-        "nombre": "Región Andina",
-        "departamentos": [
         {
-            "nombre": "Antioquia",
-            "ciudades": ["Medellín", "Bello", "Itagüí", "Envigado", "Rionegro"]
+            "nombre": "Región Andina",
+            "departamentos": [
+                {
+                    "nombre": "Antioquia",
+                    "ciudades": ["Medellín", "Bello", "Itagüí", "Envigado", "Rionegro", "Apartadó", "Turbo", "Yarumal", "Santa Rosa de Osos", "Jericó"]
+                },
+                {
+                    "nombre": "Boyacá",
+                    "ciudades": ["Tunja", "Duitama", "Sogamoso", "Chiquinquirá", "Paipa", "Villa de Leyva", "Moniquirá", "Samacá", "Nobsa", "Sáchica"]
+                },
+                {
+                    "nombre": "Cundinamarca",
+                    "ciudades": ["Bogotá", "Soacha", "Zipaquirá", "Facatativá", "Girardot", "Fusagasugá", "Chía", "Mosquera", "Madrid", "Funza"]
+                },
+                {
+                    "nombre": "Santander",
+                    "ciudades": ["Bucaramanga", "Floridablanca", "Barrancabermeja", "Girón", "Piedecuesta", "San Gil", "Socorro", "Málaga", "Barbosa", "Cimitarra"]
+                },
+                {
+                    "nombre": "Norte de Santander",
+                    "ciudades": ["Cúcuta", "Ocaña", "Pamplona", "Villa del Rosario", "Los Patios", "Chinácota", "Tibú", "El Zulia", "Sardinata", "Abrego"]
+                },
+                {
+                    "nombre": "Tolima",
+                    "ciudades": ["Ibagué", "Espinal", "Honda", "Mariquita", "Melgar", "Líbano", "Fresno", "Guamo", "Chaparral", "Purificación"]
+                },
+                {
+                    "nombre": "Huila",
+                    "ciudades": ["Neiva", "Pitalito", "Garzón", "La Plata", "Campoalegre", "Palermo", "San Agustín", "Aipe", "Yaguará", "Tesalia"]
+                },
+                {
+                    "nombre": "Caldas",
+                    "ciudades": ["Manizales", "La Dorada", "Chinchiná", "Villamaría", "Riosucio", "Aguadas", "Salamina", "Anserma", "Pácora", "Neira"]
+                },
+                {
+                    "nombre": "Risaralda",
+                    "ciudades": ["Pereira", "Dosquebradas", "Santa Rosa de Cabal", "La Virginia", "Belén de Umbría", "Marsella", "Quinchía", "Guática", "Pueblo Rico", "Santuario"]
+                },
+                {
+                    "nombre": "Quindío",
+                    "ciudades": ["Armenia", "Calarcá", "La Tebaida", "Circasia", "Montenegro", "Quimbaya", "Salento", "Pijao", "Filandia", "Buenavista"]
+                }
+            ]
         },
         {
-            "nombre": "Boyacá",
-            "ciudades": ["Tunja", "Duitama", "Sogamoso", "Chiquinquirá"]
+            "nombre": "Región Caribe",
+            "departamentos": [
+                {
+                    "nombre": "Atlántico",
+                    "ciudades": ["Barranquilla", "Soledad", "Malambo", "Sabanalarga", "Puerto Colombia", "Baranoa", "Galapa", "Palmar de Varela", "Santo Tomás", "Juan de Acosta"]
+                },
+                {
+                    "nombre": "Bolívar",
+                    "ciudades": ["Cartagena", "Magangué", "Turbaco", "Arjona", "El Carmen de Bolívar", "San Juan Nepomuceno", "Santa Rosa del Sur", "San Jacinto", "María la Baja", "Mompox"]
+                },
+                {
+                    "nombre": "Cesar",
+                    "ciudades": ["Valledupar", "Aguachica", "Codazzi", "La Paz", "Pailitas", "Pelaya", "Curumaní", "Bosconia", "Chimichagua", "San Alberto"]
+                },
+                {
+                    "nombre": "Córdoba",
+                    "ciudades": ["Montería", "Cereté", "Sahagún", "Lorica", "Planeta Rica", "Tierralta", "Montelíbano", "Puerto Libertador", "San Antero", "San Bernardo del Viento"]
+                },
+                {
+                    "nombre": "La Guajira",
+                    "ciudades": ["Riohacha", "Maicao", "Uribia", "Manaure", "Fonseca", "Barrancas", "San Juan del Cesar", "Albania", "Dibulla", "Hatonuevo"]
+                },
+                {
+                    "nombre": "Magdalena",
+                    "ciudades": ["Santa Marta", "Ciénaga", "Fundación", "Aracataca", "El Banco", "Plato", "Pivijay", "Pueblo Viejo", "Remolino", "Zona Bananera"]
+                },
+                {
+                    "nombre": "San Andrés y Providencia",
+                    "ciudades": ["San Andrés", "Providencia", "Santa Isabel", "San Luis", "Loma Linda", "El Cove", "La Loma", "Bottom House", "Mountain", "South West Bay"]
+                },
+                {
+                    "nombre": "Sucre",
+                    "ciudades": ["Sincelejo", "Corozal", "Tolú", "Sampués", "San Marcos", "Coveñas", "Ovejas", "Morroa", "Los Palmitos", "Guaranda"]
+                }
+            ]
         },
         {
-            "nombre": "Cundinamarca",
-            "ciudades": ["Bogotá", "Soacha", "Zipaquirá", "Facatativá"]
+            "nombre": "Región Pacífico",
+            "departamentos": [
+                {
+                    "nombre": "Valle del Cauca",
+                    "ciudades": ["Cali", "Buenaventura", "Palmira", "Tuluá", "Cartago", "Buga", "Yumbo", "Zarzal", "La Unión", "Roldanillo"]
+                },
+                {
+                    "nombre": "Chocó",
+                    "ciudades": ["Quibdó", "Istmina", "Tadó", "Condoto", "Bahía Solano", "Nuquí", "Acandí", "Riosucio", "El Carmen de Atrato", "Lloró"]
+                },
+                {
+                    "nombre": "Cauca",
+                    "ciudades": ["Popayán", "Santander de Quilichao", "Patía", "Puerto Tejada", "El Tambo", "Piendamó", "Silvia", "Timbío", "Morales", "Bolívar"]
+                },
+                {
+                    "nombre": "Nariño",
+                    "ciudades": ["Pasto", "Tumaco", "Ipiales", "Samaniego", "La Unión", "Sandona", "Túquerres", "Buesaco", "Chachagüí", "Consacá"]
+                }
+            ]
+        },
+        {
+            "nombre": "Región Orinoquía",
+            "departamentos": [
+                {
+                    "nombre": "Meta",
+                    "ciudades": ["Villavicencio", "Acacías", "Granada", "Puerto López", "Puerto Gaitán", "San Martín", "Cumaral", "Restrepo", "Barranca de Upía", "Cabuyaro"]
+                },
+                {
+                    "nombre": "Arauca",
+                    "ciudades": ["Arauca", "Saravena", "Fortul", "Tame", "Arauquita", "Cravo Norte", "Puerto Rondón", "San Luis de Palenque"]
+                },
+                {
+                    "nombre": "Casanare",
+                    "ciudades": ["Yopal", "Aguazul", "Villanueva", "Paz de Ariporo", "Tauramena", "Monterrey", "Nunchía", "San Luis de Palenque", "Orocué", "Sabanalarga"]
+                },
+                {
+                    "nombre": "Vichada",
+                    "ciudades": ["Puerto Carreño", "La Primavera", "Santa Rosalía", "Cumaribo", "San José de Ocuné", "Guadalupe", "Tucupita", "El Burro", "San Pedro", "Pto. Ayacucho"]
+                }
+            ]
+        },
+        {
+            "nombre": "Región Amazonía",
+            "departamentos": [
+                {
+                    "nombre": "Amazonas",
+                    "ciudades": ["Leticia", "Puerto Nariño", "La Pedrera", "Puerto Santander", "Tarapacá", "La Chorrera", "Mirití-Paraná", "El Encanto", "Puerto Arica", "La Victoria"]
+                },
+                {
+                    "nombre": "Caquetá",
+                    "ciudades": ["Florencia", "San Vicente del Caguán", "Belén de los Andaquíes", "Cartagena del Chairá", "Solano", "El Paujil", "Morelia", "La Montañita", "Puerto Rico", "San José del Fragua"]
+                },
+                {
+                    "nombre": "Guainía",
+                    "ciudades": ["Inírida", "Barranco Minas", "Mapiripana", "San Felipe", "Puerto Colombia", "La Guadalupe", "Cacahual", "Pana Pana", "Morichal", "El Retorno"]
+                },
+                {
+                    "nombre": "Guaviare",
+                    "ciudades": ["San José del Guaviare", "Calamar", "El Retorno", "Miraflores", "Puerto Concordia", "La Libertad", "Carurú", "Papunaua", "Tunapuy", "Puerto Arturo"]
+                },
+                {
+                    "nombre": "Putumayo",
+                    "ciudades": ["Mocoa", "Puerto Asís", "Orito", "Valle del Guamuez", "San Miguel", "Villagarzón", "Puerto Guzmán", "Puerto Caicedo", "Sibundoy", "Colón"]
+                },
+                {
+                    "nombre": "Vaupés",
+                    "ciudades": ["Mitú", "Carurú", "Taraira", "Pacoa", "Papunaua", "Yavaraté", "Acaricuara", "Villa Fátima", "Monfort", "Buenavista"]
+                }
+            ]
+        },
+        {
+            "nombre": "Región Insular",
+            "departamentos": [
+                {
+                    "nombre": "Archipiélago de San Andrés, Providencia y Santa Catalina",
+                    "ciudades": ["San Andrés", "Providencia", "Santa Catalina", "San Luis", "Loma Linda", "El Cove", "La Loma", "Bottom House", "Mountain", "South West Bay"]
+                }
+            ]
         }
-        ]
-    },
-    {
-        "nombre": "Región Caribe",
-        "departamentos": [
-        {
-            "nombre": "Atlántico",
-            "ciudades": ["Barranquilla", "Soledad", "Malambo", "Sabanalarga"]
-        },
-        {
-            "nombre": "Bolívar",
-            "ciudades": ["Cartagena", "Magangué", "Turbaco", "Arjona"]
-        }
-        ]
-    },
-    {
-        "nombre": "Región Pacífico",
-        "departamentos": [
-        {
-            "nombre": "Valle del Cauca",
-            "ciudades": ["Cali", "Buenaventura", "Palmira", "Tuluá"]
-        },
-        {
-            "nombre": "Chocó",
-            "ciudades": ["Quibdó", "Istmina", "Tadó", "Condoto"]
-        }
-        ]
-    }
     ]
 }

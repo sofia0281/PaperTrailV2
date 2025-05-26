@@ -112,7 +112,7 @@ export const AuthProvider = ({ children }) => {
     // Función para eliminar items del carrito
     const removeFromCart = (idLibro) => {
         setCart(prevCart => prevCart.filter(item => item.idLibro !== idLibro));
-        setAddedItems(prev => prev.filter(id => id !== idLibro)); // quitarlo de la lista
+        // setAddedItems(prev => prev.filter(id => id !== idLibro)); // quitarlo de la lista
 
     };
 

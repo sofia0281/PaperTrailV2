@@ -52,7 +52,8 @@ export default function ActiveOrders() {
           orderDate: pedido.createdAt 
             ? new Date(pedido.createdAt).toLocaleDateString() 
             : new Date().toLocaleDateString(),
-          shippingAddress: primerPedido.usuario.Direccion,
+          shippingAddress: pedido.direccion_envio,
+          nombreCliente: pedido.nombre_destinario,
           total: pedido.TotalPrecio || 0,
           estadoPedido: pedido.estado || 'Estado no disponible',
           items: pedido.items || [] // Asumiendo que la API ya incluye los items
@@ -108,6 +109,7 @@ export default function ActiveOrders() {
               orderNumber={order.orderNumber}
               orderDate={order.orderDate}
               shippingAddress={order.shippingAddress}
+              nombreCliente={order.nombreCliente}
               total={order.total}
               estadoPedido={order.estadoPedido}
               items={order.items}

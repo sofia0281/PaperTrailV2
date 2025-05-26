@@ -27,7 +27,6 @@ const PreviewShoppingCart = () => {
   // Función para manejar el clic en "IR A PAGAR"
   const handleCheckout = async () => {
 
-    router.push("/routes/procesopago");
     if (cart.length === 0) {
       setShowError(true);
       setTimeout(() => setShowError(false), 3000);
@@ -50,59 +49,8 @@ const PreviewShoppingCart = () => {
           throw new Error("stock-insuficiente"); // 🔥 Fuerza la salida del try-catch
         }
       }
-  
-      // Obtener número de pedido
-      console.log("ID del usuario que va a comprar:", authUser.id); 
-      const response = await getPedidosByUser(authUser.id);
-      const numCompra = response.data.length + 1;
-      console.log("Número de compra:", numCompra);
-
-      // Crear el pedido principal
-      const pedidoResponse = await createPedido({
-        usuario: authUser.id,
-        TotalPrecio: cart.reduce((sum, item) => sum + item.totalPrice, 0),
-        TotalProductos: cart.reduce((sum, item) => sum + item.quantity, 0),
-        idPedido: numCompra.toString()
-      });
-  
-      // Actualizar inventario y crear ítems
-      await Promise.all(
-        cart.map(async (item) => {
-          const bookData = await getBookByIdLibro(item.idLibro);
-          const newCantidad = bookData.cantidad - item.quantity;
-  
-          const updatedBookData = {
-            ISBN_ISSN: bookData.ISBN_ISSN,
-            fecha_publicacion: bookData.fecha_publicacion,
-            title: bookData.title,
-            condition: bookData.condition,
-            author: bookData.author,
-            price: bookData.price,
-            editorial: bookData.editorial,
-            numero_paginas: bookData.numero_paginas,
-            genero: bookData.genero,
-            idioma: bookData.idioma,
-            cantidad: newCantidad,
-            idLibro: bookData.idLibro,
-          };
-
-          await putBookData(updatedBookData, item.idLibro);
-  
-          await createItemPedido({
-            PrecioItem: item.unitPrice,
-            Cantidad: item.quantity,
-            IdItem: item.idLibro,
-            IdPedido: pedidoResponse.data.id,
-            Title: item.title,
-            totalPrice: item.totalPrice,
-            idstatus: numCompra.toString(),
-          });
-        })
-      );
-  
-      clearCart();
-      setSuccessMessage("Pago realizado exitosamente. ¡Muchas gracias!");
-      setTimeout(() => setSuccessMessage(null), 3000);
+      router.push("/routes/procesopago");
+      setIsLoading(false);
     } catch (error) {
       if (error.message === "stock-insuficiente") {
         // Ya se mostró mensaje
@@ -111,9 +59,7 @@ const PreviewShoppingCart = () => {
         setErrorMessage("Error al realizar el pedido");
         setTimeout(() => setErrorMessage(null), 3000);
       }
-    } finally {
-      setIsLoading(false);
-    }
+    } 
   };
   
 
