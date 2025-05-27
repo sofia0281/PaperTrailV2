@@ -10,7 +10,8 @@ export default function AdminChatLayout() {
   const [selectedUsername, setSelectedUsername] = useState<string>('');
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-auto min-h-[100px]">
+
       {/* Lado izquierdo: lista de conversaciones */}
       <div className="w-1/3 border-r overflow-y-auto">
         <ConversationList
@@ -22,15 +23,16 @@ export default function AdminChatLayout() {
       </div>
 
       {/* Lado derecho: ventana del chat */}
-      <div className="w-2/3">
+      <div className="w-2/3 h-[calc(100vh-50px)] flex flex-col"> 
         {selectedUserId ? (
           <ChatWindow userId={selectedUserId} username={selectedUsername} />
         ) : (
-          <div className="h-full flex items-center justify-center text-gray-400">
+          <div className="flex-1 flex items-center justify-center text-gray-400">
             Selecciona una conversación
           </div>
         )}
       </div>
+
     </div>
   );
 }

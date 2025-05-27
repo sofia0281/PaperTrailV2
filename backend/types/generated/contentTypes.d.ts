@@ -523,6 +523,7 @@ export interface ApiMensajeMensaje extends Struct.CollectionTypeSchema {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+    visto: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
   };
 }
 
@@ -566,33 +567,6 @@ export interface ApiPedidoPedido extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiProductProduct extends Struct.CollectionTypeSchema {
-  collectionName: 'products';
-  info: {
-    displayName: 'Product';
-    pluralName: 'products';
-    singularName: 'product';
-  };
-  options: {
-    draftAndPublish: true;
-    populateCreatorFields: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::product.product'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    title: Schema.Attribute.String;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
-  };
-}
-
 export interface ApiRespuestaRespuesta extends Struct.CollectionTypeSchema {
   collectionName: 'respuestas';
   info: {
@@ -621,6 +595,10 @@ export interface ApiRespuestaRespuesta extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
@@ -1261,7 +1239,6 @@ declare module '@strapi/strapi' {
       'api::item-pedido.item-pedido': ApiItemPedidoItemPedido;
       'api::mensaje.mensaje': ApiMensajeMensaje;
       'api::pedido.pedido': ApiPedidoPedido;
-      'api::product.product': ApiProductProduct;
       'api::respuesta.respuesta': ApiRespuestaRespuesta;
       'api::tienda.tienda': ApiTiendaTienda;
       'api::usuario.usuario': ApiUsuarioUsuario;

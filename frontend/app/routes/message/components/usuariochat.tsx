@@ -3,19 +3,21 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
+import { SendHorizonal } from 'lucide-react';
 
 export default function UsuarioChat() {
-  const { authUser } = useAuth(); // 👈 Obtener usuario logueado
+  const { authUser } = useAuth();
   const [mensaje, setMensaje] = useState('');
   const [mensajes, setMensajes] = useState([]);
 
   useEffect(() => {
-    if (!authUser?.id) return; // Asegura que haya usuario
+    if (!authUser?.id) return;
 
     const fetchMensajes = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:1337/api/mensajes?filters[user][id]=${authUser.id}&populate=respuestas`
+          `http://localhost:1337/api/mensajes?filters[user][id]=${authUser.id}&populate[respuestas][populate]=user`
+
         );
         setMensajes(res.data.data);
       } catch (error) {
@@ -23,8 +25,8 @@ export default function UsuarioChat() {
       }
     };
 
-    fetchMensajes(); // Primera carga
-    const interval = setInterval(fetchMensajes, 3000); // Auto refresh
+    fetchMensajes();
+    const interval = setInterval(fetchMensajes, 3000);
 
     return () => clearInterval(interval);
   }, [authUser]);
@@ -46,52 +48,52 @@ export default function UsuarioChat() {
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
-      <h2>Soporte al cliente</h2>
+    <div className="max-w-xl mx-auto px-4 py-6">
+      <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Soporte al Cliente</h2>
 
-      <div
-        style={{
-          border: '1px solid #ccc',
-          padding: 10,
-          minHeight: 300,
-          marginBottom: 10,
-          backgroundColor: '#f9f9f9',
-        }}
-      >
-        {mensajes.length === 0 && <p>No hay mensajes todavía.</p>}
+      <div className="bg-white border rounded-lg p-4 shadow-sm min-h-[300px] mb-4 overflow-y-auto max-h-[500px]">
+        {mensajes.length === 0 ? (
+          <p className="text-gray-500 text-center">No hay mensajes todavía.</p>
+        ) : (
+          mensajes.map((msg) => (
+            <div key={msg.id} className="mb-6">
+              <div className="bg-green-100 p-3 rounded-lg text-sm text-gray-800 max-w-[80%] ml-auto">
+                <span className="font-semibold">Tú:</span> {msg.contenido}
+              </div>
 
-        {mensajes.map((msg) => (
-          <div key={msg.id} style={{ marginBottom: 15 }}>
-            <div style={{ backgroundColor: '#e1ffc7', padding: 8, borderRadius: 6 }}>
-              <strong>Tú:</strong> {msg.contenido}
-            </div>
-
-            {(msg.respuestas || []).map((res) => (
+              {(msg.respuestas || []).map((res) => (
               <div
                 key={res.id}
-                style={{
-                  backgroundColor: '#dce5ff',
-                  padding: 8,
-                  borderRadius: 6,
-                  marginTop: 5,
-                }}
+                className="bg-blue-100 p-3 rounded-lg text-sm text-gray-800 mt-2 max-w-[80%] relative"
               >
-                <strong>Admin:</strong> {res.contenido}
+                <div className="text-[10px] text-gray-500 mb-1 font-medium">
+                  {res.user?.username || 'Admin'}
+                </div>
+                {res.contenido}
               </div>
             ))}
-          </div>
-        ))}
+
+
+            </div>
+          ))
+        )}
       </div>
 
-      <div style={{ display: 'flex', gap: 10 }}>
+      <div className="flex gap-2">
         <input
           type="text"
           placeholder="Escribe tu mensaje..."
           value={mensaje}
           onChange={(e) => setMensaje(e.target.value)}
-          style={{ flex: 1, padding: 10 }}
+          className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
         />
-        <button onClick={enviarMensaje}>Enviar</button>
+        <button
+          onClick={enviarMensaje}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        >
+          <SendHorizonal size={16} />
+          Enviar
+        </button>
       </div>
     </div>
   );

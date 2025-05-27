@@ -25,6 +25,10 @@
       "relation": "oneToMany",
       "target": "api::respuesta.respuesta",
       "mappedBy": "mensaje"
+    },
+    "visto": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
