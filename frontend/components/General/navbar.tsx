@@ -1,12 +1,22 @@
 "use client";
-import { ShoppingCart, User, Search, Settings, Shield, LogOut } from "lucide-react";
+import { ShoppingCart, User, Search, Settings, Shield, LogOut, Bell } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import CartSidebar from "../compras/ShoppingCart/CartSideBar";
 import { useAuth } from "@/context/AuthContext";
 
-import SearchBar from "./SearchBar"; // ajusta el path si es necesario
+import SearchBar from "./SearchBar"; 
+import axios from 'axios';
+
+
+
+
+
+
+
+
+
 
 
 type UserType = {
@@ -29,6 +39,24 @@ const Navbar = () => {
 
     const [role, setRole] = useState<string | null>(null);
     const [userName, setUserName] = useState<string | null>(null);
+    const [nuevosMensajesCount, setNuevosMensajesCount] = useState(0);
+
+
+    const fetchNuevosMensajes = async () => {
+        try {
+          const res = await axios.get('http://localhost:1337/api/mensajes?populate=user');
+          const mensajes = res.data.data;
+      
+          // Contar cuántos mensajes NO vistos hay
+          const noVistos = mensajes.filter((msg: any) => msg.visto === false);
+          setNuevosMensajesCount(noVistos.length);
+        } catch (error) {
+          console.error('Error al obtener mensajes no vistos:', error);
+        }
+      };
+      useEffect(() => {
+        fetchNuevosMensajes();
+      }, []);
 
     useEffect(() => {
         const loadUserData = () => {
@@ -163,6 +191,23 @@ const Navbar = () => {
                 /> 
                 </div>
                 <div
+                    title="Mensajes"
+                    className="relative transition-transform duration-300 transform hover:scale-110 cursor-pointer ml-1"
+                    onClick={() => {
+                        router.push("/routes/messageAdmin");
+                        setMenuOpen(false);
+                    }}
+                    >
+                    <Bell strokeWidth={1.5} className="w-6 h-6 text-white-700" />
+                    
+                    {nuevosMensajesCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                        {nuevosMensajesCount}
+                        </span>
+                    )}
+                    </div>
+
+                <div
                     title="Perfil"
                     className="transition-transform duration-300 transform hover:scale-110 cursor-pointer ml-1"
                     onClick={() => setMenuOpen(!menuOpen)}>
@@ -173,7 +218,7 @@ const Navbar = () => {
 
                 {/*--------------------Menú desplegable------------------*/}
                 {menuOpen && (
-                        <div className="absolute right-0 mt-35 w-52 bg-[#5FAEC9] text-white shadow-lg rounded-lg overflow-hidden z-50">
+                        <div className="absolute right-0 mt-60 w-52 bg-[#5FAEC9] text-white shadow-lg rounded-lg overflow-hidden z-50">
                             <button
                                 className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
                                 onClick={() => {
@@ -196,12 +241,7 @@ const Navbar = () => {
                             >
                                 Devoluciones
                             </button>
-                            <button
-                                className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
-                                onClick={() => router.push("/routes/messageAdmin")}
-                            >
-                                Mensajeria
-                            </button>
+
                             <button
                                 className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
                                 onClick={() => router.push("/routes/adminshop")}

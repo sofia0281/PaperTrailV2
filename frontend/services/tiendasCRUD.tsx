@@ -20,6 +20,8 @@ export const getAllTiendasData = async () => {
         Departamento:  tienda.Departamento,
         Ciudad:  tienda.Ciudad,
         Direction: tienda.Direction,
+        latitud: tienda.latitud,
+        longitud: tienda.longitud,
     }));
   } catch (error) {
     console.error('Error en getAllTiendasData:', error);

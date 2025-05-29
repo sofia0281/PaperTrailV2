@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SendHorizonal } from 'lucide-react';
 
 export default function ChatWindow({
   userId,
@@ -108,7 +109,7 @@ export default function ChatWindow({
           mensajes.map((msg) => (
             <div key={msg.id}>
               <motion.div
-                className="bg-green-100 p-3 rounded-lg text-sm text-gray-800 max-w-[80%]"
+                className="bg-orange-300 p-3 rounded-lg text-sm text-gray-800 max-w-[80%]"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
@@ -120,13 +121,13 @@ export default function ChatWindow({
                 {(msg.respuestas || []).map((res: any) => (
                   <motion.div
                     key={res.id}
-                    className="bg-blue-100 p-3 rounded-lg text-sm text-gray-800 mt-2 ml-auto max-w-[80%]"
+                    className="bg-blue-300 p-3 rounded-lg text-sm text-gray-800 mt-2 ml-auto max-w-[80%]"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 20 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <span className="font-semibold">Admin:</span> {res.contenido}
+                    <span className="font-semibold">Tu:</span> {res.contenido}
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -149,7 +150,7 @@ export default function ChatWindow({
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           disabled={!authUser}
         >
-          Enviar
+          <SendHorizonal size={16} />
         </button>
       </div>
     </div>

@@ -10,6 +10,10 @@ import colombiaData from "@/components/ui/colombia/data_colombia.json";
 import { AutocompleteColombia } from "@/components/ui/colombia/AutocompleteColombia";
 
 
+import { geocodeAddress } from "@/services/geocoding";
+
+
+
 const CreateTienda = () => {
 
 
@@ -47,46 +51,54 @@ const CreateTienda = () => {
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setShowConfirm(false);
-        if (!validateForm()) {
-          setErrorMessage("Por favor complete correctamente los datos de ubicación");
-          setTimeout(() => setErrorMessage(null), 3000);
-          return;
-        }
-        if (formData.Direction.length < 10) {
-          setErrorMessage("La dirección debe tener al menos 10 caracteres.");
-          setTimeout(() => setErrorMessage(null), 3000);
-          return;
-        }
-        try {
-            const newTiendaData = {
-            idTienda: formData.idTienda,
-            Nombre:  formData.Nombre,
-            Region:  formData.Region,
-            Departamento:  formData.Departamento,
-            Ciudad:  formData.Ciudad,
-            Direction: formData.Direction,
-            };
-
-            const response = await createTienda(newTiendaData);
-
-            setSuccessMessage("Tienda creada correctamente");
-
-
-        } catch (error: any) {
-            const errorMessages = error.errors?.map(errorItem => {
-            const field = errorItem.path?.[0];
-            if (field === "idTienda") return `Este idTienda ya se encuentra registrado`;
-            return `Error en el campo ${field || 'desconocido'}. Error al crear la tienda`;
-            });
-
-            const fullMessage = errorMessages?.join('. ') || error.message || "Error al crear la tienda";
-            setErrorMessage(fullMessage);
-            setSuccessMessage(null);
-            setTimeout(() => setErrorMessage(null), 3000);
-        }
-        }; 
+      e.preventDefault();
+      setShowConfirm(false);
+    
+      if (!validateForm()) {
+        setErrorMessage("Por favor complete correctamente los datos de ubicación");
+        setTimeout(() => setErrorMessage(null), 3000);
+        return;
+      }
+    
+      if (formData.Direction.length < 10) {
+        setErrorMessage("La dirección debe tener al menos 10 caracteres.");
+        setTimeout(() => setErrorMessage(null), 3000);
+        return;
+      }
+    
+      try {
+        const fullAddress = `${formData.Direction}, ${formData.Ciudad}, ${formData.Departamento},  Colombia`;
+        const coords = await geocodeAddress(fullAddress);
+        console.log("Coordenadas obtenidas:", coords);
+    
+        const newTiendaData = {
+          idTienda: formData.idTienda,
+          Nombre: formData.Nombre,
+          Region: formData.Region,
+          Departamento: formData.Departamento,
+          Ciudad: formData.Ciudad,
+          Direction: formData.Direction,
+          latitud: coords.latitud,
+          longitud: coords.longitud
+        };
+    
+        const response = await createTienda(newTiendaData);
+    
+        setSuccessMessage("Tienda creada correctamente");
+      } catch (error: any) {
+        const errorMessages = error.errors?.map(errorItem => {
+          const field = errorItem.path?.[0];
+          if (field === "idTienda") return `Este idTienda ya se encuentra registrado`;
+          return `Error en el campo ${field || 'desconocido'}. Error al crear la tienda`;
+        });
+    
+        const fullMessage = errorMessages?.join('. ') || error.message || "Error al crear la tienda";
+        setErrorMessage(fullMessage);
+        setSuccessMessage(null);
+        setTimeout(() => setErrorMessage(null), 3000);
+      }
+    };
+    
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 

@@ -6,6 +6,10 @@ import {getAllTiendasData, deleteTienda} from '@/services/tiendasCRUD';
 import withAuthADMIN from '@/components/Auth/withAuthADMIN';
 import { motion } from "framer-motion";
 import { XCircle } from "lucide-react";
+
+
+import { geocodeAddress } from '@/utils/geocode';
+
 interface Tienda {
   id: number;
   Nombre: string;

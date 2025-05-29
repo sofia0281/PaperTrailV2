@@ -63,15 +63,32 @@ export default function ConversationList({
     return () => clearInterval(intervalId);
   }, []);
 
+  // Contador de nuevos mensajes
+  const nuevosMensajesCount = usuarios.filter((u) => u.noVisto).length;
+
+  // Ordenar usuarios: primero los que tienen mensajes no vistos
+  const usuariosOrdenados = [...usuarios].sort((a, b) => {
+    if (a.noVisto === b.noVisto) return 0;
+    return a.noVisto ? -1 : 1;
+  });
+
   return (
-    <div className="p-4  border-r overflow-y">
-      <h2 className="text-lg font-semibold mb-4">Conversaciones</h2>
-      {usuarios.map((user) => {
-        const bgColor = user.noVisto ? 'bg-red-100' : 'bg-green-100';
+    <div className="p-4 border-r overflow-y">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold">Conversaciones</h2>
+        {nuevosMensajesCount > 0 && (
+          <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+            {nuevosMensajesCount}
+          </span>
+        )}
+      </div>
+
+      {usuariosOrdenados.map((user) => {
+        const bgColor = user.noVisto ? 'bg-orange-300' : 'bg-blue-300';
         return (
           <div
             key={user.id}
-            className={`cursor-pointer p-2 rounded flex justify-between items-center hover:bg-gray-200 ${bgColor}`}
+            className={`cursor-pointer p-2 rounded flex justify-between items-center hover:bg-red-100 ${bgColor}`}
             onClick={() => onSelectUser(user.id, user.username)}
           >
             <span>{user.username}</span>

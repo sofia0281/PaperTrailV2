@@ -1,4 +1,3 @@
-// app/routes/messageAdmin/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -23,12 +22,19 @@ export default function AdminChatLayout() {
       </div>
 
       {/* Lado derecho: ventana del chat */}
-      <div className="w-2/3 h-[calc(100vh-50px)] flex flex-col"> 
+      <div className="w-2/3 h-[calc(80vh-50px)] flex flex-col"> 
         {selectedUserId ? (
           <ChatWindow userId={selectedUserId} username={selectedUsername} />
         ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-400">
-            Selecciona una conversación
+          <div className="flex-1 flex flex-col items-center justify-start pt-10">
+            <p className="text-orange-500 text-lg font-semibold mb-6">
+              Selecciona una conversación
+            </p>
+            <img
+              src="/img/icono.png"
+              alt="Ícono empresa"
+              className="w-150 h-150 opacity-30"
+            />
           </div>
         )}
       </div>

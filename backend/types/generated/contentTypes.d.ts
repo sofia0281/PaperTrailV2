@@ -621,12 +621,14 @@ export interface ApiTiendaTienda extends Struct.CollectionTypeSchema {
     Departamento: Schema.Attribute.String & Schema.Attribute.Required;
     Direction: Schema.Attribute.String & Schema.Attribute.Required;
     idTienda: Schema.Attribute.UID & Schema.Attribute.Required;
+    latitud: Schema.Attribute.Decimal;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::tienda.tienda'
     > &
       Schema.Attribute.Private;
+    longitud: Schema.Attribute.Decimal;
     Nombre: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     Region: Schema.Attribute.String & Schema.Attribute.Required;

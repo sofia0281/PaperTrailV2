@@ -6,6 +6,9 @@ import ButtonSuscribete from "@/components/ui/botonSuscribirse/buttonsuscribete"
 import CardBooks from "@/components/ui/libros/cardbooks";
 import { useAuth } from '@/context/AuthContext';
 
+import Maps from './maps'; // ajusta el path si está en otro lugar
+
+
 
 interface StrapiBook {
   idLibro:string,
@@ -101,8 +104,26 @@ const Home = () => {
         </div>
       )}
 
-      {/* Sección de suscripción */}
-      <ButtonSuscribete />
+      
+
+      {/* Sección del mapa */}
+<section className="px-6 py-12 bg-gray-50 mt-10 rounded-lg shadow-md w-[95%] mx-auto">
+  <h2 className="text-orange-500 md:text-3xl font-bold text-center text-[#3C88A3] mb-2">
+    Nuestras tiendas en Colombia
+  </h2>
+  <p className="text-center text-gray-600 mb-6">
+    Descubre nuestras ubicaciones físicas en todo el país.
+  </p>
+
+  <div className="h-[600px] rounded-lg overflow-hidden z-10 relative">
+    <Maps />
+  </div>
+</section>
+{/* Botón flotante de suscripción */}
+<div className="fixed bottom-6 right-6 z-50">
+    <ButtonSuscribete />
+  </div>
+
     </div>
   );
 };
