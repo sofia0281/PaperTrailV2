@@ -1166,6 +1166,7 @@ export interface PluginUsersPermissionsUser
   };
   attributes: {
     Apellido: Schema.Attribute.String & Schema.Attribute.Required;
+    baneo: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     cards: Schema.Attribute.Relation<'oneToMany', 'api::card.card'>;
     cedula: Schema.Attribute.String &

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { em } from 'framer-motion/client';
 
 export default function ConversationList({
   onSelectUser,
@@ -15,18 +16,23 @@ export default function ConversationList({
       const res = await axios.get('http://localhost:1337/api/mensajes?populate=user');
       const mensajes = res.data.data.map((msg: any) => {
         const user = msg.user;
+        const email = user.email;
         const visto = msg.visto;
 
+        console.log('Email:', email);
         return {
           id: msg.id,
           contenido: msg.contenido,
           visto,
+          email,
           user: user && user.id && user.username
             ? {
                 id: user.id,
                 username: user.username,
+                email: user.email,
               }
             : null,
+         
         };
       });
 
@@ -42,6 +48,7 @@ export default function ConversationList({
               id: user.id,
               username: user.username,
               noVisto: !visto,
+              email: user.email,
             });
           } else if (!visto) {
             mapaUsuarios.get(user.id).noVisto = true;
@@ -91,7 +98,12 @@ export default function ConversationList({
             className={`cursor-pointer p-2 rounded flex justify-between items-center hover:bg-red-100 ${bgColor}`}
             onClick={() => onSelectUser(user.id, user.username)}
           >
-            <span>{user.username}</span>
+            <div className="flex flex-col">
+        <span className="font-medium">{user.username}</span>
+        <span className="text-xs text-gray-700">{user.email}</span>
+
+      </div>
+
           </div>
         );
       })}

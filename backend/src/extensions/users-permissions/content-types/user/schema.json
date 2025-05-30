@@ -123,6 +123,10 @@
       "relation": "oneToMany",
       "target": "api::mensaje.mensaje",
       "mappedBy": "user"
+    },
+    "baneo": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
