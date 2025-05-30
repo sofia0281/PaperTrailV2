@@ -41,11 +41,11 @@ export default function BannedModal({
           </div>
 
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Cuenta Bloqueada
+            Servicio de Mensajeria Bloqueado
           </h3>
           <div className="mt-2">
             <p className="text-sm text-gray-500 mb-4">
-              Tu cuenta ha sido suspendida por violar nuestros términos de servicio.
+              Tu servicio de mensajeria ha sido suspendida por violar nuestros términos de servicio.
               Para más información o apelar esta decisión, por favor contacta a:
             </p>
             <a
