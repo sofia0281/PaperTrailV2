@@ -321,7 +321,7 @@ const Navbar = () => {
                                     setMenuOpen(false)
                                 }}
                             >
-                                Mensajerias
+                                Comunicate con Soporte
                             </button>
                             { <button
                                 className="w-full px-4 py-2 text-left hover:bg-[#4D94AD] cursor-pointer"
