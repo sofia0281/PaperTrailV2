@@ -26,7 +26,7 @@ const CardPreviewShoppingCart = () => {
                     src={
                       item.imageUrl.includes("http")
                         ? item.imageUrl
-                        : `http://localhost:1337${item.imageUrl}`
+                        : `${process.env.NEXT_PUBLIC_BACKEND_URL}${item.imageUrl}`
                     }
                     alt={item.title}
                     className="w-full h-full object-cover"

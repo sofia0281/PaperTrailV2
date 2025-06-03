@@ -43,7 +43,7 @@ const EditPassword = ({ userId, userEmail }: EditPasswordProps) => {
   // Función para verificar la contraseña actual
   const verifyCurrentPassword = async (identifier: string, password: string) => {
     try {
-      const response = await fetch("http://localhost:1337/api/auth/local", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/local`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier, password }),

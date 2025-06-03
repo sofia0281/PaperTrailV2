@@ -23,7 +23,7 @@ export default function UsuarioChat() {
 
     const checkBanStatus = async () => {
       try {
-        const res = await axios.get(`http://localhost:1337/api/users/${authUser.id}`);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${authUser.id}`);
         setIsBanned(res.data.baneo);
         if (res.data.baneo) {
           setShowBanModal(true);
@@ -42,7 +42,7 @@ export default function UsuarioChat() {
     const fetchMensajes = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:1337/api/mensajes?filters[user][id]=${authUser.id}&populate[respuestas][populate]=user`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/mensajes?filters[user][id]=${authUser.id}&populate[respuestas][populate]=user`
         );
         setMensajes(res.data.data);
       } catch (error) {
@@ -96,7 +96,7 @@ export default function UsuarioChat() {
     }
 
     try {
-      await axios.post('http://localhost:1337/api/mensajes', {
+      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/mensajes`, {
         data: {
           contenido: mensaje,
           user: authUser.id,

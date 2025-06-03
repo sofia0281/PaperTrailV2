@@ -48,7 +48,7 @@ const CardSideBarShoppingCart = ({ item }) => {
       <div className="w-16 h-16 bg-white rounded overflow-hidden">
         {item.imageUrl && (
           <img
-            src={item.imageUrl.includes('http') ? item.imageUrl : `http://localhost:1337${item.imageUrl}`}
+            src={item.imageUrl.includes('http') ? item.imageUrl : `${process.env.NEXT_PUBLIC_BACKEND_URL}${item.imageUrl}`}
             alt={item.title}
             className="w-full h-full object-cover"
           />

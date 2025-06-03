@@ -40,7 +40,7 @@ export default function ChatWindow({
   useEffect(() => {
     const fetchUserStatus = async () => {
       try {
-        const res = await axios.get(`http://localhost:1337/api/users/${userId}`);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`);
         setIsBanned(res.data.baneo);
       } catch (error) {
         console.error('Error obteniendo estado del usuario:', error);
@@ -53,7 +53,7 @@ export default function ChatWindow({
     const noVistos = mensajes.filter((msg) => msg.visto === false);
     await Promise.all(
       noVistos.map((msg) =>
-        axios.put(`http://localhost:1337/api/mensajes/${msg.documentId}`, {
+        axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/mensajes/${msg.documentId}`, {
           data: { visto: true },
         })
       )
@@ -64,7 +64,7 @@ export default function ChatWindow({
     const fetchMensajes = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:1337/api/mensajes?filters[user][id]=${userId}&populate[respuestas][populate]=user`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/mensajes?filters[user][id]=${userId}&populate[respuestas][populate]=user`
         );
         const mensajes = res.data.data;
         setMensajes(mensajes);
@@ -110,7 +110,7 @@ export default function ChatWindow({
       const ultimoMensaje = mensajes[mensajes.length - 1];
       if (!ultimoMensaje) return;
 
-      await axios.post('http://localhost:1337/api/respuestas', {
+      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/respuestas`, {
         data: {
           contenido: nuevoMensaje,
           es_admin: true,
@@ -158,7 +158,7 @@ export default function ChatWindow({
               <button
                 onClick={async () => {
                   try {
-                    await axios.put(`http://localhost:1337/api/users/${userId}`, {
+                    await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`, {
                       baneo: !isBanned,
                     });
                     setIsBanned(!isBanned);

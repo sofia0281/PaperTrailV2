@@ -115,7 +115,7 @@ const CardBooks = ({
       onClick={() => router.push(`/routes/books/${idLibro}`)}>
         {imageUrl ? (
           <img 
-            src={imageUrl.includes('http') ? imageUrl : `http://localhost:1337${imageUrl}`}
+            src={imageUrl.includes('http') ? imageUrl : `${process.env.NEXT_PUBLIC_BACKEND_URL}${imageUrl}`}
             alt={`Portada de ${title}`}
             className="w-full h-full object-cover"
           />

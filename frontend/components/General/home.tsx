@@ -40,7 +40,7 @@ const Home = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const res = await fetch('http://localhost:1337/api/books?populate=cover');
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/books?populate=cover`);
         if (!res.ok) throw new Error('Error al cargar libros');
         const { data } = await res.json();
         console.log("Datos recibidos de Strapi:", data); // Verifica la estructura aquí
