@@ -2,40 +2,26 @@
 export const getAllTiendasData = async () => {
   try {
     const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tiendas`;
-    console.log('Fetching from:', url); // Debug: ver URL
-    
     const response = await fetch(url, {
       headers: {
         'Authorization': `Bearer ${process.env.NEXT_PUBLIC_STRAPI_ADMIN_TOKEN}`
       }
     });
 
-    // Verifica el contenido antes de parsear
-    const responseText = await response.text();
-    console.log('Raw response:', responseText); // Debug: ver respuesta cruda
+    if (!response.ok) throw new Error('Error al obtener tiendas');
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    // Solo intenta parsear si parece JSON
-    if (!responseText.startsWith('{') && !responseText.startsWith('[')) {
-      throw new Error('Response is not JSON: ' + responseText.substring(0, 100));
-    }
-
-    const responseData = JSON.parse(responseText);
-    const { data } = responseData;
-    
+    const { data } = await response.json();
+    console.log(data);
     return data.map((tienda: any) => ({
-      id: tienda.id,
-      idTienda: tienda.idTienda || tienda.id,
-      Nombre: tienda.Nombre,
-      Region: tienda.Region,
-      Departamento: tienda.Departamento,
-      Ciudad: tienda.Ciudad,
-      Direction: tienda.Direction,
-      latitud: tienda.latitud,
-      longitud: tienda.longitud,
+        id: tienda.id,
+        idTienda: tienda.idTienda || tienda.id,
+        Nombre:  tienda.Nombre,
+        Region:  tienda.Region,
+        Departamento:  tienda.Departamento,
+        Ciudad:  tienda.Ciudad,
+        Direction: tienda.Direction,
+        latitud: tienda.latitud,
+        longitud: tienda.longitud,
     }));
   } catch (error) {
     console.error('Error en getAllTiendasData:', error);

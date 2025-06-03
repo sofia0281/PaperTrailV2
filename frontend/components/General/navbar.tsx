@@ -44,7 +44,7 @@ const Navbar = () => {
 
     const fetchNuevosMensajes = async () => {
         try {
-          const res = await axios.get('http://localhost:1337/api/mensajes?populate=user');
+          const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/mensajes?populate=user`);
           const mensajes = res.data.data;
       
           // Contar cuántos mensajes NO vistos hay
