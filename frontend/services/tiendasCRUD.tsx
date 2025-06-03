@@ -1,10 +1,11 @@
 // getAllBooksData trae la información de cada libro de la tabla
 export const getAllTiendasData = async () => {
+  const token = localStorage.getItem('authToken');
   try {
     const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tiendas`;
     const response = await fetch(url, {
       headers: {
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_STRAPI_ADMIN_TOKEN}`
+        'Authorization': `Bearer ${token}`
       }
     });
 
