@@ -99,7 +99,7 @@ const Books = ({ idLibro }: { idLibro: string }) => {
       });
       // Cargar la imagen si existe
       if (bookData.cover.url) {
-        const imageUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}${bookData.cover.url}`;
+        const imageUrl = `${bookData.cover.url}`;
         setImage(imageUrl);
         console.log("URL de la imagen cargada:", imageUrl);
       } else {
