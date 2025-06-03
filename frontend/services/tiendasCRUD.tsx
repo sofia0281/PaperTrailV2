@@ -10,7 +10,7 @@ export const getAllTiendasData = async () => {
     });
 
     if (!response.ok) throw new Error('Error al obtener tiendas');
-    
+    console.log("Respuesta de la API:", response); // Depuración
     const { data } = await response.json();
     console.log(data);
     return data.map((tienda: any) => ({
