@@ -122,7 +122,7 @@ const Search = () => {
                     src={
                       book.cover?.url?.includes("http")
                         ? book.cover.url
-                        : `${process.env.NEXT_PUBLIC_BACKEND_URL}${book.cover?.url}`
+                        : `${book.cover?.url}`
                     }
                     alt={`Portada de ${book.title}`}
                     className="w-full h-full object-cover"

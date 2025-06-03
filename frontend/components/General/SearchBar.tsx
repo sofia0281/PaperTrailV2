@@ -68,7 +68,7 @@ const SearchBar = () => {
           >
             <div className="flex items-center gap-3 overflow-hidden">
               <img
-                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${book.cover?.url}`}
+                src={`${book.cover?.url}`}
                 alt={book.title}
                 className="w-10 h-14 object-cover rounded shrink-0"
               />
