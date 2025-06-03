@@ -2,12 +2,14 @@
 export const getAllTiendasData = async () => {
   const token = localStorage.getItem('authToken');
   try {
-    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tiendas`;
-    const response = await fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tiendas`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      });
 
     if (!response.ok) throw new Error('Error al obtener tiendas');
     console.log("Respuesta de la API:", response); // Depuración
