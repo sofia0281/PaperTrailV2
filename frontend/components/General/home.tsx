@@ -74,7 +74,7 @@ const Home = () => {
         ENCUENTRA TODOS TUS <span className="text-orange-500">LIBROS FAVORITOS</span>
       </h2>
 
-      {/* Botones de categorías y novedades */}
+      {/* Botones de categorías y novedades
       <div className="flex justify-center gap-4 my-4">
         <button className="bg-[#3C88A3] text-white px-4 py-2 rounded-md hover:scale-105 transition-transform">
           📚 Categorías
@@ -82,7 +82,7 @@ const Home = () => {
         <button className="bg-[#3C88A3] text-white px-4 py-2 rounded-md hover:scale-105 transition-transform">
           ✨ Novedades
         </button>
-      </div>
+      </div> */}
       {/* Lista de libros dinámica */}
       {loading ? (
         <div className="text-center py-10">Cargando libros...</div>
