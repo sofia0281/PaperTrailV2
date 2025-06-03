@@ -2,7 +2,7 @@
 export const getAllTiendasData = async () => {
   const token = localStorage.getItem('authToken');
   try {
-
+// comentario
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tiendas`, {
         method: 'GET',
         headers: {
