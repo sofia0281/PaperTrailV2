@@ -267,23 +267,23 @@ const Navbar = () => {
 
         <div className="relative flex items-center ">
             {/* Íconos de usuario y carrito LOGUEADO*/}
-            <span className="transition-transform duration-300 transform hover:scale-105" >Hola, {userName}</span>
-            <div
-                    title="Carrito"
-                    className="transition-transform duration-300 transform hover:scale-110 cursor-pointer ml-1">
-
-                
-                <ShoppingCart
-                    strokeWidth={1}
-                    onClick={toggleCart}
-                />
+            <span className="transition-transform duration-300 transform hover:scale-105">Hola, {userName}</span>
+            
+            {/* Contenedor del ícono del carrito con contador */}
+            <div className="relative ml-1">
+                <div
+                title="Carrito"
+                className="transition-transform duration-300 transform hover:scale-110 cursor-pointer"
+                onClick={toggleCart}
+                >
+                <ShoppingCart strokeWidth={1} />
                 {cart.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {cart.length}
-                </span>
+                    <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cart.length}
+                    </span>
                 )}
-                
-                </div> 
+                </div>
+            </div>
 
             {/*-----------Ícono de usuario con menú desplegable ---------*/}
             <div className="relative" ref={menuRef}>
